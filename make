@@ -2,7 +2,7 @@
 
 
 # define all modules (in correct order)
-MODULES=(async hash overload prototyping tree)
+MODULES=(_init async hash overload prototyping tree)
 FILES_TO_CAT=""
 
 if [[ "$1" == "with" ]]; then

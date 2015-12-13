@@ -1,4 +1,4 @@
-class App.Tree
+class JSUtils.Tree
 
     CLASS = @
 
@@ -207,7 +207,7 @@ class App.Tree
     ###*
     * Find all occurences of a node.
     * @method findNodes
-    * @param equalsFunction {App.Tree}
+    * @param equalsFunction {JSUtils.Tree}
     *###
     findNodes: (param) ->
         res = []
@@ -318,8 +318,8 @@ class App.Tree
     # MODIFYING THE TREE
     # this can also move nodes within the tree or between trees
     addChild: (node, index, adjustLevels = true) ->
-        # if node not instanceof App.Tree and not node.__instanceof__?(App.Tree)
-        if not node.instanceOf(App.Tree)
+        # if node not instanceof JSUtils.Tree and not node.__instanceof__?(JSUtils.Tree)
+        if not node.instanceOf(JSUtils.Tree)
             node = new CLASS(node)
 
         # node is attached somewhere else => correctly move between (sub)trees

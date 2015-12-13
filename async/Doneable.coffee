@@ -1,1 +1,1 @@
-App.Doneable = new App.Sequence()
+JSUtils.Doneable = new JSUtils.Sequence()

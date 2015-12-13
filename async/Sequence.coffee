@@ -11,7 +11,7 @@
  *     }
  *     {
  *      func: () ->
- *          return new App.Sequence(...)
+ *          return new JSUtils.Sequence(...)
  *      scope: someObject
  *      params: (prevRes, presFunc, prevParams, idx) ->
  *          return [...]
@@ -46,7 +46,7 @@
  * @param start {Boolean}
  * Optional. Default is `true`. If it's `!== true` the Sequence will not start automatically. The `start()` method can be used to start it whenever.
 *###
-class App.Sequence
+class JSUtils.Sequence
 
     @PARAM_MODES =
         CONTEXT:    "CONTEXT"
@@ -54,7 +54,7 @@ class App.Sequence
         EXPLICIT:   "EXPLICIT"
 
     ###*
-    * This method does the same as window.setTimeout() but makes it useable by App.Sequence. It also takes an additional (optional) scope parameter.
+    * This method does the same as window.setTimeout() but makes it useable by JSUtils.Sequence. It also takes an additional (optional) scope parameter.
     * Basically window.setTimeout() is used in order to delay a whole Sequence.
     *
     * The mechanism is lik so:
@@ -202,7 +202,7 @@ class App.Sequence
                 catch error
                     res = null
                     console.error "================================================================="
-                    console.error "App.Sequence::_invokeNextFunction: Given function (at index #{@idx}) threw an Error!"
+                    console.error "JSUtils.Sequence::_invokeNextFunction: Given function (at index #{@idx}) threw an Error!"
                     console.warn "Here is the data:", data
                     console.warn "Here is the error:", error
                     console.error "================================================================="
@@ -346,13 +346,13 @@ class App.Sequence
 ################################################################################################
 # TESTING METHOD
 if DEBUG
-    App.Sequence.test = () ->
-        sequence = new App.Sequence([
+    JSUtils.Sequence.test = () ->
+        sequence = new JSUtils.Sequence([
             # testing new setTimeout...
             # {
             #     func: () ->
             #         delay = 2000
-            #         return App.Sequence.setTimeout(
+            #         return JSUtils.Sequence.setTimeout(
             #             () ->
             #                 console.log("func0! was timed out by #{delay}")
             #             delay
@@ -390,7 +390,7 @@ if DEBUG
             # # do exactly what you did before
             # {
             #     func: (prevRes, prevCallbackParams, prevFunc, prevScope, prevParams, currentIndex) ->
-            #         return new App.Sequence([
+            #         return new JSUtils.Sequence([
             #             func: prevFunc
             #             # this has to jQuery as well because func uses the previous function (which is returned by the params function) that actually uses jQuery as `this`
             #             scope: prevScope

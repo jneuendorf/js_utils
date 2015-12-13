@@ -18,7 +18,7 @@ funcForArgs = (args, argLists, funcs) ->
         lastMatchedIdx = i
     return null
 
-window.jOverload = (args...) ->
+JSUtils.jOverload = (args...) ->
     argLists = []
     funcs = []
 

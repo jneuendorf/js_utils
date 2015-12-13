@@ -11,7 +11,7 @@
 *     }
 *     {
 *      func: () ->
-*          return new App.Sequence(...)
+*          return new JSUtils.Sequence(...)
 *      scope: someObject
 *     [
 *      () -> return true,
@@ -38,7 +38,7 @@
 * @param start {Boolean}
 * Optional. Default is `true`. If it's `!== true` the Sequence will not start automatically. The `start()` method can be used to start it whenever.
 *###
-class App.Barrier
+class JSUtils.Barrier
 
     # callback is called on every element of the given array. its result is returned (and therefore accessible in Barrier::funcResults when done)
     @forArray: (array = [], callback, start = true) ->
@@ -49,7 +49,7 @@ class App.Barrier
                     return () ->
                         return callback(elem)
             }
-        return new App.Barrier(data, start)
+        return new JSUtils.Barrier(data, start)
 
     ################################################################################################
     # CONSTRUCTOR
@@ -97,7 +97,7 @@ class App.Barrier
     * @protected
     * @method _invokeNextFunction
     * @param data {Object|Array}
-    * Function data (same structure as in App.Sequence)
+    * Function data (same structure as in JSUtils.Sequence)
     * @return This istance. {Barrier}
     * @chainable
     *###
@@ -109,7 +109,7 @@ class App.Barrier
         scope = data.scope or data[1]
         params = data.params or data[2]
         # create wrapper that notifies the barrier that the function is done
-        @_sequences.push new App.Sequence([
+        @_sequences.push new JSUtils.Sequence([
             {
                 func: () ->
                     try

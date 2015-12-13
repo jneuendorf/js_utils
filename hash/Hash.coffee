@@ -3,7 +3,7 @@
  * @class Configurator
  * @constructor
 *###
-class App.Hash
+class JSUtils.Hash
 
     ###*
      * Creates a new Hash from a given JavaScript object.
@@ -12,7 +12,7 @@ class App.Hash
      * @param object {Object}
     *###
     @fromObject: (obj) ->
-        hash = new App.Hash()
+        hash = new JSUtils.Hash()
         for key, val of obj
             hash.put key, val
         return hash
@@ -27,20 +27,20 @@ class App.Hash
                 @put key, val
 
     toObject: () ->
-      res = {}
-      for key, idx in @keys
-        res[key] = @values[idx]
-      return res
+        res = {}
+        for key, idx in @keys
+            res[key] = @values[idx]
+        return res
 
 
     clone: () ->
-        res         = new App.Hash()
+        res         = new JSUtils.Hash()
         res.keys    = @keys.clone()
         res.values  = @values.clone()
         return res
 
     invert: () ->
-        res         = new App.Hash()
+        res         = new JSUtils.Hash()
         res.keys    = @values.clone()
         res.values  = @keys.clone()
         return res

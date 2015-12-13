@@ -1,4 +1,4 @@
-class App.Leaf extends App.Tree
+class JSUtils.Leaf extends JSUtils.Tree
 
     CLASS = @
 
@@ -15,7 +15,7 @@ class App.Leaf extends App.Tree
             get: () ->
                 return []
             set: () ->
-                throw new Error("App.Leaf::children=: Cannot set children of a leaf!")
+                throw new Error("JSUtils.Leaf::children=: Cannot set children of a leaf!")
         }
 
     ##################################################################################################
@@ -66,19 +66,19 @@ class App.Leaf extends App.Tree
     ##################################################################################################
     # MODIFYING THE TREE
     addChild: () ->
-        throw new Error("App.Leaf::addChild: Cannot add a child to a leaf!")
+        throw new Error("JSUtils.Leaf::addChild: Cannot add a child to a leaf!")
 
     addChildren: () ->
-        throw new Error("App.Leaf::addChildren: Cannot add children to a leaf!")
+        throw new Error("JSUtils.Leaf::addChildren: Cannot add children to a leaf!")
 
     setChildren: () ->
-        throw new Error("App.Leaf::setChildren: Cannot set children of a leaf!")
+        throw new Error("JSUtils.Leaf::setChildren: Cannot set children of a leaf!")
 
     removeChild: () ->
-        throw new Error("App.Leaf::removeChild: Cannot remove children of a leaf!")
+        throw new Error("JSUtils.Leaf::removeChild: Cannot remove children of a leaf!")
 
     removeChildAt: (idx) ->
-        throw new Error("App.Leaf::removeChildAt: Cannot remove children of a leaf!")
+        throw new Error("JSUtils.Leaf::removeChildAt: Cannot remove children of a leaf!")
 
     adjustLevels: () ->
         return @
