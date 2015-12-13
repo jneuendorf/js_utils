@@ -48,70 +48,6 @@ $.fn.hideFast = () ->
     @[0].style.display = "none"
     return @
 
-# Makes a given DIV sortable and scrollable by arrows. It is assumed that the outer div contains li elements that are to be dragged. The created structure is
-# <OUTERDIV>
-#    <div class="$arrowClass left"></div>
-#    <div class="$arrowClass right"></div>
-#    <div class="sortableContainer">
-#        <ul class="sortable">
-#            ORIGINAL CONTENT
-#        </ul>
-#    </div>
-# </OUTERDIV>
-# Parameters:
-#    outerDiv
-#    sortableOptions        Object of options that are passed to the sortable() function
-# Returns the new outerDiv
-$.fn.makeSortable = (childrensWidth, containerClass = "sortableContainer", sortableOptions = {}, animOptions, arrowClass = "scroll") ->
-    arrowLeft    = $("<div class=\"#{arrowClass} left disabled\"></div>")
-    arrowRight    = $("<div class=\"#{arrowClass} right\"></div>")
-
-    @children().wrapAll("<div class=\"#{containerClass}\"><ul class=\"sortable\"></ul></div>")
-    @prepend(arrowLeft).prepend(arrowRight)
-
-    # set containment (which should be the div with the container class unless differently set)
-    if not sortableOptions.containment? or sortableOptions.containment is ""
-        sortableOptions.containment = ".#{containerClass}"
-
-    @find(".sortable").sortable(sortableOptions)
-
-    self = @
-    arrowLeft.click () ->
-        if not $(@).hasClass("disabled")
-            GUI.doScroll(true, self.find(".#{containerClass}"), childrensWidth, animOptions)
-    arrowRight.click () ->
-        if not $(@).hasClass("disabled")
-            GUI.doScroll(false, self.find(".#{containerClass}"), childrensWidth, animOptions)
-
-    return @
-
-# Makes a given DIV scrollable by mouse wheel
-$.fn.makeScrollable = (childrensWidth) ->
-    @mousewheel (ev, delta, deltaX, deltaY)    =>
-        if not @queue("fx").length
-            # determine the direction to scroll into:
-            # user scrolled horizontally
-            if deltaX isnt 0
-                str = "+=#{deltaX}px"
-                dir = "left"
-                if deltaX > 0
-                    dir = "right"
-            # user scrolled vertically
-            else if deltaY isnt 0
-                str = "-=#{deltaY}px"
-                dir = "left"
-                if deltaY < 0
-                    dir = "right"
-
-            inBounds = GUI.scrollingBounds(@, childrensWidth)
-
-            if inBounds[dir]
-                @animate    scrollLeft: str,
-                            0,
-                            "linear"
-
-        return false # prevent default scrolling on page
-
 # Checks whether the object is in the DOM or not
 $.fn.inDom = () ->
     return $.contains(document.documentElement, @[0])
@@ -139,9 +75,8 @@ $.fn.appendLog = (args..., trackingList) ->
 
 
 
-#######################
-# $.Color prototyping #
-#######################
+##############################################
+# $.Color prototyping
 
 $.Color.fn.distanceTo = (color, distFunc) ->
     # define default function for distance calculation
@@ -155,6 +90,6 @@ $.Color.fn.isSimilarTo = (color) ->
     return @distanceTo(color) / 255 < (1 - 1 / 1.61803398875)
 
 
-# $.Color.fn.toRgbStringOld = $.Color.fn.toRgbaString.clone()
+# @Override
 $.Color.fn.toRgbaString = () ->
     return "rgba(" + @_rgba.join(",") + ")"

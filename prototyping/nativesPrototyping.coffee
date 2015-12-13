@@ -23,7 +23,6 @@ Math.average = (vals...) ->
         elems++
     return sum / elems
 
-# Math.log10Old = Math.log10
 Math.log10 = (x) ->
     if x? and x > 0
         return Math.log(x) / Math.LN10
@@ -34,7 +33,7 @@ Math.log10 = (x) ->
 Math.roundToSig = (num, digits) ->
     return parseFloat(num.toPrecision(digits))
 
-Math.toSig = (num, digits, separator="") ->
+Math.toSig = (num, digits, separator = "") ->
     rounded = Math.roundToSig(num, digits)
 
     # digits of rounded number = floor(log10(rounded)) + 1
@@ -117,11 +116,6 @@ Object.swapKeys = (obj, keys...) ->
 ########################################################################################
 ########################################################################################
 # ELEMENT
-
-Element::appendLog = (child, trackingList) ->
-    @appendChild(child)
-    trackingList.push child
-    return @
 
 if not Element::remove?
     Element::remove = () ->

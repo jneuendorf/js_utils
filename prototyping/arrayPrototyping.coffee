@@ -42,23 +42,11 @@ Array::groupBy = (groupFun, equality) ->
     return dict
 
 Array::insert = (index, elements...) ->
-    # if elements not instanceof Array
-    #     elements = [elements]
     @splice(index, 0, elements...)
     return @
 
-Array::remove = (element) ->
-    if element instanceof Array
-        return @removeAll(element)
-    idx = @indexOf(element)
-    if idx > -1
-        @splice(idx, 1)
-    return @
-
-Array::removeAll = (elements = []) ->
-    for element in elements
-        @remove(element)
-    return @
+Array::remove = (elements...) ->
+    return (elem for elem in @ when elem not in elements)
 
 Array::removeAt = (idx) ->
     @splice(idx, 1)
@@ -209,9 +197,7 @@ Array::getMin = (propertyGetter) ->
     return res
 
 Array::reverseCopy = () ->
-    res = []
-    res.push(item) for item in @ by -1
-    return res
+    return (item for item in @ by -1)
 
 Array::sample = (n = 1, forceArray = false) ->
     if n is 1
@@ -330,7 +316,7 @@ for prop, idx in indexProps
                 return @
 
 for key, val of arrayProtoDefs
-    val.enumerable      = false
-    val.configurable    = false
+    val.enumerable = false
+    val.configurable = false
 
 Object.defineProperties Array::, arrayProtoDefs
