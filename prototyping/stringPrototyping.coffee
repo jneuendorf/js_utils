@@ -40,17 +40,30 @@ String::replaceMultiple = (array, mode) ->
         if length isnt 2
             return @
 
-        needle    = array.first
-        cbFun    = array.second
+        needle = array.first
+        cbFun = array.second
         i = 0
-        while temp.indexOf(needle) isnt -1 and i < length
+        while temp.indexOf(needle) isnt -1 and i < temp.length
             temp = temp.replace(needle, cbFun(i))
             i++
 
     return temp
 
+String::firstToUpper = () ->
+    return @charAt(0).toUpperCase() + @slice(1)
+
+String::firstToLower = () ->
+    return @charAt(0).toLowerCase() + @slice(1)
+
+String::capitalize = () ->
+    res = ""
+    # for word in @split(/\s+/g)
+    for word in @split " "
+        res += "#{word.firstToUpper()} "
+    return res.trim()
+
 # camel case to normal words
-String::unCamelCase = () ->
+String::camelToKebab = () ->
     return @
         # insert a space between lower & upper
         .replace(/([a-z])([A-Z])/g, '$1-$2')
@@ -58,13 +71,7 @@ String::unCamelCase = () ->
         .replace(/\b([A-Z]+)([A-Z])([a-z])/, '$1-$2$3')
         .toLowerCase()
 
-String::firstToUpperCase = () ->
-    return @charAt(0).toUpperCase() + @slice(1)
-
-String::firstToLowerCase = () ->
-    return @charAt(0).toLowerCase() + @slice(1)
-
-String::snakeToCamelCase = () ->
+String::snakeToCamel = () ->
     res = ""
 
     for char in @
@@ -81,7 +88,7 @@ String::snakeToCamelCase = () ->
 
     return res
 
-String::camelToSnakeCase = () ->
+String::camelToSnake = () ->
     res = ""
     prevChar = null
     for char in @
@@ -104,7 +111,7 @@ String::upper = String::toUpperCase
 
 String::isNumeric = () ->
     parsed = parseFloat(@)
-    return "#{parsed}" is @ and Math.isNum(parsed)
+    return ("#{parsed}" is "#{@}" or "+#{parsed}" is "#{@}") and Math.isNum(parsed)
 
 String::endsWith = (end) ->
     index = @lastIndexOf end
@@ -113,9 +120,9 @@ String::endsWith = (end) ->
     return false
 
 String::times = (n = 1) ->
-    res = ""
-    for i in [0...n]
-        res += @
+    res = "#{@}"
+    for i in [1...n]
+        res += "#{@}"
     return res
 
 String::encodeHTMLEntities = () ->

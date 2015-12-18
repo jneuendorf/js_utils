@@ -2,7 +2,7 @@
 (function() {
   describe("prototyping", function() {
     describe("nativesPrototyping", function() {
-      return describe("Math", function() {
+      describe("Math", function() {
         it("isNum", function() {
           expect(Math.isNum instanceof Function).toBe(true);
           expect(Math.isNum(0)).toBe(true);
@@ -22,15 +22,137 @@
           expect(Math.sign instanceof Function).toBe(true);
           expect(Math.sign(0)).toBe(0);
           expect(Math.sign(3)).toBe(1);
-          return expect(Math.sign(-3)).toBe(-1);
+          expect(Math.sign(-3)).toBe(-1);
+          expect(Math.sign("-3")).toBe(void 0);
+          return expect(Math.sign(Infinity)).toBe(void 0);
         });
         return it("log10", function() {
           expect(Math.log10 instanceof Function).toBe(true);
-          return expect(Math.log10(1)).toBe(0);
+          expect(Math.log10(1)).toBe(0);
+          expect(Math.log10(10)).toBe(1);
+          expect(Math.log10(100)).toBe(2);
+          return expect(Math.log10(1e5)).toBe(5);
+        });
+      });
+      describe("Function", function() {
+        return it("clone", function() {
+          var f1, f2, i, j, results;
+          f1 = function(a) {
+            return a + 2;
+          };
+          f2 = f1.clone();
+          results = [];
+          for (i = j = -100; j <= 100; i = j += 0.5) {
+            results.push(expect(f1(i)).toBe(f2(i)));
+          }
+          return results;
+        });
+      });
+      describe("Object", function() {
+        it("except", function() {
+          var a;
+          a = {
+            a: 10,
+            b: 20,
+            c: 30
+          };
+          return expect(Object.except(a, "b")).toEqual({
+            a: 10,
+            c: 30
+          });
+        });
+        it("values", function() {
+          var a;
+          a = {
+            a: 10,
+            b: 20,
+            c: 30
+          };
+          return expect(Object.values(a)).toEqual([10, 20, 30]);
+        });
+        return it("swapValues", function() {
+          var a;
+          a = {
+            a: 10,
+            b: 20,
+            c: 30
+          };
+          return expect(Object.swapValues(a, "a", "c")).toEqual({
+            a: 30,
+            b: 20,
+            c: 10
+          });
+        });
+      });
+      return describe("Element", function() {
+        return it("remove", function() {
+          var body;
+          body = $(document.body);
+          body.append("<div class='_test' />");
+          document.querySelector("._test").remove();
+          return expect(body.find("._test").length).toBe(0);
         });
       });
     });
-    describe("stringPrototyping", function() {});
+    describe("stringPrototyping", function() {
+      it("replaceMultiple", function() {
+        var str;
+        str = "me me me you me you bla";
+        expect(str.replaceMultiple(["me", "I", "you", "you all"], 0)).toBe("I me me you all me you bla");
+        expect(str.replaceMultiple(["me", "I", "you", "you all"], "tuples")).toBe("I me me you all me you bla");
+        expect(str.replaceMultiple(["me", "you", "him"], 1)).toBe("him me me him me you bla");
+        expect(str.replaceMultiple(["me", "you", "him"], "diffByOne")).toBe("him me me him me you bla");
+        expect(str.replaceMultiple([
+          "me", function(index) {
+            return "" + (index + 1);
+          }
+        ], 2)).toBe("1 2 3 you 4 you bla");
+        return expect(str.replaceMultiple([
+          "me", function(index) {
+            return "" + (index + 1);
+          }
+        ], "oneByDiff")).toBe("1 2 3 you 4 you bla");
+      });
+      it("firstToUpper", function() {
+        return expect("manylittleletters".firstToUpper()).toBe("Manylittleletters");
+      });
+      it("firstToLower", function() {
+        return expect("MANYBIGLETTERS".firstToLower()).toBe("mANYBIGLETTERS");
+      });
+      it("capitalize", function() {
+        return expect("hello world, this is me".capitalize()).toBe("Hello World, This Is Me");
+      });
+      it("camelToKebab", function() {
+        return expect("MyAwesomeClass".camelToKebab()).toBe("my-awesome-class");
+      });
+      it("snakeToCamel", function() {
+        return expect("my_awesome_function".snakeToCamel()).toBe("myAwesomeFunction");
+      });
+      it("camelToSnake", function() {
+        return expect("myAwesomeFunction".camelToSnake()).toBe("my_awesome_function");
+      });
+      it("lower & upper", function() {
+        expect(String.prototype.upper).toBe(String.prototype.toUpperCase);
+        return expect(String.prototype.lower).toBe(String.prototype.toLowerCase);
+      });
+      it("isNumeric", function() {
+        expect("234".isNumeric()).toBe(true);
+        expect("+234".isNumeric()).toBe(true);
+        expect("-234.567".isNumeric()).toBe(true);
+        return expect("some string".isNumeric()).toBe(false);
+      });
+      it("endsWith", function() {
+        expect("myAwesomeFunction".endsWith("Function")).toBe(true);
+        return expect("myAwesomeFunction".endsWith("Wunction")).toBe(false);
+      });
+      it("times", function() {
+        expect("word ".times(5)).toBe("word word word word word ");
+        return expect("word ".times(1)).toBe("word ");
+      });
+      return it("encodeHTMLEntities", function() {
+        return expect("ü".encodeHTMLEntities()).toBe("&#252;");
+      });
+    });
     describe("arrayPrototyping", function() {});
     return describe("jQueryPrototyping", function() {});
   });

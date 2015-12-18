@@ -68,7 +68,7 @@ prototyping["Object"] =
 
         return (val for key, val of obj)
 
-    swapKeys: (obj, keys...) ->
+    swapValues: (obj, keys...) ->
         if keys.length % 2 is 0
             for i in [0...keys.length] by 2
                 key1 = keys[i]

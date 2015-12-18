@@ -4,15 +4,44 @@ for setName, set of prototyping
     else
         parent = window[setName]
 
-    for methodName, method of set when not parent[methodName]?
-        # parent[methodName] = method
-        if method instanceof Function
-            Object.defineProperty parent, methodName, {
-                value: method
-                configurable: false
-                enumerable: false
-                writable: false
-            }
-        # assume given data is a property descriptor
-        else
-            Object.defineProperty parent, methodName, method
+    if not preferJSUtils
+        for methodName, method of set
+            if parent[methodName]?
+                methodName = "_#{methodName}"
+            # if not parent[methodName]?
+            #     # parent[methodName] = method
+            #     if method instanceof Function
+            #         Object.defineProperty parent, methodName, {
+            #             value: method
+            #             configurable: false
+            #             enumerable: false
+            #             writable: false
+            #         }
+            #     # assume given data is a property descriptor
+            #     else
+            #         Object.defineProperty parent, methodName, method
+            if method instanceof Function
+                Object.defineProperty parent, methodName, {
+                    value: method
+                    configurable: false
+                    enumerable: false
+                    writable: false
+                }
+            # assume given data is a property descriptor
+            else
+                Object.defineProperty parent, methodName, method
+    else
+        for methodName, method of set
+            if parent[methodName]?
+                parent["_#{methodName}"] = parent[methodName]
+                
+            if method instanceof Function
+                Object.defineProperty parent, methodName, {
+                    value: method
+                    configurable: false
+                    enumerable: false
+                    writable: false
+                }
+                # assume given data is a property descriptor
+            else
+                Object.defineProperty parent, methodName, method
