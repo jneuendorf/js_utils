@@ -1,1 +1,1 @@
-nativesPrototyping.coffee stringPrototyping.coffee arrayPrototyping.coffee jQueryPrototyping.coffee d3Prototyping.coffee
+init.coffee nativesPrototyping.coffee stringPrototyping.coffee arrayPrototyping.coffee jQueryPrototyping.coffee applyPrototyping.coffee

@@ -7,7 +7,7 @@ String::replaceMultiple = (array, mode) ->
 
     modes =
         0:            0
-        tuples:        0    # ['a','b','c','d'] means 'a' -> 'b' and 'c' -> 'd'
+        tuples:       0    # ['a','b','c','d'] means 'a' -> 'b' and 'c' -> 'd'
         1:            1
         diffByOne:    1    # ['asdf','bsdf','replacement'] means 'asdf' -> 'replacement' and 'bsdf' -> 'replacement'
         2:            2
@@ -103,7 +103,8 @@ String::lower = String::toLowerCase
 String::upper = String::toUpperCase
 
 String::isNumeric = () ->
-    return Math.isNum parseFloat(@)
+    parsed = parseFloat(@)
+    return "#{parsed}" is @ and Math.isNum(parsed)
 
 String::endsWith = (end) ->
     index = @lastIndexOf end
