@@ -3,7 +3,7 @@
 
 # define all modules (in correct order)
 MODULES=(_init async hash overload prototyping tree)
-FILES_TO_CAT=""
+FILES_TO_CAT="debug.coffee "
 
 if [[ "$1" == "with" ]]; then
     TEMP=""
@@ -39,7 +39,5 @@ done
 # echo $FILES_TO_CAT
 
 # --compile --stdio
-echo "cat debug.coffee $FILES_TO_CAT | coffee -sc > js_utils.js"
-cat "debug.coffee $FILES_TO_CAT" | coffee -sc > js_utils.js
-uglifyjs js_utils.js -o js_utils.min.js -c drop_console=true -d DEBUG=false -m
 cat $FILES_TO_CAT | coffee -sc > js_utils.js
+uglifyjs js_utils.js -o js_utils.min.js -c drop_console=true -d DEBUG=false -m

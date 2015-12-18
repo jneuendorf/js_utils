@@ -190,5 +190,198 @@ describe "prototyping", () ->
     ##################################################################################################################
     describe "arrayPrototyping", () ->
 
+        it "unique", () ->
+            expect [1, 2, 2, 3, 1, 3, 4, 3, 1, 4, 3, 2].unique()
+                .toEqual [1, 2, 3, 4]
+
+        it "uniqueBy", () ->
+            objs = ({a: {x: [i % 3, i % 3]}} for i in [0..10])
+            expect(objs.uniqueBy(
+                (obj) ->
+                    return obj.a.x
+                (arr1, arr2) ->
+                    return arr1[0] + arr1[1] is arr2[0] + arr2[1]
+            )).toEqual [{a: x: [0, 0]}, {a: x: [1, 1]}, {a: x: [2, 2]}]
+
+        it "intersect & intersects", () ->
+            expect [1, 2, 3, 4, 5].intersect([2, 5, 6, 7, 8])
+                .toEqual [2, 5]
+            expect [1, 2, 3, 4, 5].intersect([6, 7, 8])
+                .toEqual []
+
+            expect [1, 2, 3, 4, 5].intersects([2, 5, 6, 7, 8])
+                .toBe true
+            expect [1, 2, 3, 4, 5].intersects([6, 7, 8])
+                .toBe false
+
+        it "groupBy", () ->
+            # ~> [0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
+            objs = ({a: i % 3} for i in [0...10])
+            hash1 = new JSUtils.Hash()
+            hash1.put 0, [objs[0], objs[3], objs[6], objs[9]]
+            hash1.put 1, [objs[1], objs[4], objs[7]]
+            hash1.put 2, [objs[2], objs[5], objs[8]]
+
+            hash2 = objs.groupBy (o) ->
+                return o.a
+
+            expect hash1.keys
+                .toEqual hash2.keys
+            expect hash1.values
+                .toEqual hash2.values
+
+        it "insert", () ->
+            expect [1, 2, 2, 3].insert(2, "a", "b")
+                .toEqual [1, 2, "a", "b", 2, 3]
+
+        it "remove", () ->
+            expect [1, 2, 2, 3].remove(2, null, true)
+                .toEqual [1, 3]
+            expect [1, 2, 2, 3].remove(2)
+                .toEqual [1, 2, 3]
+            expect [1, 2, 2, 3].remove(2, null, false)
+                .toEqual [1, 2, 3]
+
+        it "removeAt", () ->
+            expect [1, 2, 2, 3].removeAt(0)
+                .toEqual [2, 2, 3]
+
+        it "moveElem", () ->
+            expect [1, 2, 2, 3].moveElem(0, 3)
+                .toEqual [2, 2, 3, 1]
+
+        it "flatten", () ->
+            expect [[1, 2], [2, 3]].flatten(0)
+                .toEqual [1, 2, 2, 3]
+
+        it "cloneDeep", () ->
+            arr = [1, [2, 2], 3]
+            expect arr.cloneDeep()
+                .toEqual arr
+
+            expect arr.cloneDeep() is arr
+                .toBe false
+
+        it "except & without", () ->
+            expect [1, 2, 2, 3].except(2, 3)
+                .toEqual [1]
+            expect [1, 2, 2, 3].without(2, 3)
+                .toEqual [1]
+
+        it "find", () ->
+            expect [1, [2, [2, "a"]], 3].find (elem) -> return elem[1] is "a"
+                .toEqual [2, "a"]
+
+        it "binIndexOf", () ->
+            expect [1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10].binIndexOf(4)
+                .toBe 4
+
+        it "sortByProp", () ->
+            objs = ({a: i % 3} for i in [0...6])
+            expect objs.sortByProp (o) -> return o.a
+                .toEqual [{a: 0}, {a: 0}, {a: 1}, {a: 1}, {a: 2}, {a: 2}]
+            expect(objs.sortByProp(
+                (o) ->
+                    return o.a
+                "desc"
+            )).toEqual [{a: 2}, {a: 2}, {a: 1}, {a: 1}, {a: 0}, {a: 0}]
+
+        it "getMax", () ->
+            objs = ({a: i % 3} for i in [0...6])
+            expect objs.getMax (o) -> return o.a
+                .toEqual [{a: 2}, {a: 2}]
+
+        it "getMin", () ->
+            objs = ({a: i % 3} for i in [0...6])
+            expect objs.getMin (o) -> return o.a
+                .toEqual [{a: 0}, {a: 0}]
+
+        it "reverseCopy", () ->
+            arr = [1, 2, 1, 3]
+            expect arr.reverseCopy()
+                .toEqual [3, 1, 2, 1]
+            expect arr.reverseCopy() is arr
+                .toBe false
+
+        it "sample", () ->
+            arr = [1, 2, 1, 3]
+            expect arr.sample(2).length
+                .toBe 2
+
+        xit "shuffle", () ->
+
+
+        it "swap", () ->
+            expect [1, 2, 2, 3].swap(1, 3)
+                .toEqual [1, 3, 2, 2]
+
+        it "times", () ->
+            expect [1, 2, 2, 3].times(3)
+                .toEqual [1, 2, 2, 3, 1, 2, 2, 3, 1, 2, 2, 3]
+
+        it "and", () ->
+            expect [1, 2, 2, 3].and(0)
+                .toEqual [1, 2, 2, 3, 0]
+
+        it "merge", () ->
+            expect [1, 2, 2, 3].merge([0, 8, 9])
+                .toEqual [1, 2, 2, 3, 0, 8, 9]
+
+        it "noNulls", () ->
+            expect [1, false, 2, 0, null, 2, null, undefined, 3].noNulls()
+                .toEqual [1, false, 2, 0, 2, 3]
+
+        it "getLast", () ->
+            expect [1, 2, 2, 3].getLast()
+                .toEqual [3]
+            expect [1, 2, 2, 3].getLast(2)
+                .toEqual [2, 3]
+
+        it "average", () ->
+            expect [1, 2, 2, 3].average
+                .toBe 2
+
+        it "last", () ->
+            expect [1, 2, 2, 3].last
+                .toBe 3
+
+        it "sum", () ->
+            expect [1, 2, 2, 3].sum
+                .toBe 8
+
+        it "first", () ->
+            expect [1, 2, 2, 3].first
+                .toBe 1
+
+        it "second", () ->
+            expect [1, 2, 2, 3].second
+                .toBe 2
+
+        it "third", () ->
+            expect [1, 2, 2, 3].third
+                .toBe 2
+
+        it "fourth", () ->
+            expect [1, 2, 2, 3].fourth
+                .toBe 3
+
+        it "aliases: prepend, append, clone (without is tested in 'expect')", () ->
+            arr = [1, 2, 2, 3]
+            expect arr.prepend(42)
+                .toBe 5
+            expect arr
+                .toEqual [42, 1, 2, 2, 3]
+
+            expect arr.append(43)
+                .toBe 6
+            expect arr
+                .toEqual [42, 1, 2, 2, 3, 43]
+
+            expect arr.clone()
+                .toEqual arr
+            expect arr.clone() is arr
+                .toBe false
+
+
     ##################################################################################################################
     describe "jQueryPrototyping", () ->

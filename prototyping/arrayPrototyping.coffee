@@ -30,7 +30,7 @@ prototyping["Array::"] =
     intersects: (arr) ->
         return @intersect(arr).length > 0
     groupBy: (groupFun, equality) ->
-        dict = new App.Hash(null, equality)
+        dict = new JSUtils.Hash(null, equality)
         for elem in @
             grouped = groupFun(elem)
             if not dict.get(grouped)?
@@ -40,21 +40,29 @@ prototyping["Array::"] =
     insert: (index, elements...) ->
         @splice(index, 0, elements...)
         return @
-    remove: (elements..., equals, removeAllOccurences = false, removedElements) ->
+    remove: (elements..., equals, removeAllOccurences = false) ->
+        if arguments.length < 3
+            elements = (arg for arg in arguments)
+            equals = null
+            removeAllOccurences = null
+
         if not equals?
             equals = (a, b) ->
                 return a is b
 
         for elem in elements
+            indices = []
             for myElem, idx in @ when equals(myElem, elem)
-                removedElements?.push @splice(idx, 1)
+                indices.push idx
                 if not removeAllOccurences
                     break
+            for idx, x in indices
+                @splice(idx - x, 1)
         return @
     removeAt: (idx) ->
         @splice(idx, 1)
         return @
-    elemMoved: (fromIdx, toIdx) ->
+    moveElem: (fromIdx, toIdx) ->
         res = []
         elem = @[fromIdx]
         for e, i in @ when i isnt fromIdx
@@ -68,7 +76,6 @@ prototyping["Array::"] =
         for elem, i in @
             if elem instanceof Array
                 @[i] = elem.cloneDeep()
-
         return @clone()
     except: (elements...) ->
         return (el for el in @ when el not in elements)
@@ -205,18 +212,6 @@ prototyping["Array::"] =
         for elem, i in arr
             @[i] = elem
         return @
-    # converts array of tuples to object
-    toObject: (callback) ->
-        res = {}
-        if not callback?
-            for elem, i in @
-                res[elem[0]] = elem[1]
-            return res
-
-        for elem, i in @
-            elem = callback(elem)
-            res[elem[0]] = elem[1]
-        return res
     swap: (i, j) ->
         tmp = @[i]
         @[i] = @[j]
@@ -227,8 +222,8 @@ prototyping["Array::"] =
         for i in [1...n]
             res = res.merge @
         return res
-    and:  (elem) ->
-        return @.concat [elem]
+    and: (elem) ->
+        return @concat [elem]
     # in-place concat
     merge: (array) ->
         Array::push.apply(@, array)
@@ -237,9 +232,9 @@ prototyping["Array::"] =
         res = []
         for e in @ when e?
             res.push e
-            return res
+        return res
     getLast: (n = 1) ->
-        return @slice(0, -n)
+        return @slice(-n)
     # GETTERS & SETTERS
     average:
         get: () ->
@@ -335,7 +330,8 @@ prototyping["Array::"] =
             return @
 
 # aliases
-Array::prepend = Array::unshift
-Array::append = Array::push
-Array::clone = Array::slice
-Array::without = Array::except
+aliasing["Array::"] =
+    prepend: "unshift"
+    append: "push"
+    clone: "slice"
+    without: "except"

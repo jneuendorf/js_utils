@@ -1,2 +1,3 @@
 prototyping = {}
+aliasing = {}
 preferJSUtils = true

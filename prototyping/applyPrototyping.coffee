@@ -4,22 +4,11 @@ for setName, set of prototyping
     else
         parent = window[setName]
 
+    # PREFER ALREADY IMPLEMENTED METHODS
     if not preferJSUtils
         for methodName, method of set
             if parent[methodName]?
                 methodName = "_#{methodName}"
-            # if not parent[methodName]?
-            #     # parent[methodName] = method
-            #     if method instanceof Function
-            #         Object.defineProperty parent, methodName, {
-            #             value: method
-            #             configurable: false
-            #             enumerable: false
-            #             writable: false
-            #         }
-            #     # assume given data is a property descriptor
-            #     else
-            #         Object.defineProperty parent, methodName, method
             if method instanceof Function
                 Object.defineProperty parent, methodName, {
                     value: method
@@ -30,11 +19,18 @@ for setName, set of prototyping
             # assume given data is a property descriptor
             else
                 Object.defineProperty parent, methodName, method
+        # ALIASING
+        if aliasing[setName]?
+            for aliasName, methodName of aliasing[setName]
+                if parent[aliasName]?
+                    aliasName = "_#{aliasName}"
+                parent[aliasName] = parent[methodName]
+    # PREFER JSUTILS' METHODS
     else
         for methodName, method of set
             if parent[methodName]?
                 parent["_#{methodName}"] = parent[methodName]
-                
+
             if method instanceof Function
                 Object.defineProperty parent, methodName, {
                     value: method
@@ -45,3 +41,9 @@ for setName, set of prototyping
                 # assume given data is a property descriptor
             else
                 Object.defineProperty parent, methodName, method
+        # ALIASING
+        if aliasing[setName]?
+            for aliasName, methodName of aliasing[setName]
+                if parent[aliasName]?
+                    parent["_#{aliasName}"] = parent[aliasName]
+                parent[aliasName] = parent[methodName]
