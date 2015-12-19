@@ -410,7 +410,105 @@
         return expect(arr.clone() === arr).toBe(false);
       });
     });
-    return describe("jQueryPrototyping", function() {});
+    return describe("jQueryPrototyping", function() {
+      beforeEach(function() {
+        this.body = $(document.body);
+        this.div = $("<div class=\"test\" />");
+        return this.body.append(this.div);
+      });
+      afterEach(function() {
+        return this.div.remove();
+      });
+      it("content", function() {
+        var div;
+        div = $("<div class=\"content\">\n    this is what we want!\n    <div>text1</div>\n    <div>text2</div>\n    <div>text3</div>\n</div>");
+        this.body.append(div);
+        expect(div.content()).toBe("this is what we want!");
+        div.content("hello world");
+        expect(div.content().trim()).toBe("hello world");
+        return div.remove();
+      });
+      it("toggleAttr", function() {
+        this.div.attr("data-test", "haha");
+        this.div.toggleAttr("data-test", "state1", "state2");
+        expect(this.div.attr("data-test")).toBe("state1");
+        this.div.toggleAttr("data-test");
+        expect(this.div.attr("data-test")).toBe("state2");
+        this.div.toggleAttr("data-test");
+        return expect(this.div.attr("data-test")).toBe("state1");
+      });
+      it("toggleCss", function() {
+        this.div.toggleCss("visibility", "hidden", "visible");
+        expect(this.div.css("visibility")).toBe("hidden");
+        this.div.toggleCss("visibility");
+        expect(this.div.css("visibility")).toBe("visible");
+        this.div.toggleCss("visibility");
+        return expect(this.div.css("visibility")).toBe("hidden");
+      });
+      it("dimensions & outerDimensions", function() {
+        this.div.css({
+          width: 100,
+          height: 100
+        });
+        expect(this.div.dimensions()).toEqual({
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 100
+        });
+        expect(this.div.outerDimensions()).toEqual({
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 100
+        });
+        this.div.css({
+          padding: 20,
+          margin: 20
+        });
+        expect(this.div.outerDimensions(false)).toEqual({
+          x: 140,
+          y: 140,
+          width: 140,
+          height: 140
+        });
+        expect(this.div.outerDimensions()).toEqual({
+          x: 180,
+          y: 180,
+          width: 180,
+          height: 180
+        });
+        return expect(this.div.outerDimensions(true)).toEqual({
+          x: 180,
+          y: 180,
+          width: 180,
+          height: 180
+        });
+      });
+      it("showNow", function() {
+        this.div.hide(0);
+        expect(this.div.is(":visible")).toBe(false);
+        this.div.showNow();
+        return expect(this.div.is(":visible")).toBe(true);
+      });
+      it("hideNow", function() {
+        expect(this.div.is(":visible")).toBe(true);
+        this.div.hideNow();
+        return expect(this.div.is(":visible")).toBe(false);
+      });
+      it("inDom", function() {
+        expect(this.div.inDom()).toBe(true);
+        this.div.detach();
+        return expect(this.div.inDom()).toBe(false);
+      });
+      return it("wrapAll", function() {
+        this.div.wrapAll("<div class='dom' />");
+        expect(this.div.parent().hasClass("dom")).toBe(true);
+        this.div.parent().detach();
+        this.div.wrapAll("<div class='no-dom' />");
+        return expect(this.div.parent().hasClass("no-dom")).toBe(true);
+      });
+    });
   });
 
 }).call(this);

@@ -1,8 +1,15 @@
+getObjectFromPath = (path) ->
+    parts = path.split "."
+    res = window
+    for part in parts
+        res = res?[part]
+    return res
+
 for setName, set of prototyping
-    if setName[setName.length - 1] is ":"
-        parent = window[setName.slice(0, -2)].prototype
-    else
-        parent = window[setName]
+    parent = getObjectFromPath(setName)
+
+    if not parent?
+        continue
 
     # PREFER ALREADY IMPLEMENTED METHODS
     if not preferJSUtils

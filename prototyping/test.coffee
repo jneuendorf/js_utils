@@ -385,3 +385,138 @@ describe "prototyping", () ->
 
     ##################################################################################################################
     describe "jQueryPrototyping", () ->
+
+        beforeEach () ->
+            @body = $ document.body
+            @div = $ """<div class="test" />"""
+            @body.append @div
+
+        afterEach () ->
+            @div.remove()
+
+
+        it "content", () ->
+            div = $ """<div class="content">
+                this is what we want!
+                <div>text1</div>
+                <div>text2</div>
+                <div>text3</div>
+            </div>"""
+            @body.append div
+
+            expect div.content()
+                .toBe "this is what we want!"
+            div.content("hello world")
+            expect div.content().trim()
+                .toBe "hello world"
+
+            div.remove()
+
+        it "toggleAttr", () ->
+            @div.attr "data-test", "haha"
+
+            @div.toggleAttr "data-test", "state1", "state2"
+
+            expect @div.attr("data-test")
+                .toBe "state1"
+
+            @div.toggleAttr "data-test"
+            expect @div.attr("data-test")
+                .toBe "state2"
+
+            @div.toggleAttr "data-test"
+            expect @div.attr("data-test")
+                .toBe "state1"
+
+        it "toggleCss", () ->
+            @div.toggleCss "visibility", "hidden", "visible"
+
+            expect @div.css("visibility")
+                .toBe "hidden"
+
+            @div.toggleCss "visibility"
+            expect @div.css("visibility")
+                .toBe "visible"
+
+            @div.toggleCss "visibility"
+            expect @div.css("visibility")
+                .toBe "hidden"
+
+
+        it "dimensions & outerDimensions", () ->
+            @div.css {
+                width: 100
+                height: 100
+            }
+            expect @div.dimensions()
+                .toEqual {
+                    x: 100
+                    y: 100
+                    width: 100
+                    height: 100
+                }
+            expect @div.outerDimensions()
+                .toEqual {
+                    x: 100
+                    y: 100
+                    width: 100
+                    height: 100
+                }
+
+            @div.css {
+                padding: 20
+                margin: 20
+            }
+            expect @div.outerDimensions(false)
+                .toEqual {
+                    x: 140
+                    y: 140
+                    width: 140
+                    height: 140
+                }
+            expect @div.outerDimensions()
+                .toEqual {
+                    x: 180
+                    y: 180
+                    width: 180
+                    height: 180
+                }
+            expect @div.outerDimensions(true)
+                .toEqual {
+                    x: 180
+                    y: 180
+                    width: 180
+                    height: 180
+                }
+
+        it "showNow", () ->
+            @div.hide(0)
+            expect @div.is(":visible")
+                .toBe false
+            @div.showNow()
+            expect @div.is(":visible")
+                .toBe true
+
+        it "hideNow", () ->
+            expect @div.is(":visible")
+                .toBe true
+            @div.hideNow()
+            expect @div.is(":visible")
+                .toBe false
+
+        it "inDom", () ->
+            expect @div.inDom()
+                .toBe true
+            @div.detach()
+            expect @div.inDom()
+                .toBe false
+
+        it "wrapAll", () ->
+            @div.wrapAll "<div class='dom' />"
+            expect @div.parent().hasClass "dom"
+                .toBe true
+
+            @div.parent().detach()
+            @div.wrapAll "<div class='no-dom' />"
+            expect @div.parent().hasClass "no-dom"
+                .toBe true

@@ -29,7 +29,7 @@ prototyping["Math"] =
 ########################################################################################
 # FUNCTION
 # inline javascript from https://gist.github.com/Sykkro/7490193
-prototyping["Function::"] =
+prototyping["Function.prototype"] =
     # Function.prototype.clone = function() {
     clone: `function() {
         var that = this;
@@ -82,6 +82,6 @@ prototyping["Object"] =
 ########################################################################################
 ########################################################################################
 # ELEMENT
-prototyping["Element::"] =
+prototyping["Element.prototype"] =
     remove: () ->
         return @parentNode.removeChild(@)

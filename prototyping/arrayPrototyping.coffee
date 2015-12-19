@@ -1,4 +1,4 @@
-prototyping["Array::"] =
+prototyping["Array.prototype"] =
     # not in-place
     unique: () ->
         res = []
@@ -330,7 +330,7 @@ prototyping["Array::"] =
             return @
 
 # aliases
-aliasing["Array::"] =
+aliasing["Array.prototype"] =
     prepend: "unshift"
     append: "push"
     clone: "slice"

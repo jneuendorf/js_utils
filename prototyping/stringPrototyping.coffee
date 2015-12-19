@@ -1,4 +1,4 @@
-prototyping["String::"] =
+prototyping["String.prototype"] =
     replaceMultiple: (array, mode) ->
         # if invalid array return the original string
         if not array? or array.length < 2
@@ -117,6 +117,6 @@ prototyping["String::"] =
         return @replace /[\u00A0-\u9999<>\&]/gim, (i) ->
             return "&##{i.charCodeAt(0)};"
 
-aliasing["String::"] =
+aliasing["String.prototype"] =
     lower: "toLowerCase"
     upper: "toUpperCase"
