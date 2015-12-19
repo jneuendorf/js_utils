@@ -95,6 +95,7 @@ class JSUtils.Sequence
         @_doneCallbacks = []
         @_startCallback = null
         @_endCallback   = null
+        @_errorCallback = null
         @_isDone        = false
         @_isStopped     = false
 
@@ -208,6 +209,7 @@ class JSUtils.Sequence
                     console.error "================================================================="
                     if @stopOnError
                         @interrupt()
+                        @_errorCallback?(error)
 
                 # TODO: enable sequence concatenation: if res is a sequence somehow pass the last result to next function (as if they were defined in 1 sequence)
                 # ASYNC
@@ -298,6 +300,12 @@ class JSUtils.Sequence
                 return callback.apply(context, args)
         return @
 
+    onError: (callback, context, args...) ->
+        if typeof callback is "function"
+            @_errorCallback = (error) ->
+                return callback.apply(context, [error].concat(args))
+        return @
+
     ###*
     * This method adds a callback that will be executed after all functions have returned.
     * @method done
@@ -340,90 +348,3 @@ class JSUtils.Sequence
         @onStart startFunc, context, args
         @onEnd endFunc, context, args
         return @
-
-
-
-################################################################################################
-# TESTING METHOD
-if DEBUG
-    JSUtils.Sequence.test = () ->
-        sequence = new JSUtils.Sequence([
-            # testing new setTimeout...
-            # {
-            #     func: () ->
-            #         delay = 2000
-            #         return JSUtils.Sequence.setTimeout(
-            #             () ->
-            #                 console.log("func0! was timed out by #{delay}")
-            #             delay
-            #             $
-            #         )
-            #     scope: window
-            #     params: []
-            # }
-            # make an API call
-            {
-                func: (id, idx) ->
-                    # http://localhost:3000/api/reports?channel=1
-                    console.log "func1! idx = #{idx}#{if idx? then " (called again...so actually func2 ^^)" else ""}"
-                    # s = Date.now()
-                    return @get "http://localhost:3000/api/report/#{id}"
-                    # return @get "http://localhost:3000/api/reports?channel=#{id}", (resp) ->
-                    #     # console.log "api call took", resp, Date.now() - s, "ms"
-                    #     console.log "func1 (id=#{id}) res =", resp
-                    #     return true
-                scope: $
-                params: [12]
-            }
-            # jquery.get callback
-            {
-                func: (response) ->
-                    console.log "jquery get callback:", response
-                    return response
-            }
-            {
-                func: (response) ->
-                    console.log "next seq function with prev result:", response
-                    return true
-
-            }
-            # # do exactly what you did before
-            # {
-            #     func: (prevRes, prevCallbackParams, prevFunc, prevScope, prevParams, currentIndex) ->
-            #         return new JSUtils.Sequence([
-            #             func: prevFunc
-            #             # this has to jQuery as well because func uses the previous function (which is returned by the params function) that actually uses jQuery as `this`
-            #             scope: prevScope
-            #             params: () ->
-            #                 params = prevParams.concat(currentIndex)
-            #                 params[0]++
-            #                 return params
-            #         ])
-            #     scope: window
-            #     params: (prevRes, prevCallbackParams, prevFunc, prevScope, prevParams, currentIndex) ->
-            #         return [prevRes, prevCallbackParams, prevFunc, prevScope, prevParams, currentIndex]
-            # }
-            # execute a synchronous function using array notation
-            # [
-            #     () ->
-            #         console.log "func3 (synchronous function)!"
-            #         return { data: "awesome data" }
-            #     null
-            #     [42]
-            # ]
-            # # just something...
-            # {
-            #     func: (prevRes) ->
-            #         console.log "func4 (using previous result)!", "'#{prevRes.data}' and some more chars! :D"
-            #         return @
-            #     scope: null
-            #     params: (prevRes, prevCallbackParams, prevFunc, prevScope, prevParams, currentIndex) ->
-            #         return [prevRes]
-            # }
-        ], false)
-        .while(
-            loadingIndicator.start
-            loadingIndicator.stop
-            loadingIndicator
-        )
-        .start()

@@ -104,6 +104,7 @@
       this._doneCallbacks = [];
       this._startCallback = null;
       this._endCallback = null;
+      this._errorCallback = null;
       this._isDone = false;
       this._isStopped = false;
       this._parameterMode = this.constructor.PARAM_MODES.EXPLICIT;
@@ -212,6 +213,9 @@
             console.error("=================================================================");
             if (this.stopOnError) {
               this.interrupt();
+              if (typeof this._errorCallback === "function") {
+                this._errorCallback(error);
+              }
             }
           }
           if (((res != null ? res.done : void 0) != null) && ((res != null ? res.context : void 0) != null)) {
@@ -330,6 +334,17 @@
       return this;
     };
 
+    Sequence.prototype.onError = function() {
+      var args, callback, context;
+      callback = arguments[0], context = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [];
+      if (typeof callback === "function") {
+        this._errorCallback = function(error) {
+          return callback.apply(context, [error].concat(args));
+        };
+      }
+      return this;
+    };
+
 
     /**
     * This method adds a callback that will be executed after all functions have returned.
@@ -391,32 +406,6 @@
     return Sequence;
 
   })();
-
-  if (DEBUG) {
-    JSUtils.Sequence.test = function() {
-      var sequence;
-      return sequence = new JSUtils.Sequence([
-        {
-          func: function(id, idx) {
-            console.log("func1! idx = " + idx + (idx != null ? " (called again...so actually func2 ^^)" : ""));
-            return this.get("http://localhost:3000/api/report/" + id);
-          },
-          scope: $,
-          params: [12]
-        }, {
-          func: function(response) {
-            console.log("jquery get callback:", response);
-            return response;
-          }
-        }, {
-          func: function(response) {
-            console.log("next seq function with prev result:", response);
-            return true;
-          }
-        }
-      ], false)["while"](loadingIndicator.start, loadingIndicator.stop, loadingIndicator).start();
-    };
-  }
 
 
   /**

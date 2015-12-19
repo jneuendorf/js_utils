@@ -1,2 +1,2 @@
 # AsyncJS
-A small JavaScript library for thread-like programming
+A small JavaScript library for managing async functions.
