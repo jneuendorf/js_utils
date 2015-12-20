@@ -102,9 +102,6 @@ class JSUtils.Barrier
     * @chainable
     *###
     _invokeNextFunction: (data, idx) ->
-        if @_isStopped
-            return @
-
         func = data.func or data[0]
         scope = data.scope or data[1]
         params = data.params or data[2]
@@ -164,10 +161,10 @@ class JSUtils.Barrier
 
     ###*
     * This method returns the progress (how many async function have already reached the Barrier) in [0,1].
-    * @method getProgress
+    * @method progress
     * @return progress {Number}
     *###
-    getProgress: () ->
+    progress: () ->
         return 1 - @remainingThreads / @data.length
 
     ###*
@@ -198,43 +195,4 @@ class JSUtils.Barrier
             @_startCallback = startCallback
             @_endCallback   = endCallback
 
-        return @
-
-
-    ###*
-    * Same as while() but the 2nd parameter is executed AFTER the done callbacks.
-    * @protected
-    * @method whileAll
-    * @return This istance. {Barrier}
-    * @chainable
-    *###
-    whileAll: (startCallback, endCallback, context) ->
-        if context?
-            @_startCallback = () ->
-                return context.startCallback()
-            @_endAllCallback = () ->
-                return context.endCallback()
-        else
-            @_startCallback     = startCallback
-            @_endAllCallback    = endCallback
-
-        return @
-
-    stop: (execCallbacks = true) ->
-        @_isStopped = true
-
-        sequence.stop(execCallbacks) for sequence in @_sequences
-
-        if execCallbacks
-            @_endCallback?()
-            @_execDoneCallbacks()
-        return @
-
-    interrupt: () ->
-        return @stop(false)
-
-    resume: () ->
-        @_isStopped = false
-        # TODO: pass correct params here (prev res....)
-        @_invokeNextFunction()
         return @

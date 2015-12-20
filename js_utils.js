@@ -228,7 +228,7 @@
             res.done(function() {
               self.idx++;
               self._parameterMode = CLASS.PARAM_MODES.IMPLICIT;
-              return self._invokeNextFunction.apply(self, arguments);
+              return self._invokeNextFunction.apply(self, slice.call(arguments).concat([res]));
             });
           } else if (res != null ? res.context : void 0) {
             this.idx++;
@@ -543,9 +543,6 @@
 
     Barrier.prototype._invokeNextFunction = function(data, idx) {
       var func, params, scope;
-      if (this._isStopped) {
-        return this;
-      }
       func = data.func || data[0];
       scope = data.scope || data[1];
       params = data.params || data[2];
@@ -622,12 +619,12 @@
 
     /**
     * This method returns the progress (how many async function have already reached the Barrier) in [0,1].
-    * @method getProgress
+    * @method progress
     * @return progress {Number}
     *
      */
 
-    Barrier.prototype.getProgress = function() {
+    Barrier.prototype.progress = function() {
       return 1 - this.remainingThreads / this.data.length;
     };
 
@@ -673,61 +670,6 @@
         this._startCallback = startCallback;
         this._endCallback = endCallback;
       }
-      return this;
-    };
-
-
-    /**
-    * Same as while() but the 2nd parameter is executed AFTER the done callbacks.
-    * @protected
-    * @method whileAll
-    * @return This istance. {Barrier}
-    * @chainable
-    *
-     */
-
-    Barrier.prototype.whileAll = function(startCallback, endCallback, context) {
-      if (context != null) {
-        this._startCallback = function() {
-          return context.startCallback();
-        };
-        this._endAllCallback = function() {
-          return context.endCallback();
-        };
-      } else {
-        this._startCallback = startCallback;
-        this._endAllCallback = endCallback;
-      }
-      return this;
-    };
-
-    Barrier.prototype.stop = function(execCallbacks) {
-      var len1, m, ref, sequence;
-      if (execCallbacks == null) {
-        execCallbacks = true;
-      }
-      this._isStopped = true;
-      ref = this._sequences;
-      for (m = 0, len1 = ref.length; m < len1; m++) {
-        sequence = ref[m];
-        sequence.stop(execCallbacks);
-      }
-      if (execCallbacks) {
-        if (typeof this._endCallback === "function") {
-          this._endCallback();
-        }
-        this._execDoneCallbacks();
-      }
-      return this;
-    };
-
-    Barrier.prototype.interrupt = function() {
-      return this.stop(false);
-    };
-
-    Barrier.prototype.resume = function() {
-      this._isStopped = false;
-      this._invokeNextFunction();
       return this;
     };
 

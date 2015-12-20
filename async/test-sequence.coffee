@@ -290,6 +290,30 @@ describe "async", () ->
                 ]
             ]
 
+        it "returning a doneable object will also make it accessible in the next function", (done) ->
+            result = []
+            Helper = @helperClass
+            h = null
+
+            @sequence.start [
+                {
+                    func: () ->
+                        h = new Helper(3000)
+                        h.go()
+                        return h
+                    scope: @
+                }
+                {
+                    func: (prevH) ->
+                        result.push prevH is h
+                        return 2
+                }
+            ]
+            @sequence.done () ->
+                expect result
+                    .toEqual [true]
+                done()
+
         it "use context to pass multiple parameters for next function in sequence", (done) ->
             result = []
             Helper = @helperClass

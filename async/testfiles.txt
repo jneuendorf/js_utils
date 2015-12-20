@@ -1,1 +1,1 @@
-test.coffee
+test-sequence.coffee test-barrier.coffee

@@ -228,7 +228,7 @@ class JSUtils.Sequence
                         self.idx++
                         self._parameterMode = CLASS.PARAM_MODES.IMPLICIT
                         # use callback arguments because it should not be of interest (use context if needed)
-                        self._invokeNextFunction(arguments...)
+                        self._invokeNextFunction(arguments..., res)
                 # SYNC
                 # only context => synchronous function => nothing to wait for
                 else if res?.context

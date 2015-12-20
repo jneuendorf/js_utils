@@ -5,7 +5,7 @@
   window.DEBUG = true;
 
   describe("async", function() {
-    return describe("Sequence", function() {
+    describe("Sequence", function() {
       beforeEach(function() {
         var Helper;
         this.sequence = new JSUtils.Sequence([], false);
@@ -332,6 +332,31 @@
           ]
         ]);
       });
+      it("returning a doneable object will also make it accessible in the next function", function(done) {
+        var Helper, h, result;
+        result = [];
+        Helper = this.helperClass;
+        h = null;
+        this.sequence.start([
+          {
+            func: function() {
+              h = new Helper(3000);
+              h.go();
+              return h;
+            },
+            scope: this
+          }, {
+            func: function(prevH) {
+              result.push(prevH === h);
+              return 2;
+            }
+          }
+        ]);
+        return this.sequence.done(function() {
+          expect(result).toEqual([true]);
+          return done();
+        });
+      });
       it("use context to pass multiple parameters for next function in sequence", function(done) {
         var Helper, result;
         result = [];
@@ -424,6 +449,212 @@
         return sequence.done(function() {
           result.push(sequence.progress());
           expect(result).toEqual([0, 1 / 3, 2 / 3, 1]);
+          return done();
+        });
+      });
+    });
+    return describe("Barrier", function() {
+      beforeEach(function() {
+        var Helper;
+        this.barrier = new JSUtils.Barrier([], false);
+        Helper = (function() {
+          function Helper(delay) {
+            if (delay == null) {
+              delay = 1000;
+            }
+            this.cbs = [];
+            this.isDone = false;
+            this.delay = delay;
+          }
+
+          Helper.prototype.go = function(result) {
+            return window.setTimeout((function(_this) {
+              return function() {
+                _this.isDone = true;
+                if (result != null) {
+                  result.push(_this.delay);
+                }
+                return _this._done();
+              };
+            })(this), this.deplay);
+          };
+
+          Helper.prototype._done = function() {
+            var cb, j, len, ref, results;
+            ref = this.cbs;
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              cb = ref[j];
+              results.push(cb());
+            }
+            return results;
+          };
+
+          Helper.prototype.done = function(cb) {
+            this.cbs.push(cb);
+            if (this.isDone) {
+              this._done();
+            }
+            return this;
+          };
+
+          return Helper;
+
+        })();
+        return this.helperClass = Helper;
+      });
+      it("execute synchronous functions pseudo-concurrently", function(done) {
+        this.barrier.start([
+          {
+            func: function() {
+              return 2;
+            }
+          }, {
+            func: function() {
+              return 8;
+            }
+          }
+        ]);
+        return this.barrier.done(function(barrierResults) {
+          expect(barrierResults).toEqual([2, 8]);
+          return done();
+        });
+      });
+      it("execute asynchronous functions pseudo-concurrently", function(done) {
+        var Helper, result;
+        result = [];
+        Helper = this.helperClass;
+        this.barrier.start([
+          {
+            func: function() {
+              var h;
+              h = new Helper(3000);
+              h.go(result);
+              return h;
+            }
+          }, {
+            func: function() {
+              var h;
+              h = new Helper(1000);
+              h.go(result);
+              return h;
+            }
+          }
+        ]);
+        return this.barrier.done(function(barrierResults) {
+          var res;
+          expect(result).toEqual([3000, 1000]);
+          expect((function() {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = barrierResults.length; j < len; j++) {
+              res = barrierResults[j];
+              results.push(res instanceof Helper);
+            }
+            return results;
+          })()).toEqual([true, true]);
+          return done();
+        });
+      });
+      it("execute done-callbacks on completion and aftewards", function(done) {
+        var result;
+        result = [];
+        this.barrier.start([
+          {
+            func: function() {
+              return 2;
+            }
+          }, {
+            func: function(a) {
+              return a + 8;
+            },
+            scope: this
+          }
+        ]);
+        return this.barrier.done((function(_this) {
+          return function() {
+            result.push("first");
+            return _this.barrier.done(function() {
+              result.push("second");
+              expect(result).toEqual(["first", "second"]);
+              return done();
+            });
+          };
+        })(this));
+      });
+      it("set specific barrier's results (using sequences)", function(done) {
+        var result;
+        result = [];
+        this.barrier.start([
+          {
+            func: function() {
+              return new JSUtils.Sequence([
+                {
+                  func: function() {
+                    var h;
+                    h = new this.helperClass(1000);
+                    h.go(result);
+                    return {
+                      done: h,
+                      context: {
+                        h: h
+                      }
+                    };
+                  },
+                  scope: this
+                }, {
+                  func: function(h) {
+                    return {
+                      a: 2,
+                      delay: h.delay
+                    };
+                  }
+                }
+              ]);
+            },
+            scope: this
+          }, {
+            func: function() {
+              return new JSUtils.Sequence([
+                {
+                  func: function() {
+                    var h;
+                    h = new this.helperClass(1001);
+                    h.go(result);
+                    return h;
+                  },
+                  scope: this
+                }, {
+                  func: function(h) {
+                    return {
+                      delay: h.delay
+                    };
+                  }
+                }
+              ]);
+            },
+            scope: this
+          }
+        ]);
+        return this.barrier.done(function(barrierResults) {
+          expect(barrierResults).toEqual([
+            {
+              a: 2,
+              delay: 1000
+            }, {
+              delay: 1001
+            }
+          ]);
+          return done();
+        });
+      });
+      return it("Barrier.forArray", function(done) {
+        var barrier;
+        barrier = JSUtils.Barrier.forArray([1, 2, 3, 4], function(elem) {
+          return elem * elem;
+        });
+        return barrier.done(function(barrierResults) {
+          expect(barrierResults).toEqual([1, 4, 9, 16]);
           return done();
         });
       });
