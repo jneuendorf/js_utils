@@ -661,6 +661,153 @@
     });
   });
 
+  describe("Hash", function() {
+    beforeEach(function() {
+      this.hash = new JSUtils.Hash();
+      this.hash.put(1, "2");
+      this.hash.put(2, "3");
+      return this.hashEq = new JSUtils.Hash(null, 42, function(key1, key2) {
+        return key1[0] + key1[1] === key2[0] + key2[1];
+      });
+    });
+    it("put", function() {
+      this.hash.put(2, "4");
+      this.hash.put(["a", "b"], "3");
+      this.hash.put({
+        key1: "val1",
+        key2: "val2"
+      });
+      expect(this.hash.keys).toEqual([1, 2, ["a", "b"], "key1", "key2"]);
+      return expect(this.hash.values).toEqual(["2", "4", "3", "val1", "val2"]);
+    });
+    it("get", function() {
+      var arr;
+      arr = ["a", "b"];
+      this.hash.put(arr, "3");
+      expect(this.hash.get(1)).toBe("2");
+      expect(this.hash.get(["a", "b"])).toBe(null);
+      expect(this.hash.get(arr)).toBe("3");
+      this.hashEq.put([1, 2], 3);
+      expect(this.hashEq.get([1, 2])).toBe(3);
+      expect(this.hashEq.get([2, 1])).toBe(3);
+      this.hashEq.put([3, 0], 3);
+      expect(this.hashEq.get([3, 0])).toBe(3);
+      return expect(this.hashEq.get([2, 1])).toBe(3);
+    });
+    it("remove", function() {
+      var arr;
+      arr = ["a", "b"];
+      this.hash.put(arr, "3");
+      this.hash.remove(1);
+      expect(this.hash.get(1)).toBe(null);
+      expect(this.hash.get(2)).toBe("3");
+      this.hashEq.put([1, 2], 3);
+      this.hashEq.remove([2, 1]);
+      return expect(this.hashEq.get([1, 2])).toBe(42);
+    });
+    it("empty", function() {
+      var arr;
+      arr = ["a", "b"];
+      this.hash.put(arr, "3");
+      this.hash.empty();
+      expect(this.hash.keys.length).toBe(0);
+      return expect(this.hash.values.length).toBe(0);
+    });
+    it("getAll", function() {
+      var arr;
+      arr = ["a", "b"];
+      this.hash.put(arr, "3");
+      return expect(this.hash.getAll()).toEqual([[1, "2"], [2, "3"], [["a", "b"], "3"]]);
+    });
+    it("has (== hasKey)", function() {
+      var arr;
+      arr = ["a", "b"];
+      this.hash.put(arr, "3");
+      expect(this.hash.has(1)).toBe(true);
+      expect(this.hash.has(2)).toBe(true);
+      expect(this.hash.has(arr)).toBe(true);
+      expect(this.hash.has(["a", "b"])).toBe(false);
+      return expect(this.hash.has(3)).toBe(false);
+    });
+    it("size", function() {
+      expect(this.hash.size()).toBe(2);
+      this.hash.put({
+        a: 10,
+        b: 20
+      });
+      expect(this.hash.size()).toBe(4);
+      this.hash.put({
+        x: 1e3,
+        y: 0.4
+      }, "value");
+      return expect(this.hash.size()).toBe(5);
+    });
+    it("getKeys", function() {
+      expect(this.hash.getKeys().length).toBe(this.hash.keys.length);
+      expect(this.hash.getKeys()).toEqual(this.hash.keys);
+      expect(this.hash.getKeys() === this.hash.keys).toBe(false);
+      return expect(this.hash.getKeys(false) === this.hash.keys).toBe(true);
+    });
+    it("getValues", function() {
+      expect(this.hash.getValues().length).toBe(this.hash.values.length);
+      expect(this.hash.getValues()).toEqual(this.hash.values);
+      expect(this.hash.getValues() === this.hash.values).toBe(false);
+      return expect(this.hash.getValues(false) === this.hash.values).toBe(true);
+    });
+    it("getKeysForValue", function() {
+      this.hash.put(3, "3");
+      return expect(this.hash.getKeysForValue("3")).toEqual([2, 3]);
+    });
+    it("JSUtils.Hash.fromObject", function() {
+      var hash;
+      hash = JSUtils.Hash.fromObject({
+        a: 10,
+        "myKey": ["a", 22]
+      });
+      expect(hash.getKeys()).toEqual(["a", "myKey"]);
+      return expect(hash.getValues()).toEqual([10, ["a", 22]]);
+    });
+    it("toObject", function() {
+      var hash;
+      hash = JSUtils.Hash.fromObject({
+        a: 10,
+        "myKey": ["a", 22]
+      });
+      return expect(hash.toObject()).toEqual({
+        a: 10,
+        myKey: ["a", 22]
+      });
+    });
+    it("clone", function() {
+      expect({
+        k: this.hash.clone().getKeys(),
+        v: this.hash.clone().getValues()
+      }).toEqual({
+        k: this.hash.getKeys(),
+        v: this.hash.getValues()
+      });
+      return expect(this.hash.clone() === this.hash).toBe(false);
+    });
+    it("invert", function() {
+      var inverted;
+      inverted = this.hash.invert();
+      expect(inverted.getKeys()).toEqual(["2", "3"]);
+      return expect(inverted.getValues()).toEqual([1, 2]);
+    });
+    return it("each", function() {
+      var maxIdx;
+      maxIdx = null;
+      this.hash.each((function(_this) {
+        return function(key, val, idx) {
+          expect(key).toBe(_this.hash.getKeys()[idx]);
+          expect(val).toBe(_this.hash.getValues()[idx]);
+          return maxIdx = idx;
+        };
+      })(this));
+      return expect(maxIdx).toBe(this.hash.size() - 1);
+    });
+  });
+
   describe("prototyping", function() {
     describe("nativesPrototyping", function() {
       describe("Math", function() {

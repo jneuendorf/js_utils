@@ -713,8 +713,14 @@
       if (defaultVal == null) {
         defaultVal = null;
       }
+      if (equality == null) {
+        equality = function(a, b) {
+          return a === b;
+        };
+      }
       this.keys = [];
       this.values = [];
+      this.defaultVal = defaultVal;
       this.equality = equality;
       if (obj != null) {
         for (key in obj) {
@@ -738,16 +744,16 @@
     Hash.prototype.clone = function() {
       var res;
       res = new JSUtils.Hash();
-      res.keys = this.keys.clone();
-      res.values = this.values.clone();
+      res.keys = this.keys.slice(0);
+      res.values = this.values.slice(0);
       return res;
     };
 
     Hash.prototype.invert = function() {
       var res;
       res = new JSUtils.Hash();
-      res.keys = this.values.clone();
-      res.values = this.keys.clone();
+      res.keys = this.values.slice(0);
+      res.values = this.keys.slice(0);
       return res;
     };
 
@@ -774,14 +780,14 @@
 
     /**
      * Return the index of the given key
-     * @method findKeyIdx
+     * @method _findKeyIdx
      * @param key {mixed}
      * @return {Hash} This instance.
      * @chainable
     *
      */
 
-    Hash.prototype.findKeyIdx = function(key) {
+    Hash.prototype._findKeyIdx = function(key) {
       var el, idx, len1, m, ref;
       ref = this.keys;
       for (idx = m = 0, len1 = ref.length; m < len1; idx = ++m) {
@@ -809,7 +815,7 @@
       if (val == null) {
         return _putObject.call(this, key);
       }
-      idx = this.findKeyIdx(key);
+      idx = this._findKeyIdx(key);
       if (idx < 0) {
         this.keys.push(key);
         this.values.push(val);
@@ -822,74 +828,20 @@
 
 
     /**
-     * Adds a new key-value pair or overwrites an existing one.
-     * @method putMultiple
-     * @param pairs... {mixed}
-     * @param val {mixed}
-     * @return {Hash} This instance.
-     * @chainable
-    *
-     */
-
-    Hash.prototype.putMultiple = function() {
-      var idx, key, len1, m, pairs, ref, val;
-      pairs = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-      for (m = 0, len1 = pairs.length; m < len1; m++) {
-        ref = pairs[m], key = ref[0], val = ref[1];
-        if (val == null) {
-          _putObject.call(this, key);
-        }
-        idx = this.findKeyIdx(key);
-        if (idx < 0) {
-          this.keys.push(key);
-          this.values.push(val);
-        } else {
-          idx = this.keys.indexOf(key);
-          if (idx < 0) {
-            this.keys.push(key);
-            this.values.push(val);
-          } else {
-            this.keys[idx] = key;
-            this.values[idx] = val;
-          }
-        }
-      }
-      return this;
-    };
-
-
-    /**
      * Returns the value (or null) for the specified key.
      * @method get
      * @param key {mixed}
-     * @param [equalityFunction] {Function}
-     * This optional function can overwrite the test for equality between keys. This function expects the parameters: (the current key in the key iteration, 'key'). If this parameters is omitted '===' is used.
      * @return {mixed}
     *
      */
 
-    Hash.prototype.get = function(key, eqFunc) {
-      var i, idx, k;
-      if (eqFunc == null) {
-        idx = this.findKeyIdx(key);
-      } else {
-        idx = ((function() {
-          var len1, m, ref, results;
-          ref = this.keys;
-          results = [];
-          for (i = m = 0, len1 = ref.length; m < len1; i = ++m) {
-            k = ref[i];
-            if (eqFunc(k, key) === true) {
-              results.push(i);
-            }
-          }
-          return results;
-        }).call(this)).first;
-      }
+    Hash.prototype.get = function(key) {
+      var idx;
+      idx = this._findKeyIdx(key);
       if (idx >= 0) {
         return this.values[idx];
       }
-      return (typeof this.defaultVal === "function" ? this.defaultVal() : void 0) || this.defaultVal;
+      return (typeof this.defaultVal === "function" ? this.defaultVal(key) : void 0) || this.defaultVal;
     };
 
 
@@ -920,11 +872,13 @@
     *
      */
 
-    Hash.prototype.hasKey = function(key) {
-      return this.findKeyIdx(key) >= 0;
+    Hash.prototype.has = function(key) {
+      return this._findKeyIdx(key) >= 0;
     };
 
-    Hash.prototype.has = Hash.prototype.hasKey;
+    Hash.prototype.hasKey = function() {
+      return this.has.apply(this, arguments);
+    };
 
 
     /**
@@ -946,7 +900,13 @@
     *
      */
 
-    Hash.prototype.getKeys = function() {
+    Hash.prototype.getKeys = function(clone) {
+      if (clone == null) {
+        clone = true;
+      }
+      if (clone === true) {
+        return this.keys.slice(0);
+      }
       return this.keys;
     };
 
@@ -958,7 +918,13 @@
     *
      */
 
-    Hash.prototype.getValues = function() {
+    Hash.prototype.getValues = function(clone) {
+      if (clone == null) {
+        clone = true;
+      }
+      if (clone === true) {
+        return this.values.slice(0);
+      }
       return this.values;
     };
 
@@ -967,41 +933,24 @@
      * Returns a list of keys that have val (or anything equal as specified in 'eqFunc') as value.
      * @method getKeysForValue
      * @param val {mixed}
-     * @param [equalityFunction] {Function}
-     * This optional function can overwrite the test for equality between values. This function expects the parameters ('value' and the current value in the value iteration). If this parameters is omitted '===' is used.
      * @return {mixed}
     *
      */
 
-    Hash.prototype.getKeysForValue = function(value, eqFunc) {
+    Hash.prototype.getKeysForValue = function(value) {
       var idx, idxs, val;
-      if (eqFunc == null) {
-        idxs = (function() {
-          var len1, m, ref, results;
-          ref = this.values;
-          results = [];
-          for (idx = m = 0, len1 = ref.length; m < len1; idx = ++m) {
-            val = ref[idx];
-            if (this.equality(val, value) || val === value) {
-              results.push(idx);
-            }
+      idxs = (function() {
+        var len1, m, ref, results;
+        ref = this.values;
+        results = [];
+        for (idx = m = 0, len1 = ref.length; m < len1; idx = ++m) {
+          val = ref[idx];
+          if (this.equality(val, value) || val === value) {
+            results.push(idx);
           }
-          return results;
-        }).call(this);
-      } else {
-        idxs = (function() {
-          var len1, m, ref, results;
-          ref = this.values;
-          results = [];
-          for (idx = m = 0, len1 = ref.length; m < len1; idx = ++m) {
-            val = ref[idx];
-            if (eqFunc(val, value) === true) {
-              results.push(idx);
-            }
-          }
-          return results;
-        }).call(this);
-      }
+        }
+        return results;
+      }).call(this);
       return (function() {
         var len1, m, results;
         results = [];
@@ -1021,7 +970,7 @@
 
     Hash.prototype.remove = function(key) {
       var idx;
-      idx = this.keys.indexOf(key);
+      idx = this._findKeyIdx(key);
       if (idx >= 0) {
         this.keys.splice(idx, 1);
         this.values.splice(idx, 1);

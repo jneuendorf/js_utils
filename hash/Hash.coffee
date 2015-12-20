@@ -17,9 +17,10 @@ class JSUtils.Hash
             hash.put key, val
         return hash
 
-    constructor: (obj, defaultVal = null, equality) ->
+    constructor: (obj, defaultVal = null, equality = (a, b) -> a is b) ->
         @keys   = []
         @values = []
+        @defaultVal = defaultVal
         @equality = equality
 
         if obj?
@@ -32,17 +33,16 @@ class JSUtils.Hash
             res[key] = @values[idx]
         return res
 
-
     clone: () ->
         res         = new JSUtils.Hash()
-        res.keys    = @keys.clone()
-        res.values  = @values.clone()
+        res.keys    = @keys.slice(0)
+        res.values  = @values.slice(0)
         return res
 
     invert: () ->
         res         = new JSUtils.Hash()
-        res.keys    = @values.clone()
-        res.values  = @keys.clone()
+        res.keys    = @values.slice(0)
+        res.values  = @keys.slice(0)
         return res
 
     ###*
@@ -60,12 +60,12 @@ class JSUtils.Hash
 
     ###*
      * Return the index of the given key
-     * @method findKeyIdx
+     * @method _findKeyIdx
      * @param key {mixed}
      * @return {Hash} This instance.
      * @chainable
     *###
-    findKeyIdx: (key) ->
+    _findKeyIdx: (key) ->
         for el, idx in @keys
             if @equality?(el, key) or el is key
                 return idx
@@ -84,7 +84,7 @@ class JSUtils.Hash
         if not val?
             return _putObject.call(@, key)
 
-        idx = @findKeyIdx(key)
+        idx = @_findKeyIdx(key)
         # add new entry
         if idx < 0
             @keys.push key
@@ -97,56 +97,18 @@ class JSUtils.Hash
         return @
 
     ###*
-     * Adds a new key-value pair or overwrites an existing one.
-     * @method putMultiple
-     * @param pairs... {mixed}
-     * @param val {mixed}
-     * @return {Hash} This instance.
-     * @chainable
-    *###
-    putMultiple: (pairs...) ->
-        for [key, val] in pairs
-            # no value given => assume an object was passed
-            if not val?
-                _putObject.call(@, key)
-
-            idx = @findKeyIdx(key)
-            # add new entry
-            if idx < 0
-                @keys.push key
-                @values.push val
-            # overwrite entry
-            else
-                idx = @keys.indexOf key
-                # add new entry
-                if idx < 0
-                    @keys.push key
-                    @values.push val
-                # overwrite entry
-                else
-                    @keys[idx] = key
-                    @values[idx] = val
-
-        return @
-
-    ###*
      * Returns the value (or null) for the specified key.
      * @method get
      * @param key {mixed}
-     * @param [equalityFunction] {Function}
-     * This optional function can overwrite the test for equality between keys. This function expects the parameters: (the current key in the key iteration, 'key'). If this parameters is omitted '===' is used.
      * @return {mixed}
     *###
-    get: (key, eqFunc) ->
-        if not eqFunc?
-            idx = @findKeyIdx(key)
-        else
-            idx = (i for k, i in @keys when eqFunc(k, key) is true).first
+    get: (key) ->
+        idx = @_findKeyIdx(key)
 
         if idx >= 0
             return @values[idx]
 
-        return @defaultVal?() or @defaultVal
+        return @defaultVal?(key) or @defaultVal
 
     ###*
      * Returns a list of all key-value pairs. Each pair is an Array with the 1st element being the key, the 2nd being the value.
@@ -167,10 +129,11 @@ class JSUtils.Hash
      * @param key {mixed}
      * @return {Boolean}
     *###
-    hasKey: (key) ->
-        return @findKeyIdx(key) >= 0
+    has: (key) ->
+        return @_findKeyIdx(key) >= 0
 
-    has: @::hasKey
+    hasKey: () ->
+        return @has.apply(@, arguments)
 
     ###*
      * Returns the number of entries in the Hash.
@@ -185,7 +148,9 @@ class JSUtils.Hash
      * @method getKeys()
      * @return {Array}
     *###
-    getKeys: () ->
+    getKeys: (clone = true) ->
+        if clone is true
+            return @keys.slice(0)
         return @keys
 
     ###*
@@ -193,23 +158,19 @@ class JSUtils.Hash
      * @method getValues()
      * @return {Array}
     *###
-    getValues: () ->
+    getValues: (clone = true) ->
+        if clone is true
+            return @values.slice(0)
         return @values
 
     ###*
      * Returns a list of keys that have val (or anything equal as specified in 'eqFunc') as value.
      * @method getKeysForValue
      * @param val {mixed}
-     * @param [equalityFunction] {Function}
-     * This optional function can overwrite the test for equality between values. This function expects the parameters ('value' and the current value in the value iteration). If this parameters is omitted '===' is used.
      * @return {mixed}
     *###
-    getKeysForValue: (value, eqFunc) ->
-        if not eqFunc?
-            idxs = (idx for val, idx in @values when @equality(val, value) or val is value)
-        else
-            idxs = (idx for val, idx in @values when eqFunc(val, value) is true)
-
+    getKeysForValue: (value) ->
+        idxs = (idx for val, idx in @values when @equality(val, value) or val is value)
         return (@keys[idx] for idx in idxs)
 
     empty: () ->
@@ -218,7 +179,7 @@ class JSUtils.Hash
         return @
 
     remove: (key) ->
-        idx = @keys.indexOf key
+        idx = @_findKeyIdx(key)
         if idx >= 0
             @keys.splice idx, 1
             @values.splice idx, 1
