@@ -808,6 +808,72 @@
     });
   });
 
+  describe("jOverload", function() {
+    it("jOverload setup", function() {
+      window.A = (function() {
+        function A() {}
+
+        A.prototype.a = function() {
+          return 1337;
+        };
+
+        return A;
+
+      })();
+      return window.TestClass = (function() {
+        var e, error1;
+
+        function TestClass() {}
+
+        TestClass.prototype.method1 = JSUtils.jOverload({
+          a: Number,
+          b: String
+        }, function(a, b) {
+          return a + parseInt(b, 10);
+        }, {
+          a: String,
+          b: Number
+        }, function(a, b) {
+          return parseInt(a, 10) + b;
+        }, [Boolean, String], [String, Boolean], function(x, y) {
+          return x + y;
+        }, {
+          a: A,
+          b: String
+        }, function(a, b) {
+          return a.a() + parseInt(b, 10);
+        });
+
+        try {
+          TestClass.prototype.method2 = JSUtils.jOverload([String, A], [A, Boolean]);
+        } catch (error1) {
+          e = error1;
+          expect(e.message).toBe("No function given for argument lists: [[\"String\",\"A\"],[\"A\",\"Boolean\"]]");
+        }
+
+        return TestClass;
+
+      })();
+    });
+    return it("overloading", function() {
+      var a, e, error1, testInstance;
+      testInstance = new TestClass();
+      a = new A();
+      expect(testInstance.method1(10, "20")).toBe(30);
+      expect(testInstance.method1("20", 20)).toBe(40);
+      expect(testInstance.method1(a, "20")).toBe(1357);
+      try {
+        testInstance.method1(a, a);
+      } catch (error1) {
+        e = error1;
+        expect(e.message).toBe("Arguments do not match any known argument list!");
+      }
+      expect(testInstance.method1(true, "a")).toBe("truea");
+      expect(testInstance.method1("a", true)).toBe("atrue");
+      return expect(testInstance.method2).toBeUndefined();
+    });
+  });
+
   describe("prototyping", function() {
     describe("nativesPrototyping", function() {
       describe("Math", function() {

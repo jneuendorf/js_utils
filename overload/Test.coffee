@@ -8,7 +8,7 @@ describe "jOverload", () ->
 
         class window.TestClass
 
-            method1: jOverload(
+            method1: JSUtils.jOverload(
                 {a: Number, b: String}
                 (a, b) ->
                     return a + parseInt(b, 10)
@@ -28,7 +28,7 @@ describe "jOverload", () ->
             )
 
             try
-                @::method2 = jOverload(
+                @::method2 = JSUtils.jOverload(
                     [String, A]
                     [A, Boolean]
                 )
