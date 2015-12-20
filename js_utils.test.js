@@ -808,8 +808,8 @@
     });
   });
 
-  describe("jOverload", function() {
-    it("jOverload setup", function() {
+  describe("overload", function() {
+    it("overload setup", function() {
       window.A = (function() {
         function A() {}
 
@@ -825,7 +825,7 @@
 
         function TestClass() {}
 
-        TestClass.prototype.method1 = JSUtils.jOverload({
+        TestClass.prototype.method1 = JSUtils.overload({
           a: Number,
           b: String
         }, function(a, b) {
@@ -845,7 +845,7 @@
         });
 
         try {
-          TestClass.prototype.method2 = JSUtils.jOverload([String, A], [A, Boolean]);
+          TestClass.prototype.method2 = JSUtils.overload([String, A], [A, Boolean]);
         } catch (error1) {
           e = error1;
           expect(e.message).toBe("No function given for argument lists: [[\"String\",\"A\"],[\"A\",\"Boolean\"]]");

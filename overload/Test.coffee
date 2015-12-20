@@ -1,14 +1,14 @@
-describe "jOverload", () ->
+describe "overload", () ->
 
     ##################################################################################################################
-    it "jOverload setup", () ->
+    it "overload setup", () ->
         class window.A
             a: () ->
                 return 1337
 
         class window.TestClass
 
-            method1: JSUtils.jOverload(
+            method1: JSUtils.overload(
                 {a: Number, b: String}
                 (a, b) ->
                     return a + parseInt(b, 10)
@@ -28,7 +28,7 @@ describe "jOverload", () ->
             )
 
             try
-                @::method2 = JSUtils.jOverload(
+                @::method2 = JSUtils.overload(
                     [String, A]
                     [A, Boolean]
                 )

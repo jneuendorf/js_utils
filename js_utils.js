@@ -1031,7 +1031,7 @@
     return null;
   };
 
-  JSUtils.jOverload = function() {
+  JSUtils.overload = function() {
     var arg, argList, argLists, args, funcs, i, j, k, len, m, name, ref, type;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     argLists = [];
