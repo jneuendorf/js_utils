@@ -1,3 +1,6 @@
+isTree = (obj) ->
+    return obj instanceof JSUtils.Tree or obj?.__instanceof__?(JSUtils.Tree) or false
+
 class JSUtils.Tree
 
     CLASS = @
@@ -15,7 +18,8 @@ class JSUtils.Tree
     * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
     *###
     @new = (node, options) ->
-        if isFunction(node) and node instanceof @
+        CLASS = @
+        if not node? or isTree(node)
             return new CLASS(node)
 
         if node.children?
@@ -31,7 +35,7 @@ class JSUtils.Tree
                 return CLASS.new.byParentRef(node, options)
 
         if DEBUG
-            console.warn "No recusrive structure found! Use correct options."
+            console.warn "No recursive structure found! Use correct options."
 
         return null
 
@@ -163,6 +167,12 @@ class JSUtils.Tree
         @descendants = @children.concat res
         return @
 
+    _adjustLevels: (startLevel = 0) ->
+        @_cacheDescendants().each (n, l, i) ->
+            n._level = startLevel + l
+            return true
+        return @
+
     ##################################################################################################
     # INFORMATION ABOUT THE TREE
     equals: (tree, compareLeaves = (a, b) -> a is b) ->
@@ -226,7 +236,7 @@ class JSUtils.Tree
             maxLevel = null
             for descendant in @descendants when not maxLevel? or descendant.level > maxLevel
                 maxLevel = descendant.level
-            return maxLevel.level - @level
+            return maxLevel - @level
         return 0
 
     ###*
@@ -251,8 +261,7 @@ class JSUtils.Tree
         leaves = []
         for child in @children
             if child.children.length > 0
-                # TODO remove array proto dependency
-                leaves.merge child.getLeaves()
+                leaves = leaves.concat child.getLeaves()
             else
                 leaves.push child
         return leaves
@@ -271,17 +280,16 @@ class JSUtils.Tree
             serializedChildren.push child.serialize(format, doneNodes)
 
         if not format?
-            return {
-                children: serializedChildren
-                data: @data.serialize?() or JSON.parse(JSON.stringify(@data))
-            }
+            res = @data.serialize?() or JSON.parse(JSON.stringify(@data))
+            res.children = serializedChildren
+            return res
         return format(@, serializedChildren, @data.serialize?() or JSON.parse(JSON.stringify(@data)))
 
     deserialize: (data) ->
         tree = @constructor.new(data)
-        @children = tree.children
+        @setChildren tree.children
 
-        for key, val in data when key isnt "children"
+        for key, val of data when key isnt "children"
             @[key] = val
 
         return @
@@ -298,7 +306,7 @@ class JSUtils.Tree
 
     getLevelSiblings: () ->
         self = @
-        siblings = @getRoot()?.findNodes (node) ->
+        siblings = @getRoot().findNodes (node) ->
             return node.level is self.level and node isnt self
         return siblings or []
 
@@ -314,6 +322,10 @@ class JSUtils.Tree
         while parent?
             res.push parent
             parent = parent.parent
+        return res
+
+    pathFromRoot: () ->
+        res = @pathToRoot()
         res.reverse()
         return res
 
@@ -322,7 +334,7 @@ class JSUtils.Tree
     # this can also move nodes within the tree or between trees
     addChild: (node, index, adjustLevels = true) ->
         # if node not instanceof JSUtils.Tree and not node.__instanceof__?(JSUtils.Tree)
-        if not node.instanceOf(JSUtils.Tree)
+        if not isTree(node)
             node = new CLASS(node)
 
         # node is attached somewhere else => correctly move between (sub)trees
@@ -334,14 +346,13 @@ class JSUtils.Tree
         if not index?
             @children.push node
         else
-            # TODO remove array proto dependency
-            @children.insert index, node
+            @children.splice index, 0, node
 
         node.parent = @
 
         # @descendants.push(node) is done in adjustLevels()
         if adjustLevels
-            node._adjustLevels @level
+            node._adjustLevels @level + 1
 
         return @
 
@@ -363,19 +374,22 @@ class JSUtils.Tree
         @children = []
 
         if clone
-            nodes = (node.clone() for node in nodes when node?)
+            nodes = (node?.clone() for node in nodes)
 
         for node in nodes
-            @addChild node, false
+            @addChild node
 
         if adjustLevels
             @_adjustLevels @level
         return @
 
-    moveTo: (targetNode, index, adjustLevels = true) ->
+    moveTo: (targetParent, index, adjustLevels = true) ->
         @remove(false)
-        targetNode.addChild @, index, adjustLevels
+        targetParent.addChild @, index, adjustLevels
         return @
+
+    appendTo: () ->
+        return @moveTo.apply(@, arguments)
 
     remove: (adjustLevels = true) ->
         if @parent?
@@ -387,21 +401,13 @@ class JSUtils.Tree
                 @_adjustLevels()
         return @
 
-    removeChild: (node) ->
+    removeChild: (param) ->
+        if typeof param is "number" or param instanceof Number
+            node = @children[param]
+        else
+            node = param
         if node in @children
             node.remove()
-        return @
-
-    removeChildAt: (idx) ->
-        return @removeChild @children[idx]
-
-    appendTo: (node) ->
-        return node.addChild @
-
-    _adjustLevels: (startLevel = 0) ->
-        @_cacheDescendants().each (n, l, i) ->
-            n._level = startLevel + l
-            return true
         return @
 
 
@@ -441,16 +447,16 @@ class JSUtils.Tree
 
         return @
 
-    inorder: (callback, level, index = @children.length // 2, info = {idx: 0, ctx: @}) ->
+    inorder: (callback, level = 0, index = @children.length // 2, info = {idx: 0, ctx: @}) ->
         for i in [0...index]
-            @children[i].inorder(callback, level + 1, index, info)
+            @children[i]?.inorder(callback, level + 1, index, info)
             info.idx++
 
         if callback.call(info.ctx, @, level, info.idx) is false
             return @
 
-        for i in [index...@children.lenth]
-            @children[i].inorder(callback, level + 1, index, info)
+        for i in [index...@children.length]
+            @children[i]?.inorder(callback, level + 1, index, info)
             info.idx++
 
         return @

@@ -1386,50 +1386,540 @@
   describe("Tree", function() {
     return describe("Tree", function() {
       describe("creating a tree", function() {
-        it("Tree.new (== Tree.fromRecursive)", function() {});
-        it("Tree.newByChildRef", function() {});
+        it("Tree.new (== Tree.fromRecursive), defaults to Tree.newByChildRef", function() {
+          var node, tree;
+          tree = JSUtils.Tree["new"]({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1"
+              }, {
+                a: 3,
+                b: 4,
+                name: "child2",
+                children: [
+                  {
+                    a: 0,
+                    b: 0,
+                    name: "child2-child"
+                  }
+                ]
+              }, {
+                a: 5,
+                b: 6,
+                name: "child3"
+              }
+            ]
+          });
+          expect(tree.data.name).toBe("root");
+          expect(tree.children.length).toBe(3);
+          expect((function() {
+            var j, len, ref, results;
+            ref = tree.children;
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.data.name);
+            }
+            return results;
+          })()).toEqual(["child1", "child2", "child3"]);
+          expect(tree.children[0].data.a).toBe(1);
+          return expect(tree.children[1].children[0].data.name).toBe("child2-child");
+        });
         xit("Tree.newByParentRef", function() {});
-        return it("magically access properties on the data object (attached to a node)", function() {});
+        return it("magically access properties on the data object (attached to a node)", function() {
+          var tree;
+          tree = JSUtils.Tree["new"]({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1"
+              }
+            ]
+          });
+          expect(tree.data.name).toBe(tree.name);
+          expect(tree.data.a).toBe(tree.a);
+          return expect(tree.children[0].data.name).toBe(tree.children[0].name);
+        });
       });
       describe("modifying a tree", function() {
-        it("addChild (== appendChild)", function() {});
-        it("addChildren (== appendChildren)", function() {});
-        it("setChildren", function() {});
-        it("moveTo", function() {});
-        it("remove", function() {});
-        it("removeChild", function() {});
-        it("removeChildAt", function() {});
-        return it("appendTo", function() {});
+        beforeEach(function() {
+          return this.tree = JSUtils.Tree["new"]({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1"
+              }, {
+                a: 3,
+                b: 4,
+                name: "child2",
+                children: [
+                  {
+                    a: 0,
+                    b: 0,
+                    name: "child2-child"
+                  }
+                ]
+              }, {
+                a: 5,
+                b: 6,
+                name: "child3"
+              }
+            ]
+          });
+        });
+        it("addChild (== appendChild)", function() {
+          expect(this.tree.children.length).toBe(3);
+          this.tree.addChild({
+            newNode: true
+          });
+          expect(this.tree.children.length).toBe(4);
+          expect(this.tree.children[3].newNode).toBe(true);
+          this.tree.addChild({
+            prop: "asdf"
+          }, 1);
+          expect(this.tree.children.length).toBe(5);
+          expect(this.tree.children[1].prop).toBe("asdf");
+          return expect(this.tree.children[4].newNode).toBe(true);
+        });
+        it("addChildren (== appendChildren)", function() {
+          expect(this.tree.children.length).toBe(3);
+          this.tree.addChildren([
+            {
+              name: "new node 1"
+            }, {
+              name: "new node 2"
+            }
+          ], 1);
+          expect(this.tree.children.length).toBe(5);
+          expect(this.tree.children[1].name).toBe("new node 1");
+          expect(this.tree.children[2].name).toBe("new node 2");
+          expect(this.tree.children[3].name).toBe("child2");
+          return expect(this.tree.children[4].name).toBe("child3");
+        });
+        it("setChildren", function() {
+          expect(this.tree.children.length).toBe(3);
+          this.tree.setChildren([
+            {
+              name: "new child 1"
+            }, {
+              name: "new child 2"
+            }
+          ]);
+          expect(this.tree.children.length).toBe(2);
+          expect(this.tree.children[0].name).toBe("new child 1");
+          return expect(this.tree.children[1].name).toBe("new child 2");
+        });
+        it("moveTo (== appendTo)", function() {
+          this.tree.children[1].children[0].moveTo(this.tree, 0);
+          expect(this.tree.children[0].name).toBe("child2-child");
+          expect(this.tree.children[1].children.length).toBe(0);
+          return expect(this.tree.children.length).toBe(4);
+        });
+        it("remove", function() {
+          var removed;
+          removed = this.tree.children[1].remove();
+          expect(this.tree.children.length).toBe(2);
+          expect(this.tree.children[1].name).toBe("child3");
+          return expect(removed.children[0].name).toBe("child2-child");
+        });
+        return it("removeChild", function() {
+          this.tree.removeChild(1);
+          expect(this.tree.children.length).toBe(2);
+          expect(this.tree.children[1].name).toBe("child3");
+          this.tree.removeChild(this.tree.children[0]);
+          expect(this.tree.children.length).toBe(1);
+          return expect(this.tree.children[0].name).toBe("child3");
+        });
       });
       describe("traversing a tree", function() {
-        it("each", function() {});
-        it("postorder", function() {});
-        it("preorder", function() {});
-        it("inorder", function() {});
-        return it("levelorder", function() {});
+        beforeEach(function() {
+          return this.tree = JSUtils.Tree["new"]({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1"
+              }, {
+                a: 3,
+                b: 4,
+                name: "child2",
+                children: [
+                  {
+                    a: 0,
+                    b: 0,
+                    name: "child2-child"
+                  }
+                ]
+              }, {
+                a: 5,
+                b: 6,
+                name: "child3"
+              }
+            ]
+          });
+        });
+        it("postorder (== each)", function() {
+          var result;
+          result = [];
+          this.tree.postorder(function(node, relativeLevel, index) {
+            return result.push(node.name);
+          });
+          expect(result).toEqual(["child1", "child2-child", "child2", "child3", "root"]);
+          result = [];
+          this.tree.each(function(node, relativeLevel, index) {
+            return result.push(node.name);
+          });
+          return expect(result).toEqual(["child1", "child2-child", "child2", "child3", "root"]);
+        });
+        it("preorder", function() {
+          var result;
+          result = [];
+          this.tree.preorder(function(node, relativeLevel, index) {
+            return result.push(node.name);
+          });
+          return expect(result).toEqual(["root", "child1", "child2", "child2-child", "child3"]);
+        });
+        it("inorder", function() {
+          var result;
+          result = [];
+          this.tree.inorder(function(node, relativeLevel, index) {
+            return result.push(node.name);
+          });
+          return expect(result).toEqual(["child1", "root", "child2-child", "child2", "child3"]);
+        });
+        return it("levelorder", function() {
+          var result;
+          result = [];
+          this.tree.levelorder(function(node, relativeLevel, index) {
+            return result.push(node.name);
+          });
+          return expect(result).toEqual(["root", "child1", "child2", "child3", "child2-child"]);
+        });
       });
       describe("getting information about a tree", function() {
-        it("depth & getDepth()", function() {});
-        it("size & getSize()", function() {});
-        it("level & getLevel()", function() {});
-        it("rot & getRoot()", function() {});
-        it("equals", function() {});
-        it("hasNode", function() {});
-        it("findNode (== findDescendant)", function() {});
-        it("findNodes (== findDescendants)", function() {});
-        it("getDepth", function() {});
-        it("getSize", function() {});
-        it("getLeaves", function() {});
-        it("isLeaf", function() {});
-        it("getSiblings", function() {});
-        it("getLevelSiblings", function() {});
-        it("getParent", function() {});
-        it("getChildren", function() {});
-        return it("pathToRoot", function() {});
+        beforeEach(function() {
+          return this.tree = JSUtils.Tree["new"]({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1"
+              }, {
+                a: 3,
+                b: 4,
+                name: "child2",
+                children: [
+                  {
+                    a: 0,
+                    b: 0,
+                    name: "child2-child"
+                  }
+                ]
+              }, {
+                a: 5,
+                b: 6,
+                name: "child3"
+              }
+            ]
+          });
+        });
+        it("depth & getDepth()", function() {
+          expect(this.tree.depth).toBe(2);
+          this.tree.children[1].children[0].remove();
+          return expect(this.tree.depth).toBe(1);
+        });
+        it("size & getSize()", function() {
+          return expect(this.tree.size).toBe(5);
+        });
+        it("level & getLevel()", function() {
+          expect(this.tree.level).toBe(0);
+          expect(this.tree.children[1].level).toBe(1);
+          expect(this.tree.children[1].children[0].level).toBe(2);
+          this.tree.children[1].children[0].addChild({
+            name: "child2-child-child"
+          });
+          return expect(this.tree.children[1].children[0].children[0].level).toBe(3);
+        });
+        it("root & getRoot()", function() {
+          expect(this.tree.root).toBe(this.tree);
+          expect(this.tree.children[1].root).toBe(this.tree);
+          return expect(this.tree.children[1].children[0].root).toBe(this.tree);
+        });
+        it("hasNode", function() {
+          expect(this.tree.hasNode(this.tree)).toBe(true);
+          expect(this.tree.hasNode(this.tree.children[0])).toBe(true);
+          expect(this.tree.hasNode(this.tree.children[1])).toBe(true);
+          expect(this.tree.hasNode(this.tree.children[1].children[0])).toBe(true);
+          expect(this.tree.hasNode(this.tree.children[2])).toBe(true);
+          return expect(this.tree.hasNode(JSUtils.Tree["new"]())).toBe(false);
+        });
+        it("findNode (== findDescendant)", function() {
+          return expect(this.tree.findNode(function(node) {
+            return node.name === "child2";
+          })).toBe(this.tree.children[1]);
+        });
+        it("findNodes (== findDescendants)", function() {
+          var names, node, nodes;
+          nodes = this.tree.findNodes(function(node) {
+            return node.name.length > 4;
+          });
+          nodes.sort(function(a, b) {
+            return a - b;
+          });
+          names = (function() {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = nodes.length; j < len; j++) {
+              node = nodes[j];
+              results.push(node.name);
+            }
+            return results;
+          })();
+          return expect(names).toEqual(["child1", "child2", "child3", "child2-child"]);
+        });
+        it("getLeaves", function() {
+          var leaf;
+          return expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.getLeaves();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              leaf = ref[j];
+              results.push(leaf.name);
+            }
+            return results;
+          }).call(this)).toEqual(["child1", "child2-child", "child3"]);
+        });
+        it("isLeaf", function() {
+          var j, leaf, leaves, len;
+          leaves = this.tree.getLeaves();
+          for (j = 0, len = leaves.length; j < len; j++) {
+            leaf = leaves[j];
+            expect(leaf.isLeaf()).toBe(true);
+          }
+          return expect(this.tree.children[1].isLeaf()).toBe(false);
+        });
+        it("getSiblings", function() {
+          var node;
+          this.tree.children[1].addChild({
+            name: "child2-child2"
+          });
+          expect(this.tree.children[1].children[0].getSiblings()[0].name).toBe("child2-child2");
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.children[1].getSiblings();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["child1", "child3"]);
+          return expect(this.tree.getSiblings()).toEqual([]);
+        });
+        it("getLevelSiblings", function() {
+          var node;
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.children[1].getLevelSiblings();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["child1", "child3"]);
+          this.tree.children[0].addChild({
+            name: "child1-child"
+          });
+          return expect(this.tree.children[0].children[0].getLevelSiblings()[0].name).toBe("child2-child");
+        });
+        it("getParent", function() {
+          return expect(this.tree.children[0].getParent()).toBe(this.tree.children[0].parent);
+        });
+        it("getChildren", function() {
+          return expect(this.tree.getChildren()).toBe(this.tree.children);
+        });
+        it("pathToRoot", function() {
+          var node;
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.pathToRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["root"]);
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.children[0].pathToRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["child1", "root"]);
+          return expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.children[1].children[0].pathToRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["child2-child", "child2", "root"]);
+        });
+        it("pathFromRoot", function() {
+          var node;
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.pathFromRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["root"]);
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.children[0].pathFromRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["root", "child1"]);
+          return expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.children[1].children[0].pathFromRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.name);
+            }
+            return results;
+          }).call(this)).toEqual(["root", "child2", "child2-child"]);
+        });
+        return it("equals", function() {});
       });
       return describe("converting a tree", function() {
-        it("serialize (== toObject)", function() {});
-        return it("deserialize", function() {});
+        beforeEach(function() {
+          return this.tree = JSUtils.Tree["new"]({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1"
+              }, {
+                a: 3,
+                b: 4,
+                name: "child2",
+                children: [
+                  {
+                    a: 0,
+                    b: 0,
+                    name: "child2-child"
+                  }
+                ]
+              }, {
+                a: 5,
+                b: 6,
+                name: "child3"
+              }
+            ]
+          });
+        });
+        it("serialize (== toObject)", function() {
+          return expect(this.tree.serialize()).toEqual({
+            a: 10,
+            b: 20,
+            name: "root",
+            children: [
+              {
+                a: 1,
+                b: 2,
+                name: "child1",
+                children: []
+              }, {
+                a: 3,
+                b: 4,
+                name: "child2",
+                children: [
+                  {
+                    a: 0,
+                    b: 0,
+                    name: "child2-child",
+                    children: []
+                  }
+                ]
+              }, {
+                a: 5,
+                b: 6,
+                name: "child3",
+                children: []
+              }
+            ]
+          });
+        });
+        return it("deserialize (a.k.a. in-place constructing)", function() {
+          var child, idx, j, len, ref;
+          this.tree.deserialize({
+            a: 10,
+            name: "new root",
+            children: [
+              {
+                a: 1,
+                name: "new child1",
+                children: []
+              }, {
+                name: "new child2",
+                children: [
+                  {
+                    name: "new child2-child",
+                    children: []
+                  }
+                ]
+              }
+            ]
+          });
+          expect(this.tree.name).toBe("new root");
+          ref = this.tree.children;
+          for (idx = j = 0, len = ref.length; j < len; idx = ++j) {
+            child = ref[idx];
+            expect(child.name).toBe("new child" + (idx + 1));
+            expect(child.parent).toBe(this.tree);
+          }
+          expect(this.tree.children[1].children[0].name).toBe("new child2-child");
+          return expect(this.tree.children[1].children[0].parent).toBe(this.tree.children[1]);
+        });
       });
     });
   });
