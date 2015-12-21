@@ -69,7 +69,7 @@ class JSUtils.Tree
             tree.addChild(childInstance, null, false)
 
         if adjustLevels
-            tree.adjustLevels 0
+            tree._adjustLevels 0
 
         return tree
 
@@ -165,12 +165,13 @@ class JSUtils.Tree
 
     ##################################################################################################
     # INFORMATION ABOUT THE TREE
-    equals: (tree, compareLeaves) ->
+    equals: (tree, compareLeaves = (a, b) -> a is b) ->
         if @children.length > 0
             if @children.length isnt tree.children.length or @descendants.length isnt tree.descendants.length
                 return false
 
             # create list for comparing (it will be modified)
+            # TODO remove array proto dependency
             otherChildren = tree.children.clone()
 
             for myChild in @children
@@ -222,9 +223,10 @@ class JSUtils.Tree
 
     getDepth: () ->
         if @children.length > 0
-            maxLevel = @descendants.getMax (node) ->
-                return node.level
-            return maxLevel.first.level - @level
+            maxLevel = null
+            for descendant in @descendants when not maxLevel? or descendant.level > maxLevel
+                maxLevel = descendant.level
+            return maxLevel.level - @level
         return 0
 
     ###*
@@ -249,9 +251,10 @@ class JSUtils.Tree
         leaves = []
         for child in @children
             if child.children.length > 0
-                leaves.merge(child.getLeaves())
+                # TODO remove array proto dependency
+                leaves.merge child.getLeaves()
             else
-                leaves.push(child)
+                leaves.push child
         return leaves
 
     isLeaf: () ->
@@ -284,22 +287,13 @@ class JSUtils.Tree
         return @
 
     toObject: () ->
-        return @serialize()
-
-    pathToRoot: () ->
-        res = [@]
-        parent = @parent
-        while parent?
-            res.push parent
-            parent = parent.parent
-        res.reverse()
-        return res
-
+        return @serialize.apply(@, arguments)
 
 
     ##################################################################################################
     # NODE RELATIONS
     getSiblings: () ->
+        # TODO remove array proto dependency
         return @parent?.children.except(@) or []
 
     getLevelSiblings: () ->
@@ -313,6 +307,15 @@ class JSUtils.Tree
 
     getChildren: () ->
         return @children
+
+    pathToRoot: () ->
+        res = [@]
+        parent = @parent
+        while parent?
+            res.push parent
+            parent = parent.parent
+        res.reverse()
+        return res
 
     ##################################################################################################
     # MODIFYING THE TREE
@@ -331,13 +334,14 @@ class JSUtils.Tree
         if not index?
             @children.push node
         else
+            # TODO remove array proto dependency
             @children.insert index, node
 
         node.parent = @
 
         # @descendants.push(node) is done in adjustLevels()
         if adjustLevels
-            node.adjustLevels @level
+            node._adjustLevels @level
 
         return @
 
@@ -349,7 +353,7 @@ class JSUtils.Tree
         for node in nodes by -1 when node?
             @addChild node, index, false
         if adjustLevels
-            @adjustLevels @level
+            @_adjustLevels @level
         return @
 
     appendChildren: () ->
@@ -365,7 +369,7 @@ class JSUtils.Tree
             @addChild node, false
 
         if adjustLevels
-            @adjustLevels @level
+            @_adjustLevels @level
         return @
 
     moveTo: (targetNode, index, adjustLevels = true) ->
@@ -375,11 +379,12 @@ class JSUtils.Tree
 
     remove: (adjustLevels = true) ->
         if @parent?
+            # TODO remove array proto dependency
             @parent.children = @parent.children.except @
             @parent.descendants = @parent.descendants.except(@descendants.and(@))
             @parent = null
             if adjustLevels
-                @adjustLevels()
+                @_adjustLevels()
         return @
 
     removeChild: (node) ->
@@ -388,12 +393,12 @@ class JSUtils.Tree
         return @
 
     removeChildAt: (idx) ->
-        return removeChild @children[idx]
+        return @removeChild @children[idx]
 
     appendTo: (node) ->
         return node.addChild @
 
-    adjustLevels: (startLevel = 0) ->
+    _adjustLevels: (startLevel = 0) ->
         @_cacheDescendants().each (n, l, i) ->
             n._level = startLevel + l
             return true
@@ -403,7 +408,7 @@ class JSUtils.Tree
     ##################################################################################################
     # TRAVERSING THE TREE
     ###*
-    * @method traverse
+    * @method _traverse
     * @param callback {Function}
     * Gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters.
     * @param orderMode {String}
@@ -411,11 +416,11 @@ class JSUtils.Tree
     * @param searchMode {String}
     * Optional. Default is "depthFirst". Posible are "depthFirst", "breadthFirst".
     *###
-    traverse: (callback, orderMode = @orderMode or "postorder", inorderIndex = null) ->
-        return @[orderMode](callback, null, inorderIndex)
+    _traverse: (callback, orderMode = @orderMode or "postorder", info = {idx: 0, ctx: @}) ->
+        return @[orderMode](callback, null, info)
 
     each: () ->
-        return @traverse.apply(@, arguments)
+        return @_traverse.apply(@, arguments)
 
     postorder: (callback, level = 0, info = {idx: 0, ctx: @}) ->
         for child in @children

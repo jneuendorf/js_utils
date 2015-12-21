@@ -1383,4 +1383,55 @@
     });
   });
 
+  describe("Tree", function() {
+    return describe("Tree", function() {
+      describe("creating a tree", function() {
+        it("Tree.new (== Tree.fromRecursive)", function() {});
+        it("Tree.newByChildRef", function() {});
+        xit("Tree.newByParentRef", function() {});
+        return it("magically access properties on the data object (attached to a node)", function() {});
+      });
+      describe("modifying a tree", function() {
+        it("addChild (== appendChild)", function() {});
+        it("addChildren (== appendChildren)", function() {});
+        it("setChildren", function() {});
+        it("moveTo", function() {});
+        it("remove", function() {});
+        it("removeChild", function() {});
+        it("removeChildAt", function() {});
+        return it("appendTo", function() {});
+      });
+      describe("traversing a tree", function() {
+        it("each", function() {});
+        it("postorder", function() {});
+        it("preorder", function() {});
+        it("inorder", function() {});
+        return it("levelorder", function() {});
+      });
+      describe("getting information about a tree", function() {
+        it("depth & getDepth()", function() {});
+        it("size & getSize()", function() {});
+        it("level & getLevel()", function() {});
+        it("rot & getRoot()", function() {});
+        it("equals", function() {});
+        it("hasNode", function() {});
+        it("findNode (== findDescendant)", function() {});
+        it("findNodes (== findDescendants)", function() {});
+        it("getDepth", function() {});
+        it("getSize", function() {});
+        it("getLeaves", function() {});
+        it("isLeaf", function() {});
+        it("getSiblings", function() {});
+        it("getLevelSiblings", function() {});
+        it("getParent", function() {});
+        it("getChildren", function() {});
+        return it("pathToRoot", function() {});
+      });
+      return describe("converting a tree", function() {
+        it("serialize (== toObject)", function() {});
+        return it("deserialize", function() {});
+      });
+    });
+  });
+
 }).call(this);

@@ -2165,7 +2165,7 @@
         tree.addChild(childInstance, null, false);
       }
       if (adjustLevels) {
-        tree.adjustLevels(0);
+        tree._adjustLevels(0);
       }
       return tree;
     };
@@ -2280,6 +2280,11 @@
 
     Tree.prototype.equals = function(tree, compareLeaves) {
       var idx, len1, len2, m, match, myChild, o, otherChild, otherChildren, ref2;
+      if (compareLeaves == null) {
+        compareLeaves = function(a, b) {
+          return a === b;
+        };
+      }
       if (this.children.length > 0) {
         if (this.children.length !== tree.children.length || this.descendants.length !== tree.descendants.length) {
           return false;
@@ -2359,12 +2364,17 @@
     };
 
     Tree.prototype.getDepth = function() {
-      var maxLevel;
+      var descendant, len1, m, maxLevel, ref2;
       if (this.children.length > 0) {
-        maxLevel = this.descendants.getMax(function(node) {
-          return node.level;
-        });
-        return maxLevel.first.level - this.level;
+        maxLevel = null;
+        ref2 = this.descendants;
+        for (m = 0, len1 = ref2.length; m < len1; m++) {
+          descendant = ref2[m];
+          if ((maxLevel == null) || descendant.level > maxLevel) {
+            maxLevel = descendant.level;
+          }
+        }
+        return maxLevel.level - this.level;
       }
       return 0;
     };
@@ -2457,19 +2467,7 @@
     };
 
     Tree.prototype.toObject = function() {
-      return this.serialize();
-    };
-
-    Tree.prototype.pathToRoot = function() {
-      var res;
-      res = [this];
-      parent = this.parent;
-      while (parent != null) {
-        res.push(parent);
-        parent = parent.parent;
-      }
-      res.reverse();
-      return res;
+      return this.serialize.apply(this, arguments);
     };
 
     Tree.prototype.getSiblings = function() {
@@ -2494,6 +2492,18 @@
       return this.children;
     };
 
+    Tree.prototype.pathToRoot = function() {
+      var res;
+      res = [this];
+      parent = this.parent;
+      while (parent != null) {
+        res.push(parent);
+        parent = parent.parent;
+      }
+      res.reverse();
+      return res;
+    };
+
     Tree.prototype.addChild = function(node, index, adjustLevels) {
       if (adjustLevels == null) {
         adjustLevels = true;
@@ -2512,7 +2522,7 @@
       }
       node.parent = this;
       if (adjustLevels) {
-        node.adjustLevels(this.level);
+        node._adjustLevels(this.level);
       }
       return this;
     };
@@ -2533,7 +2543,7 @@
         }
       }
       if (adjustLevels) {
-        this.adjustLevels(this.level);
+        this._adjustLevels(this.level);
       }
       return this;
     };
@@ -2569,7 +2579,7 @@
         this.addChild(node, false);
       }
       if (adjustLevels) {
-        this.adjustLevels(this.level);
+        this._adjustLevels(this.level);
       }
       return this;
     };
@@ -2592,7 +2602,7 @@
         this.parent.descendants = this.parent.descendants.except(this.descendants.and(this));
         this.parent = null;
         if (adjustLevels) {
-          this.adjustLevels();
+          this._adjustLevels();
         }
       }
       return this;
@@ -2606,14 +2616,14 @@
     };
 
     Tree.prototype.removeChildAt = function(idx) {
-      return removeChild(this.children[idx]);
+      return this.removeChild(this.children[idx]);
     };
 
     Tree.prototype.appendTo = function(node) {
       return node.addChild(this);
     };
 
-    Tree.prototype.adjustLevels = function(startLevel) {
+    Tree.prototype._adjustLevels = function(startLevel) {
       if (startLevel == null) {
         startLevel = 0;
       }
@@ -2626,7 +2636,7 @@
 
 
     /**
-    * @method traverse
+    * @method _traverse
     * @param callback {Function}
     * Gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters.
     * @param orderMode {String}
@@ -2636,18 +2646,21 @@
     *
      */
 
-    Tree.prototype.traverse = function(callback, orderMode, inorderIndex) {
+    Tree.prototype._traverse = function(callback, orderMode, info) {
       if (orderMode == null) {
         orderMode = this.orderMode || "postorder";
       }
-      if (inorderIndex == null) {
-        inorderIndex = null;
+      if (info == null) {
+        info = {
+          idx: 0,
+          ctx: this
+        };
       }
-      return this[orderMode](callback, null, inorderIndex);
+      return this[orderMode](callback, null, info);
     };
 
     Tree.prototype.each = function() {
-      return this.traverse.apply(this, arguments);
+      return this._traverse.apply(this, arguments);
     };
 
     Tree.prototype.postorder = function(callback, level, info) {
