@@ -413,8 +413,6 @@ describe "Tree", () ->
                 expect (node.name for node in @tree.children[1].children[0].pathFromRoot())
                     .toEqual ["root", "child2", "child2-child"]
 
-            it "equals", () ->
-
         describe "converting a tree", () ->
             beforeEach () ->
                 @tree = JSUtils.Tree.new {

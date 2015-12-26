@@ -1,1 +1,1 @@
-test-tree.coffee test-leaf.coffee
+test-tree.coffee test-binary-tree.coffee test-leaf.coffee

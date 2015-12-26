@@ -1,9 +1,21 @@
+# __instanceof__ to support Halo.js
 isTree = (obj) ->
     return obj instanceof JSUtils.Tree or obj?.__instanceof__?(JSUtils.Tree) or false
 
 class JSUtils.Tree
 
-    CLASS = @
+    # CLASS = @
+
+    @_newOptions: (CLASS) ->
+        return {
+            getChildren: (nodeData) ->
+                return nodeData.children
+            instantiate: (nodeData) ->
+                return new CLASS(nodeData)
+            afterInstantiate: (nodeData, node) ->
+                return false
+            adjustLevels: true
+        }
 
     ###*
     * @method new
@@ -17,22 +29,16 @@ class JSUtils.Tree
     * getParent: Function that specifies how to retrieve the parent from the node object. getChildren is checked 1st so it doesn't make sense to pass getChildren AND getParent!
     * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
     *###
-    @new = (node, options) ->
+    @_new: (node, options) ->
         CLASS = @
         if not node? or isTree(node)
             return new CLASS(node)
 
-        if node.children?
-            return CLASS.new.byChildRef(node)
+        if node.children? or options.getChildren instanceof Function
+            return CLASS.new.byChildRef(node, options)
 
-        if node.parent?
-            return CLASS.new.byParentRef(node)
-
-        if options?
-            if options.getChildren?
-                return CLASS.new.byChildRef(node, options)
-            if options.getParent?
-                return CLASS.new.byParentRef(node, options)
+        if node.parent? or options.getParent instanceof Function
+            return CLASS.new.byParentRef(node, options)
 
         if DEBUG
             console.warn "No recursive structure found! Use correct options."
@@ -50,15 +56,9 @@ class JSUtils.Tree
     * getChildren: Function that specifies how to retrieve the children from the node object.
     * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
     *###
-    @new.byChildRef = (node, options) ->
-        defaultOptions =
-            getChildren: (nodeData) ->
-                return nodeData.children
-            instantiate: (nodeData) ->
-                return new CLASS(nodeData)
-            afterInstantiate: (nodeData, node) ->
-                return false
-            adjustLevels: true
+    @_newByChildRef: (node, options) ->
+        CLASS = @
+        defaultOptions = CLASS._newOptions(CLASS)
         options = $.extend defaultOptions, options
 
         # cache value because it will be set to false for recursion calls
@@ -89,10 +89,21 @@ class JSUtils.Tree
     * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
     *###
     # TODO !!!
-    @new.byParentRef = (node, getParent) ->
+    @_newByParentRef: (node, getParent) ->
         tree = new CLASS()
 
-    @fromRecursive = @new
+    @init: () ->
+        CLASS = @
+        @new = () ->
+            return CLASS._new.apply(CLASS, arguments)
+        @new.byChildRef = () ->
+            return CLASS._newByChildRef.apply(CLASS, arguments)
+        @new.byParentRef = () ->
+            return CLASS._newByParentRef.apply(CLASS, arguments)
+
+        @fromRecursive = @new
+
+    @init()
 
     ##################################################################################################
     ##################################################################################################
@@ -175,32 +186,6 @@ class JSUtils.Tree
 
     ##################################################################################################
     # INFORMATION ABOUT THE TREE
-    equals: (tree, compareLeaves = (a, b) -> a is b) ->
-        if @children.length > 0
-            if @children.length isnt tree.children.length or @descendants.length isnt tree.descendants.length
-                return false
-
-            # create list for comparing (it will be modified)
-            # TODO remove array proto dependency
-            otherChildren = tree.children.clone()
-
-            for myChild in @children
-                match = false
-                for otherChild, idx in otherChildren when myChild.equals(otherChild)
-                    match = true
-                    break
-
-                if not match
-                    return false
-
-                # else: found equal otherChild => remove equal children from both lists
-                otherChildren.splice(idx, 1)
-            return true
-        # else: no children => leaf => compare differently
-        if compareLeaves instanceof Function
-            return compareLeaves(@, tree)
-        return true
-
     hasNode: (node) ->
         return @ is node or node in @descendants
 
@@ -335,7 +320,7 @@ class JSUtils.Tree
     addChild: (node, index, adjustLevels = true) ->
         # if node not instanceof JSUtils.Tree and not node.__instanceof__?(JSUtils.Tree)
         if not isTree(node)
-            node = new CLASS(node)
+            node = new @constructor(node)
 
         # node is attached somewhere else => correctly move between (sub)trees
         if node.parent? and node.parent isnt @

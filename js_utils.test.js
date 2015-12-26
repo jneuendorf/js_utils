@@ -1384,7 +1384,7 @@
   });
 
   describe("Tree", function() {
-    return describe("Tree", function() {
+    describe("Tree", function() {
       describe("creating a tree", function() {
         it("Tree.new (== Tree.fromRecursive), defaults to Tree.newByChildRef", function() {
           var node, tree;
@@ -1792,7 +1792,7 @@
             return results;
           }).call(this)).toEqual(["child2-child", "child2", "root"]);
         });
-        it("pathFromRoot", function() {
+        return it("pathFromRoot", function() {
           var node;
           expect((function() {
             var j, len, ref, results;
@@ -1825,7 +1825,6 @@
             return results;
           }).call(this)).toEqual(["root", "child2", "child2-child"]);
         });
-        return it("equals", function() {});
       });
       return describe("converting a tree", function() {
         beforeEach(function() {
@@ -1921,6 +1920,37 @@
           return expect(this.tree.children[1].children[0].parent).toBe(this.tree.children[1]);
         });
       });
+    });
+    return describe("BinaryTree", function() {
+      describe("creating a binary tree", function() {
+        return it("BinaryTree.new (== BinaryTree.fromRecursive), defaults to BinaryTree.newByChildRef", function() {
+          var tree;
+          tree = JSUtils.BinaryTree["new"]({
+            n: 10,
+            children: [
+              {
+                n: 1,
+                children: [
+                  {
+                    n: 3
+                  }
+                ]
+              }, {
+                n: 15
+              }
+            ]
+          }, {
+            compareNodes: function(currentNode, newNode) {
+              return currentNode.n - newNode.n;
+            }
+          });
+          expect(tree.left.n).toBe(1);
+          expect(tree.left.left).toBe(null);
+          expect(tree.left.right.n).toBe(3);
+          return expect(tree.right.n).toBe(15);
+        });
+      });
+      return describe("modifying a tree", function() {});
     });
   });
 

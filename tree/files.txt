@@ -1,1 +1,1 @@
-Tree.coffee Leaf.coffee
+Tree.coffee BinaryTree.coffee Leaf.coffee

@@ -2086,9 +2086,20 @@
   };
 
   JSUtils.Tree = (function() {
-    var CLASS;
-
-    CLASS = Tree;
+    Tree._newOptions = function(CLASS) {
+      return {
+        getChildren: function(nodeData) {
+          return nodeData.children;
+        },
+        instantiate: function(nodeData) {
+          return new CLASS(nodeData);
+        },
+        afterInstantiate: function(nodeData, node) {
+          return false;
+        },
+        adjustLevels: true
+      };
+    };
 
 
     /**
@@ -2105,24 +2116,17 @@
     *
      */
 
-    Tree["new"] = function(node, options) {
+    Tree._new = function(node, options) {
+      var CLASS;
       CLASS = this;
       if ((node == null) || isTree(node)) {
         return new CLASS(node);
       }
-      if (node.children != null) {
-        return CLASS["new"].byChildRef(node);
+      if ((node.children != null) || options.getChildren instanceof Function) {
+        return CLASS["new"].byChildRef(node, options);
       }
-      if (node.parent != null) {
-        return CLASS["new"].byParentRef(node);
-      }
-      if (options != null) {
-        if (options.getChildren != null) {
-          return CLASS["new"].byChildRef(node, options);
-        }
-        if (options.getParent != null) {
-          return CLASS["new"].byParentRef(node, options);
-        }
+      if ((node.parent != null) || options.getParent instanceof Function) {
+        return CLASS["new"].byParentRef(node, options);
       }
       if (DEBUG) {
         console.warn("No recursive structure found! Use correct options.");
@@ -2144,20 +2148,10 @@
     *
      */
 
-    Tree["new"].byChildRef = function(node, options) {
-      var adjustLevels, child, childInstance, defaultOptions, len1, m, ref2, tree;
-      defaultOptions = {
-        getChildren: function(nodeData) {
-          return nodeData.children;
-        },
-        instantiate: function(nodeData) {
-          return new CLASS(nodeData);
-        },
-        afterInstantiate: function(nodeData, node) {
-          return false;
-        },
-        adjustLevels: true
-      };
+    Tree._newByChildRef = function(node, options) {
+      var CLASS, adjustLevels, child, childInstance, defaultOptions, len1, m, ref2, tree;
+      CLASS = this;
+      defaultOptions = CLASS._newOptions(CLASS);
       options = $.extend(defaultOptions, options);
       adjustLevels = options.adjustLevels;
       options.adjustLevels = false;
@@ -2189,12 +2183,27 @@
     *
      */
 
-    Tree["new"].byParentRef = function(node, getParent) {
+    Tree._newByParentRef = function(node, getParent) {
       var tree;
       return tree = new CLASS();
     };
 
-    Tree.fromRecursive = Tree["new"];
+    Tree.init = function() {
+      var CLASS;
+      CLASS = this;
+      this["new"] = function() {
+        return CLASS._new.apply(CLASS, arguments);
+      };
+      this["new"].byChildRef = function() {
+        return CLASS._newByChildRef.apply(CLASS, arguments);
+      };
+      this["new"].byParentRef = function() {
+        return CLASS._newByParentRef.apply(CLASS, arguments);
+      };
+      return this.fromRecursive = this["new"];
+    };
+
+    Tree.init();
 
     function Tree(node) {
       var forbiddenKeys, k, self, v;
@@ -2292,43 +2301,6 @@
         return true;
       });
       return this;
-    };
-
-    Tree.prototype.equals = function(tree, compareLeaves) {
-      var idx, len1, len2, m, match, myChild, o, otherChild, otherChildren, ref2;
-      if (compareLeaves == null) {
-        compareLeaves = function(a, b) {
-          return a === b;
-        };
-      }
-      if (this.children.length > 0) {
-        if (this.children.length !== tree.children.length || this.descendants.length !== tree.descendants.length) {
-          return false;
-        }
-        otherChildren = tree.children.clone();
-        ref2 = this.children;
-        for (m = 0, len1 = ref2.length; m < len1; m++) {
-          myChild = ref2[m];
-          match = false;
-          for (idx = o = 0, len2 = otherChildren.length; o < len2; idx = ++o) {
-            otherChild = otherChildren[idx];
-            if (!(myChild.equals(otherChild))) {
-              continue;
-            }
-            match = true;
-            break;
-          }
-          if (!match) {
-            return false;
-          }
-          otherChildren.splice(idx, 1);
-        }
-        return true;
-      }
-      if (compareLeaves instanceof Function) {
-        return compareLeaves(this, tree);
-      }
-      return true;
     };
 
     Tree.prototype.hasNode = function(node) {
@@ -2530,7 +2502,7 @@
         adjustLevels = true;
       }
       if (!isTree(node)) {
-        node = new CLASS(node);
+        node = new this.constructor(node);
       }
       if ((node.parent != null) && node.parent !== this) {
         node.moveTo(this, index);
@@ -2786,6 +2758,107 @@
     return Tree;
 
   })();
+
+  JSUtils.BinaryTree = (function(superClass) {
+    extend(BinaryTree, superClass);
+
+    BinaryTree._newOptions = function(CLASS) {
+      var options;
+      options = BinaryTree.__super__.constructor._newOptions.call(this, CLASS);
+      options.instantiate = function(nodeData, compareNodes) {
+        return new CLASS(nodeData, compareNodes);
+      };
+      return options;
+    };
+
+    BinaryTree._newByChildRef = function(node, options) {
+      var CLASS, adjustLevels, child, childInstance, defaultOptions, len1, m, ref2, tree;
+      CLASS = this;
+      defaultOptions = CLASS._newOptions(CLASS);
+      options = $.extend(defaultOptions, options);
+      adjustLevels = options.adjustLevels;
+      options.adjustLevels = false;
+      tree = options.instantiate(node, options.compareNodes);
+      options.afterInstantiate(node, tree);
+      ref2 = options.getChildren(node) || [];
+      for (m = 0, len1 = ref2.length; m < len1; m++) {
+        child = ref2[m];
+        childInstance = CLASS["new"].byChildRef(child, options);
+        tree.addChild(childInstance, false);
+      }
+      if (adjustLevels) {
+        tree._adjustLevels(0);
+      }
+      return tree;
+    };
+
+    BinaryTree.init(BinaryTree);
+
+    function BinaryTree(node, compareNodes) {
+      if (!(compareNodes instanceof Function) || compareNodes.length !== 2) {
+        throw new Error("BinaryTree::constructor: Invalid nodes compare function given!");
+      }
+      BinaryTree.__super__.constructor.call(this, node);
+      this.compareNodes = compareNodes;
+      Object.defineProperties(this, {
+        left: {
+          get: function() {
+            return this.children[0];
+          },
+          set: function(node) {
+            this.children[0] = node;
+            return this;
+          }
+        },
+        right: {
+          get: function() {
+            return this.children[1];
+          },
+          set: function(node) {
+            this.children[1] = node;
+            return this;
+          }
+        }
+      });
+    }
+
+    BinaryTree.prototype.addChild = function(node, adjustLevels) {
+      var relation;
+      if (!isTree(node)) {
+        node = new this.constructor(node);
+      }
+      relation = this.compareNodes(this, node);
+      if (relation === 0) {
+        return this;
+      }
+      if (relation < 0) {
+        if (this.left != null) {
+          this.left.addChild(node, adjustLevels);
+        } else {
+          this.left = node;
+          node.parent = this;
+        }
+      } else {
+        if (this.right != null) {
+          this.right.addChild(node, adjustLevels);
+        } else {
+          this.right = node;
+          node.parent = this;
+        }
+      }
+      if (adjustLevels) {
+        node._adjustLevels(this.level + 1);
+      }
+      return this;
+    };
+
+    BinaryTree.prototype.moveTo = function() {
+      throw new Error();
+    };
+
+    return BinaryTree;
+
+  })(JSUtils.Tree);
 
   JSUtils.Leaf = (function(superClass) {
     var CLASS;
