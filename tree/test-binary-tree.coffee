@@ -21,14 +21,20 @@
                     }
                     {
                         compareNodes: (currentNode, newNode) ->
-                            return currentNode.n - newNode.n
+                            return newNode.n - currentNode.n
                     }
                 )
+
+                #    10
+                #    / \
+                #   1  15
+                #  /
+                # 3
 
                 expect tree.left.n
                     .toBe 1
                 expect tree.left.left
-                    .toBe null
+                    .toEqual null
                 expect tree.left.right.n
                     .toBe 3
                 expect tree.right.n

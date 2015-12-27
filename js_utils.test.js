@@ -1941,11 +1941,11 @@
             ]
           }, {
             compareNodes: function(currentNode, newNode) {
-              return currentNode.n - newNode.n;
+              return newNode.n - currentNode.n;
             }
           });
           expect(tree.left.n).toBe(1);
-          expect(tree.left.left).toBe(null);
+          expect(tree.left.left).toEqual(null);
           expect(tree.left.right.n).toBe(3);
           return expect(tree.right.n).toBe(15);
         });

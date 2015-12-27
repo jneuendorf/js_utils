@@ -2778,6 +2778,7 @@
       options = $.extend(defaultOptions, options);
       adjustLevels = options.adjustLevels;
       options.adjustLevels = false;
+      console.log(node);
       tree = options.instantiate(node, options.compareNodes);
       options.afterInstantiate(node, tree);
       ref2 = options.getChildren(node) || [];
@@ -2799,34 +2800,58 @@
         throw new Error("BinaryTree::constructor: Invalid nodes compare function given!");
       }
       BinaryTree.__super__.constructor.call(this, node);
+      this._children = this.children;
       this.compareNodes = compareNodes;
       Object.defineProperties(this, {
+        children: {
+          get: function() {
+            if ((this._children[0] != null) && (this._children[1] != null)) {
+              return [this._children[0], this._children[1]];
+            }
+            if ((this._children[0] == null) && (this._children[1] == null)) {
+              return [];
+            }
+            if (this._children[0] == null) {
+              return [this._children[1]];
+            }
+            return [this._children[0]];
+          },
+          set: function(children) {
+            this._children = children;
+            return this;
+          }
+        },
         left: {
           get: function() {
-            return this.children[0];
+            return this._children[0] || null;
           },
           set: function(node) {
-            this.children[0] = node;
+            this._children[0] = node;
             return this;
           }
         },
         right: {
           get: function() {
-            return this.children[1];
+            return this._children[1] || null;
           },
           set: function(node) {
-            this.children[1] = node;
+            this._children[1] = node;
             return this;
           }
         }
       });
     }
 
+    BinaryTree.prototype.balance = function() {
+      return this;
+    };
+
     BinaryTree.prototype.addChild = function(node, adjustLevels) {
       var relation;
       if (!isTree(node)) {
         node = new this.constructor(node);
       }
+      console.log("adding child: " + node.n + " to " + this.n);
       relation = this.compareNodes(this, node);
       if (relation === 0) {
         return this;

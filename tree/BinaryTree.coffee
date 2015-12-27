@@ -16,6 +16,7 @@ class JSUtils.BinaryTree extends JSUtils.Tree
         adjustLevels = options.adjustLevels
         options.adjustLevels = false
 
+        console.log node
         tree = options.instantiate node, options.compareNodes
         options.afterInstantiate node, tree
 
@@ -36,39 +37,65 @@ class JSUtils.BinaryTree extends JSUtils.Tree
             throw new Error("BinaryTree::constructor: Invalid nodes compare function given!")
 
         super(node)
+
+        @_children = @children
         # used to define an absolute order on the nodes
         @compareNodes = compareNodes
 
         Object.defineProperties @, {
+            children:
+                get: () ->
+                    if @_children[0]? and @_children[1]?
+                        return [@_children[0], @_children[1]]
+                    if not @_children[0]? and not @_children[1]?
+                        return []
+
+                    if not @_children[0]?
+                        return [@_children[1]]
+                    # if not @_children[1]?
+                    return [@_children[0]]
+                set: (children) ->
+                    @_children = children
+                    return @
             left:
                 get: () ->
-                    return @children[0]
+                    return @_children[0] or null
                 set: (node) ->
-                    @children[0] = node
+                    @_children[0] = node
                     return @
             right:
                 get: () ->
-                    return @children[1]
+                    return @_children[1] or null
                 set: (node) ->
-                    @children[1] = node
+                    @_children[1] = node
                     return @
         }
+
+    balance: () ->
+
+        return @
+
+    # @Override
 
     addChild: (node, adjustLevels) ->
         if not isTree(node)
             node = new @constructor(node)
 
-        # node already exists
+        console.log "adding child: #{node.n} to #{@n}"
+
         relation = @compareNodes(@, node)
+        # node already exists
         if relation is 0
             return @
 
+        # left
         if relation < 0
             if @left?
                 @left.addChild node, adjustLevels
             else
                 @left = node
                 node.parent = @
+        # right
         else
             if @right?
                 @right.addChild node, adjustLevels
