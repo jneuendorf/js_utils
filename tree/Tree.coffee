@@ -171,7 +171,7 @@ class JSUtils.Tree
     # INTERNAL
     _cacheDescendants: () ->
         res = []
-        for child in @children
+        for child in @children when child?
             child._cacheDescendants()
             res = res.concat child.descendants
 
@@ -209,7 +209,7 @@ class JSUtils.Tree
         res = []
         # find by match criterea function
         if param instanceof Function
-            res.push node for node in @descendants when param(node)
+            res.push(node) for node in @descendants when node? and param(node)
         # not found
         return res
 
@@ -219,7 +219,7 @@ class JSUtils.Tree
     getDepth: () ->
         if @children.length > 0
             maxLevel = null
-            for descendant in @descendants when not maxLevel? or descendant.level > maxLevel
+            for descendant in @descendants when descendant? and (not maxLevel? or descendant.level > maxLevel)
                 maxLevel = descendant.level
             return maxLevel - @level
         return 0
@@ -228,7 +228,7 @@ class JSUtils.Tree
     * Get number of nodes in (sub)tree
     *###
     getSize: () ->
-        return @descendants.length + 1
+        return (descendant for descendant in @descendants when descendant?).length + 1
 
     getLevel: () ->
         return @_level
@@ -244,7 +244,7 @@ class JSUtils.Tree
 
     getLeaves: () ->
         leaves = []
-        for child in @children
+        for child in @children when child?
             if child.children.length > 0
                 leaves = leaves.concat child.getLeaves()
             else
@@ -262,11 +262,12 @@ class JSUtils.Tree
         serializedChildren = []
         for child in @children when child not in doneNodes
             doneNodes.push child
-            serializedChildren.push child.serialize(format, doneNodes)
+            serializedChildren.push child?.serialize?(format, doneNodes) or {}
 
         if not format?
             res = @data.serialize?() or JSON.parse(JSON.stringify(@data))
-            res.children = serializedChildren
+            if serializedChildren.length > 0
+                res.children = serializedChildren
             return res
         return format(@, serializedChildren, @data.serialize?() or JSON.parse(JSON.stringify(@data)))
 
@@ -301,6 +302,9 @@ class JSUtils.Tree
     getChildren: () ->
         return @children
 
+    getDescendants: () ->
+        return @descendants
+
     pathToRoot: () ->
         res = [@]
         parent = @parent
@@ -318,7 +322,6 @@ class JSUtils.Tree
     # MODIFYING THE TREE
     # this can also move nodes within the tree or between trees
     addChild: (node, index, adjustLevels = true) ->
-        # if node not instanceof JSUtils.Tree and not node.__instanceof__?(JSUtils.Tree)
         if not isTree(node)
             node = new @constructor(node)
 
@@ -335,9 +338,9 @@ class JSUtils.Tree
 
         node.parent = @
 
-        # @descendants.push(node) is done in adjustLevels()
+        # @descendants.push(node)
         if adjustLevels
-            node._adjustLevels @level + 1
+            @getRoot()._adjustLevels()
 
         return @
 
@@ -378,9 +381,13 @@ class JSUtils.Tree
 
     remove: (adjustLevels = true) ->
         if @parent?
-            # TODO remove array proto dependency
-            @parent.children = @parent.children.except @
-            @parent.descendants = @parent.descendants.except(@descendants.and(@))
+            @parent.children = (child for child in @parent.children when child isnt @)
+
+            # # TODO remove array proto dependency
+            # @parent.descendants = @parent.descendants.except(@descendants.and(@))
+            # @parent.descendants = (descendant for descendant in @parent.descendants when descendant isnt @)
+            @parent._cacheDescendants()
+
             @parent = null
             if adjustLevels
                 @_adjustLevels()
@@ -389,9 +396,11 @@ class JSUtils.Tree
     removeChild: (param) ->
         if typeof param is "number" or param instanceof Number
             node = @children[param]
+        else if param instanceof Function
+            node = (node for node in @children when param(node))[0]
         else
             node = param
-        if node in @children
+        if node? and node in @children
             node.remove()
         return @
 
@@ -414,7 +423,7 @@ class JSUtils.Tree
         return @_traverse.apply(@, arguments)
 
     postorder: (callback, level = 0, info = {idx: 0, ctx: @}) ->
-        for child in @children
+        for child in @children when child?
             child.postorder(callback, level + 1, info)
             info.idx++
 
@@ -426,7 +435,7 @@ class JSUtils.Tree
         if callback.call(info.ctx, @, level, info.idx) is false
             return @
 
-        for child in @children
+        for child in @children when child?
             child.preorder(callback, level + 1, info)
             info.idx++
 
@@ -456,20 +465,22 @@ class JSUtils.Tree
             # remove 1st elem from list
             el = list.shift()
 
-            currentLevel = el.level - startLevel
+            # this is only in case any child is null. this is the case with binary trees
+            if el?
+                currentLevel = el.level - startLevel
 
-            # going to new level => reset level index
-            if currentLevel > prevLevel
-                info.levelIdx = 0
+                # going to new level => reset level index
+                if currentLevel > prevLevel
+                    info.levelIdx = 0
 
-            if callback.call(info.ctx, el, currentLevel, info) is false
-                return @
+                if callback.call(info.ctx, el, currentLevel, info) is false
+                    return @
 
-            prevLevel = currentLevel
+                prevLevel = currentLevel
 
-            info.idx++
-            info.levelIdx++
+                info.idx++
+                info.levelIdx++
 
-            list = list.concat el.children
+                list = list.concat el.children
 
         return @

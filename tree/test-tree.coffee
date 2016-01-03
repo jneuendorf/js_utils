@@ -456,7 +456,6 @@ describe "Tree", () ->
                                 a: 1
                                 b: 2
                                 name: "child1"
-                                children: []
                             }
                             {
                                 a: 3
@@ -467,7 +466,6 @@ describe "Tree", () ->
                                         a: 0
                                         b: 0
                                         name: "child2-child"
-                                        children: []
                                     }
                                 ]
                             }
@@ -475,7 +473,6 @@ describe "Tree", () ->
                                 a: 5
                                 b: 6
                                 name: "child3"
-                                children: []
                             }
                         ]
                     }

@@ -1865,8 +1865,7 @@
               {
                 a: 1,
                 b: 2,
-                name: "child1",
-                children: []
+                name: "child1"
               }, {
                 a: 3,
                 b: 4,
@@ -1875,15 +1874,13 @@
                   {
                     a: 0,
                     b: 0,
-                    name: "child2-child",
-                    children: []
+                    name: "child2-child"
                   }
                 ]
               }, {
                 a: 5,
                 b: 6,
-                name: "child3",
-                children: []
+                name: "child3"
               }
             ]
           });
@@ -1924,7 +1921,7 @@
     return describe("BinaryTree", function() {
       describe("creating a binary tree", function() {
         return it("BinaryTree.new (== BinaryTree.fromRecursive), defaults to BinaryTree.newByChildRef", function() {
-          var tree;
+          var arr, tree;
           tree = JSUtils.BinaryTree["new"]({
             n: 10,
             children: [
@@ -1944,13 +1941,373 @@
               return newNode.n - currentNode.n;
             }
           });
+          arr = [];
+          tree.inorder(function(node) {
+            arr.push(node.n);
+            return true;
+          });
+          console.log(arr);
           expect(tree.left.n).toBe(1);
           expect(tree.left.left).toEqual(null);
           expect(tree.left.right.n).toBe(3);
           return expect(tree.right.n).toBe(15);
         });
       });
-      return describe("modifying a tree", function() {});
+      describe("modifying a tree", function() {
+        beforeEach(function() {
+          return this.tree = JSUtils.BinaryTree["new"]({
+            n: 10,
+            children: [
+              {
+                n: 1,
+                children: [
+                  {
+                    n: 3
+                  }
+                ]
+              }, {
+                n: 15
+              }
+            ]
+          }, {
+            compareNodes: function(currentNode, newNode) {
+              return newNode.n - currentNode.n;
+            }
+          });
+        });
+        it("addChild (== appendChild)", function() {
+          this.tree.addChild({
+            n: 12
+          });
+          return expect(this.tree.right.left.n).toBe(12);
+        });
+        it("addChildren (== appendChildren)", function() {
+          this.tree.addChildren([
+            {
+              n: 12
+            }, {
+              n: 8
+            }
+          ]);
+          expect(this.tree.right.left.n).toBe(12);
+          return expect(this.tree.left.right.right.n).toBe(8);
+        });
+        it("setChildren", function() {
+          return expect(this.tree.setChildren).toThrowError(/children.*cannot.*be.*set/i);
+        });
+        it("moveTo (== appendTo)", function() {
+          expect(this.tree.moveTo).toThrowError(/cannot.*move.*node/i);
+          return expect(this.tree.appendTo).toThrowError(/cannot.*move.*node/i);
+        });
+        it("remove", function() {
+          this.tree.left.right.remove();
+          return expect(this.tree.left.right).toBe(null);
+        });
+        return it("removeChild", function() {
+          this.tree.removeChild(function(node) {
+            return node.n === 1;
+          });
+          return expect(this.tree.left).toBe(null);
+        });
+      });
+      describe("traversing a tree", function() {
+        beforeEach(function() {
+          return this.tree = JSUtils.BinaryTree["new"]({
+            n: 10,
+            children: [
+              {
+                n: 1,
+                children: [
+                  {
+                    n: 3
+                  }
+                ]
+              }, {
+                n: 15
+              }
+            ]
+          }, {
+            compareNodes: function(currentNode, newNode) {
+              return newNode.n - currentNode.n;
+            }
+          });
+        });
+        it("postorder (== each)", function() {
+          var result;
+          result = [];
+          this.tree.postorder(function(node, relativeLevel, index) {
+            return result.push(node.n);
+          });
+          expect(result).toEqual([3, 1, 15, 10]);
+          result = [];
+          this.tree.each(function(node, relativeLevel, index) {
+            return result.push(node.n);
+          });
+          return expect(result).toEqual([3, 1, 15, 10]);
+        });
+        it("preorder", function() {
+          var result;
+          result = [];
+          this.tree.preorder(function(node, relativeLevel, index) {
+            return result.push(node.n);
+          });
+          return expect(result).toEqual([10, 1, 3, 15]);
+        });
+        it("inorder", function() {
+          var result;
+          result = [];
+          this.tree.inorder(function(node, relativeLevel, index) {
+            return result.push(node.n);
+          });
+          return expect(result).toEqual([1, 3, 10, 15]);
+        });
+        return it("levelorder", function() {
+          var result;
+          result = [];
+          this.tree.levelorder(function(node, relativeLevel, index) {
+            return result.push(node.n);
+          });
+          return expect(result).toEqual([10, 1, 15, 3]);
+        });
+      });
+      describe("getting information about a tree", function() {
+        beforeEach(function() {
+          return this.tree = JSUtils.BinaryTree["new"]({
+            n: 10,
+            children: [
+              {
+                n: 1,
+                children: [
+                  {
+                    n: 3
+                  }
+                ]
+              }, {
+                n: 15
+              }
+            ]
+          }, {
+            compareNodes: function(currentNode, newNode) {
+              return newNode.n - currentNode.n;
+            }
+          });
+        });
+        it("depth & getDepth()", function() {
+          return expect(this.tree.depth).toBe(2);
+        });
+        it("size & getSize()", function() {
+          return expect(this.tree.size).toBe(4);
+        });
+        it("level & getLevel()", function() {
+          expect(this.tree.level).toBe(0);
+          expect(this.tree.left.level).toBe(1);
+          return expect(this.tree.left.right.level).toBe(2);
+        });
+        it("root & getRoot()", function() {
+          expect(this.tree.root).toBe(this.tree);
+          expect(this.tree.left.root).toBe(this.tree);
+          return expect(this.tree.left.right.root).toBe(this.tree);
+        });
+        it("hasNode", function() {
+          expect(this.tree.hasNode(this.tree)).toBe(true);
+          expect(this.tree.hasNode(this.tree.left)).toBe(true);
+          expect(this.tree.hasNode(this.tree.right)).toBe(true);
+          return expect(this.tree.hasNode(JSUtils.BinaryTree["new"]({
+            n: 42
+          }, function(a, b) {
+            return a - b;
+          }))).toBe(false);
+        });
+        it("findNode (== findDescendant)", function() {
+          return expect(this.tree.findNode(function(node) {
+            return node.n === 3;
+          })).toBe(this.tree.left.right);
+        });
+        it("findNodes (== findDescendants)", function() {
+          var node, nodes, vals;
+          nodes = this.tree.findNodes(function(node) {
+            return node.n > 2;
+          });
+          vals = (function() {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = nodes.length; j < len; j++) {
+              node = nodes[j];
+              results.push(node.n);
+            }
+            return results;
+          })();
+          vals.sort(function(a, b) {
+            return a - b;
+          });
+          return expect(vals).toEqual([3, 15]);
+        });
+        it("getLeaves", function() {
+          var leaf;
+          return expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.getLeaves();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              leaf = ref[j];
+              results.push(leaf.n);
+            }
+            return results;
+          }).call(this)).toEqual([3, 15]);
+        });
+        it("isLeaf", function() {
+          var j, leaf, leaves, len;
+          leaves = this.tree.getLeaves();
+          for (j = 0, len = leaves.length; j < len; j++) {
+            leaf = leaves[j];
+            expect(leaf.isLeaf()).toBe(true);
+          }
+          return expect(this.tree.left.isLeaf()).toBe(false);
+        });
+        it("getSiblings", function() {
+          expect(this.tree.left.getSiblings()[0].n).toBe(15);
+          return expect(this.tree.getSiblings()).toEqual([]);
+        });
+        it("getLevelSiblings", function() {
+          this.tree.addChild({
+            n: 42
+          });
+          return expect(this.tree.left.right.getLevelSiblings()[0].n).toBe(42);
+        });
+        it("getParent", function() {
+          return expect(this.tree.left.getParent()).toBe(this.tree.left.parent);
+        });
+        it("getChildren", function() {
+          return expect(this.tree.getChildren()).toBe(this.tree.children);
+        });
+        it("pathToRoot", function() {
+          var node;
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.pathToRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.n);
+            }
+            return results;
+          }).call(this)).toEqual([10]);
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.left.pathToRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.n);
+            }
+            return results;
+          }).call(this)).toEqual([1, 10]);
+          return expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.left.right.pathToRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.n);
+            }
+            return results;
+          }).call(this)).toEqual([3, 1, 10]);
+        });
+        return it("pathFromRoot", function() {
+          var node;
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.pathFromRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.n);
+            }
+            return results;
+          }).call(this)).toEqual([10]);
+          expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.left.pathFromRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.n);
+            }
+            return results;
+          }).call(this)).toEqual([10, 1]);
+          return expect((function() {
+            var j, len, ref, results;
+            ref = this.tree.left.right.pathFromRoot();
+            results = [];
+            for (j = 0, len = ref.length; j < len; j++) {
+              node = ref[j];
+              results.push(node.n);
+            }
+            return results;
+          }).call(this)).toEqual([10, 1, 3]);
+        });
+      });
+      return describe("converting a tree", function() {
+        beforeEach(function() {
+          return this.tree = JSUtils.BinaryTree["new"]({
+            n: 10,
+            children: [
+              {
+                n: 1,
+                children: [
+                  {
+                    n: 3
+                  }
+                ]
+              }, {
+                n: 15
+              }
+            ]
+          }, {
+            compareNodes: function(currentNode, newNode) {
+              return newNode.n - currentNode.n;
+            }
+          });
+        });
+        it("serialize (== toObject)", function() {
+          return expect(this.tree.serialize()).toEqual({
+            n: 10,
+            children: [
+              {
+                n: 1,
+                children: [
+                  {}, {
+                    n: 3
+                  }
+                ]
+              }, {
+                n: 15
+              }
+            ]
+          });
+        });
+        return it("deserialize (a.k.a. in-place constructing)", function() {
+          this.tree.deserialize({
+            n: 11,
+            children: [
+              {
+                n: 2,
+                children: [
+                  {
+                    n: 4
+                  }
+                ]
+              }, {
+                n: 16
+              }
+            ]
+          });
+          expect(this.tree.n).toBe(11);
+          expect(this.tree.left.n).toBe(2);
+          expect(this.tree.left.right.n).toBe(4);
+          return expect(this.tree.right.n).toBe(16);
+        });
+      });
     });
   });
 
