@@ -809,7 +809,7 @@
   });
 
   describe("overload", function() {
-    it("overload setup", function() {
+    it("setup", function() {
       window.A = (function() {
         function A() {}
 
@@ -844,8 +844,14 @@
           return a.a() + parseInt(b, 10);
         });
 
+        TestClass.prototype.method2 = JSUtils.overload([Number, String], function(n, str) {
+          return n + "-" + str;
+        }, [Number, String, String], function(n, str1, str2) {
+          return n + "-" + str1 + "+" + str2;
+        });
+
         try {
-          TestClass.prototype.method2 = JSUtils.overload([String, A], [A, Boolean]);
+          TestClass.prototype.method3 = JSUtils.overload([String, A], [A, Boolean]);
         } catch (error1) {
           e = error1;
           expect(e.message).toBe("No function given for argument lists: [[\"String\",\"A\"],[\"A\",\"Boolean\"]]");
@@ -870,7 +876,9 @@
       }
       expect(testInstance.method1(true, "a")).toBe("truea");
       expect(testInstance.method1("a", true)).toBe("atrue");
-      return expect(testInstance.method2).toBeUndefined();
+      expect(testInstance.method2(1, "a")).toBe("1-a");
+      expect(testInstance.method2(1, "a", "b")).toBe("1-a+b");
+      return expect(testInstance.method3).toBeUndefined();
     });
   });
 

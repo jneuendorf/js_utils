@@ -1,7 +1,7 @@
 describe "overload", () ->
 
     ##################################################################################################################
-    it "overload setup", () ->
+    it "setup", () ->
         class window.A
             a: () ->
                 return 1337
@@ -27,8 +27,18 @@ describe "overload", () ->
                     return a.a() + parseInt(b, 10)
             )
 
+            method2: JSUtils.overload(
+                [Number, String]
+                (n, str) ->
+                    return "#{n}-#{str}"
+                [Number, String, String]
+                (n, str1, str2) ->
+                    return "#{n}-#{str1}+#{str2}"
+
+            )
+
             try
-                @::method2 = JSUtils.overload(
+                @::method3 = JSUtils.overload(
                     [String, A]
                     [A, Boolean]
                 )
@@ -43,10 +53,8 @@ describe "overload", () ->
 
         expect testInstance.method1(10, "20")
             .toBe 30
-
         expect testInstance.method1("20", 20)
             .toBe 40
-
         expect testInstance.method1(a, "20")
             .toBe 1357
 
@@ -58,9 +66,13 @@ describe "overload", () ->
 
         expect testInstance.method1(true, "a")
             .toBe "truea"
-
         expect testInstance.method1("a", true)
             .toBe "atrue"
 
-        expect testInstance.method2
+        expect testInstance.method2(1, "a")
+            .toBe "1-a"
+        expect testInstance.method2(1, "a", "b")
+            .toBe "1-a+b"
+
+        expect testInstance.method3
             .toBeUndefined()
