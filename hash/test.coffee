@@ -181,3 +181,14 @@ describe "Hash", () ->
             maxIdx = idx
         expect maxIdx
             .toBe @hash.size() - 1
+
+        # iterate in certain order
+        result = []
+        @hash.each(
+            (key, val, idx) ->
+                result.push [key, val]
+            (a, b) ->
+                return b - a
+        )
+        expect result
+            .toEqual [[2, "3"], [1, "2"]]

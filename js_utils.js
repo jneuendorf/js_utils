@@ -980,13 +980,25 @@
       return this;
     };
 
-    Hash.prototype.each = function(callback) {
-      var i, key, len1, m, ref;
-      ref = this.keys;
-      for (i = m = 0, len1 = ref.length; m < len1; i = ++m) {
-        key = ref[i];
-        if (callback(key, this.values[i], i) === false) {
-          return this;
+    Hash.prototype.each = function(callback, order) {
+      var i, idx, key, keys, len1, len2, m, o, ref;
+      if (!(order instanceof Function)) {
+        ref = this.keys;
+        for (i = m = 0, len1 = ref.length; m < len1; i = ++m) {
+          key = ref[i];
+          if (callback(key, this.values[i], i) === false) {
+            return this;
+          }
+        }
+      } else {
+        keys = this.keys.slice(0);
+        keys.sort(order);
+        for (i = o = 0, len2 = keys.length; o < len2; i = ++o) {
+          key = keys[i];
+          idx = this._findKeyIdx(key);
+          if (callback(key, this.values[idx], i) === false) {
+            return this;
+          }
         }
       }
       return this;

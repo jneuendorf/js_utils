@@ -795,7 +795,7 @@
       return expect(inverted.getValues()).toEqual([1, 2]);
     });
     return it("each", function() {
-      var maxIdx;
+      var maxIdx, result;
       maxIdx = null;
       this.hash.each((function(_this) {
         return function(key, val, idx) {
@@ -804,7 +804,14 @@
           return maxIdx = idx;
         };
       })(this));
-      return expect(maxIdx).toBe(this.hash.size() - 1);
+      expect(maxIdx).toBe(this.hash.size() - 1);
+      result = [];
+      this.hash.each(function(key, val, idx) {
+        return result.push([key, val]);
+      }, function(a, b) {
+        return b - a;
+      });
+      return expect(result).toEqual([[2, "3"], [1, "2"]]);
     });
   });
 

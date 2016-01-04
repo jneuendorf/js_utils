@@ -187,8 +187,17 @@ class JSUtils.Hash
             console.warn "Could not remove key '#{key}'!"
         return @
 
-    each: (callback) ->
-        for key, i in @keys
-            if callback(key, @values[i], i) is false
-                return @
+    each: (callback, order) ->
+        if order not instanceof Function
+            for key, i in @keys
+                if callback(key, @values[i], i) is false
+                    return @
+        # iterate keys in a certain order
+        else
+            keys = @keys.slice(0)
+            keys.sort order
+            for key, i in keys
+                idx = @_findKeyIdx(key)
+                if callback(key, @values[idx], i) is false
+                    return @
         return @
