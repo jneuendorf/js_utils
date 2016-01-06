@@ -5,13 +5,13 @@
 MODULES=(_init async hash overload prototyping tree)
 FILES_TO_CAT="debug.coffee "
 
-if [[ "$1" == "with" ]]; then
+if [[ "$1" == "w--ith" ]]; then
     TEMP=""
     for param in ${@:2}; do
         TEMP+="$param "
     done
     MODULES=("$TEMP")
-elif [[ "$1" == "without" ]]; then
+elif [[ "$1" == "--without" ]]; then
     TEMP="${MODULES[@]}"
     for param in ${@:2}; do
         TEMP=${TEMP/$param/""}

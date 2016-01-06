@@ -980,13 +980,25 @@
       return this;
     };
 
-    Hash.prototype.each = function(callback) {
-      var i, key, len1, m, ref;
-      ref = this.keys;
-      for (i = m = 0, len1 = ref.length; m < len1; i = ++m) {
-        key = ref[i];
-        if (callback(key, this.values[i], i) === false) {
-          return this;
+    Hash.prototype.each = function(callback, order) {
+      var i, idx, key, keys, len1, len2, m, o, ref;
+      if (!(order instanceof Function)) {
+        ref = this.keys;
+        for (i = m = 0, len1 = ref.length; m < len1; i = ++m) {
+          key = ref[i];
+          if (callback(key, this.values[i], i) === false) {
+            return this;
+          }
+        }
+      } else {
+        keys = this.keys.slice(0);
+        keys.sort(order);
+        for (i = o = 0, len2 = keys.length; o < len2; i = ++o) {
+          key = keys[i];
+          idx = this._findKeyIdx(key);
+          if (callback(key, this.values[idx], i) === false) {
+            return this;
+          }
         }
       }
       return this;
@@ -2285,6 +2297,9 @@
       ref2 = this.children;
       for (m = 0, len1 = ref2.length; m < len1; m++) {
         child = ref2[m];
+        if (!(child != null)) {
+          continue;
+        }
         child._cacheDescendants();
         res = res.concat(child.descendants);
       }
@@ -2339,7 +2354,7 @@
         ref2 = this.descendants;
         for (m = 0, len1 = ref2.length; m < len1; m++) {
           node = ref2[m];
-          if (param(node)) {
+          if ((node != null) && param(node)) {
             res.push(node);
           }
         }
@@ -2358,7 +2373,7 @@
         ref2 = this.descendants;
         for (m = 0, len1 = ref2.length; m < len1; m++) {
           descendant = ref2[m];
-          if ((maxLevel == null) || descendant.level > maxLevel) {
+          if ((descendant != null) && ((maxLevel == null) || descendant.level > maxLevel)) {
             maxLevel = descendant.level;
           }
         }
@@ -2374,7 +2389,19 @@
      */
 
     Tree.prototype.getSize = function() {
-      return this.descendants.length + 1;
+      var descendant;
+      return ((function() {
+        var len1, m, ref2, results;
+        ref2 = this.descendants;
+        results = [];
+        for (m = 0, len1 = ref2.length; m < len1; m++) {
+          descendant = ref2[m];
+          if (descendant != null) {
+            results.push(descendant);
+          }
+        }
+        return results;
+      }).call(this)).length + 1;
     };
 
     Tree.prototype.getLevel = function() {
@@ -2398,10 +2425,12 @@
       ref2 = this.children;
       for (m = 0, len1 = ref2.length; m < len1; m++) {
         child = ref2[m];
-        if (child.children.length > 0) {
-          leaves = leaves.concat(child.getLeaves());
-        } else {
-          leaves.push(child);
+        if (child != null) {
+          if (child.children.length > 0) {
+            leaves = leaves.concat(child.getLeaves());
+          } else {
+            leaves.push(child);
+          }
         }
       }
       return leaves;
@@ -2430,11 +2459,13 @@
           continue;
         }
         doneNodes.push(child);
-        serializedChildren.push(child.serialize(format, doneNodes));
+        serializedChildren.push((child != null ? typeof child.serialize === "function" ? child.serialize(format, doneNodes) : void 0 : void 0) || {});
       }
       if (format == null) {
         res = (typeof (base = this.data).serialize === "function" ? base.serialize() : void 0) || JSON.parse(JSON.stringify(this.data));
-        res.children = serializedChildren;
+        if (serializedChildren.length > 0) {
+          res.children = serializedChildren;
+        }
         return res;
       }
       return format(this, serializedChildren, (typeof (base1 = this.data).serialize === "function" ? base1.serialize() : void 0) || JSON.parse(JSON.stringify(this.data)));
@@ -2479,6 +2510,10 @@
       return this.children;
     };
 
+    Tree.prototype.getDescendants = function() {
+      return this.descendants;
+    };
+
     Tree.prototype.pathToRoot = function() {
       var res;
       res = [this];
@@ -2515,7 +2550,7 @@
       }
       node.parent = this;
       if (adjustLevels) {
-        node._adjustLevels(this.level + 1);
+        this.getRoot()._adjustLevels();
       }
       return this;
     };
@@ -2589,12 +2624,24 @@
     };
 
     Tree.prototype.remove = function(adjustLevels) {
+      var child;
       if (adjustLevels == null) {
         adjustLevels = true;
       }
       if (this.parent != null) {
-        this.parent.children = this.parent.children.except(this);
-        this.parent.descendants = this.parent.descendants.except(this.descendants.and(this));
+        this.parent.children = (function() {
+          var len1, m, ref2, results;
+          ref2 = this.parent.children;
+          results = [];
+          for (m = 0, len1 = ref2.length; m < len1; m++) {
+            child = ref2[m];
+            if (child !== this) {
+              results.push(child);
+            }
+          }
+          return results;
+        }).call(this);
+        this.parent._cacheDescendants();
         this.parent = null;
         if (adjustLevels) {
           this._adjustLevels();
@@ -2607,10 +2654,23 @@
       var node;
       if (typeof param === "number" || param instanceof Number) {
         node = this.children[param];
+      } else if (param instanceof Function) {
+        node = ((function() {
+          var len1, m, ref2, results;
+          ref2 = this.children;
+          results = [];
+          for (m = 0, len1 = ref2.length; m < len1; m++) {
+            node = ref2[m];
+            if (param(node)) {
+              results.push(node);
+            }
+          }
+          return results;
+        }).call(this))[0];
       } else {
         node = param;
       }
-      if (indexOf.call(this.children, node) >= 0) {
+      if ((node != null) && indexOf.call(this.children, node) >= 0) {
         node.remove();
       }
       return this;
@@ -2659,6 +2719,9 @@
       ref2 = this.children;
       for (m = 0, len1 = ref2.length; m < len1; m++) {
         child = ref2[m];
+        if (!(child != null)) {
+          continue;
+        }
         child.postorder(callback, level + 1, info);
         info.idx++;
       }
@@ -2685,6 +2748,9 @@
       ref2 = this.children;
       for (m = 0, len1 = ref2.length; m < len1; m++) {
         child = ref2[m];
+        if (!(child != null)) {
+          continue;
+        }
         child.preorder(callback, level + 1, info);
         info.idx++;
       }
@@ -2740,17 +2806,19 @@
       prevLevel = 0;
       while (list.length > 0) {
         el = list.shift();
-        currentLevel = el.level - startLevel;
-        if (currentLevel > prevLevel) {
-          info.levelIdx = 0;
+        if (el != null) {
+          currentLevel = el.level - startLevel;
+          if (currentLevel > prevLevel) {
+            info.levelIdx = 0;
+          }
+          if (callback.call(info.ctx, el, currentLevel, info) === false) {
+            return this;
+          }
+          prevLevel = currentLevel;
+          info.idx++;
+          info.levelIdx++;
+          list = list.concat(el.children);
         }
-        if (callback.call(info.ctx, el, currentLevel, info) === false) {
-          return this;
-        }
-        prevLevel = currentLevel;
-        info.idx++;
-        info.levelIdx++;
-        list = list.concat(el.children);
       }
       return this;
     };
@@ -2800,42 +2868,23 @@
         throw new Error("BinaryTree::constructor: Invalid nodes compare function given!");
       }
       BinaryTree.__super__.constructor.call(this, node);
-      this._children = this.children;
       this.compareNodes = compareNodes;
       Object.defineProperties(this, {
-        children: {
-          get: function() {
-            if ((this._children[0] != null) && (this._children[1] != null)) {
-              return [this._children[0], this._children[1]];
-            }
-            if ((this._children[0] == null) && (this._children[1] == null)) {
-              return [];
-            }
-            if (this._children[0] == null) {
-              return [this._children[1]];
-            }
-            return [this._children[0]];
-          },
-          set: function(children) {
-            this._children = children;
-            return this;
-          }
-        },
         left: {
           get: function() {
-            return this._children[0] || null;
+            return this.children[0] || null;
           },
           set: function(node) {
-            this._children[0] = node;
+            this.children[0] = node;
             return this;
           }
         },
         right: {
           get: function() {
-            return this._children[1] || null;
+            return this.children[1] || null;
           },
           set: function(node) {
-            this._children[1] = node;
+            this.children[1] = node;
             return this;
           }
         }
@@ -2848,10 +2897,12 @@
 
     BinaryTree.prototype.addChild = function(node, adjustLevels) {
       var relation;
-      if (!isTree(node)) {
-        node = new this.constructor(node);
+      if (adjustLevels == null) {
+        adjustLevels = true;
       }
-      console.log("adding child: " + node.n + " to " + this.n);
+      if (!isTree(node)) {
+        node = new this.constructor(node, this.compareNodes);
+      }
       relation = this.compareNodes(this, node);
       if (relation === 0) {
         return this;
@@ -2859,6 +2910,7 @@
       if (relation < 0) {
         if (this.left != null) {
           this.left.addChild(node, adjustLevels);
+          return this;
         } else {
           this.left = node;
           node.parent = this;
@@ -2866,19 +2918,68 @@
       } else {
         if (this.right != null) {
           this.right.addChild(node, adjustLevels);
+          return this;
         } else {
           this.right = node;
           node.parent = this;
         }
       }
       if (adjustLevels) {
-        node._adjustLevels(this.level + 1);
+        this.getRoot()._adjustLevels();
       }
       return this;
     };
 
+    BinaryTree.prototype.addChildren = function(nodes, adjustLevels) {
+      return BinaryTree.__super__.addChildren.call(this, nodes, null, adjustLevels);
+    };
+
+    BinaryTree.prototype.setChildren = function() {
+      throw new Error("BinaryTree::setChildren: Children cannot be set. Use removeChild() and addChild()!");
+    };
+
     BinaryTree.prototype.moveTo = function() {
-      throw new Error();
+      throw new Error("BinaryTree::moveTo: Cannot move a node!");
+    };
+
+    BinaryTree.prototype.appendTo = function() {
+      throw new Error("BinaryTree::appendTo: Cannot move a node!");
+    };
+
+    BinaryTree.prototype.remove = function(adjustLevels) {
+      var children;
+      if (adjustLevels == null) {
+        adjustLevels = true;
+      }
+      if (this.parent != null) {
+        children = this.parent.children;
+        if (children[0] === this) {
+          this.parent.children = [null, children[1]];
+        } else {
+          this.parent.children = [children[0], null];
+        }
+        this.parent._cacheDescendants();
+        this.parent = null;
+        if (adjustLevels) {
+          this._adjustLevels();
+        }
+      }
+      return this;
+    };
+
+    BinaryTree.prototype.deserialize = function(data) {
+      var key, tree, val;
+      tree = this.constructor["new"](data, {
+        compareNodes: this.compareNodes
+      });
+      this.children = tree.children;
+      for (key in data) {
+        val = data[key];
+        if (key !== "children") {
+          this[key] = val;
+        }
+      }
+      return this;
     };
 
     return BinaryTree;

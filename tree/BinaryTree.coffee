@@ -38,50 +38,37 @@ class JSUtils.BinaryTree extends JSUtils.Tree
 
         super(node)
 
-        @_children = @children
         # used to define an absolute order on the nodes
         @compareNodes = compareNodes
 
         Object.defineProperties @, {
-            children:
-                get: () ->
-                    if @_children[0]? and @_children[1]?
-                        return [@_children[0], @_children[1]]
-                    if not @_children[0]? and not @_children[1]?
-                        return []
-
-                    if not @_children[0]?
-                        return [@_children[1]]
-                    # if not @_children[1]?
-                    return [@_children[0]]
-                set: (children) ->
-                    @_children = children
-                    return @
             left:
                 get: () ->
-                    return @_children[0] or null
+                    return @children[0] or null
                 set: (node) ->
-                    @_children[0] = node
+                    @children[0] = node
                     return @
             right:
                 get: () ->
-                    return @_children[1] or null
+                    return @children[1] or null
                 set: (node) ->
-                    @_children[1] = node
+                    @children[1] = node
                     return @
         }
 
     balance: () ->
-
+        # TODO
         return @
 
     # @Override
 
-    addChild: (node, adjustLevels) ->
-        if not isTree(node)
-            node = new @constructor(node)
+    # TODO: override findNodes for better performance
 
-        console.log "adding child: #{node.n} to #{@n}"
+    addChild: (node, adjustLevels = true) ->
+        if not isTree(node)
+            node = new @constructor(node, @compareNodes)
+
+        # console.log "adding child: #{node.n} to #{@n}"
 
         relation = @compareNodes(@, node)
         # node already exists
@@ -92,6 +79,7 @@ class JSUtils.BinaryTree extends JSUtils.Tree
         if relation < 0
             if @left?
                 @left.addChild node, adjustLevels
+                return @
             else
                 @left = node
                 node.parent = @
@@ -99,13 +87,45 @@ class JSUtils.BinaryTree extends JSUtils.Tree
         else
             if @right?
                 @right.addChild node, adjustLevels
+                return @
             else
                 @right = node
                 node.parent = @
 
+        # @descendants.push(node)
         if adjustLevels
-            node._adjustLevels @level + 1
+            @getRoot()._adjustLevels()
         return @
 
+    addChildren: (nodes, adjustLevels) ->
+        return super(nodes, null, adjustLevels)
+
+    setChildren: () ->
+        throw new Error("BinaryTree::setChildren: Children cannot be set. Use removeChild() and addChild()!")
+
     moveTo: () ->
-        throw new Error()
+        throw new Error("BinaryTree::moveTo: Cannot move a node!")
+    appendTo: () ->
+        throw new Error("BinaryTree::appendTo: Cannot move a node!")
+
+    remove: (adjustLevels = true) ->
+        if @parent?
+            children = @parent.children
+            if children[0] is @
+                @parent.children = [null, children[1]]
+            else
+                @parent.children = [children[0], null]
+            @parent._cacheDescendants()
+            @parent = null
+            if adjustLevels
+                @_adjustLevels()
+        return @
+
+    deserialize: (data) ->
+        tree = @constructor.new(data, {compareNodes: @compareNodes})
+        @children = tree.children
+
+        for key, val of data when key isnt "children"
+            @[key] = val
+
+        return @
