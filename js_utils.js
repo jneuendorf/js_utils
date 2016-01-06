@@ -452,7 +452,7 @@
 
   JSUtils.Barrier = (function() {
     Barrier.forArray = function(array, callback, start) {
-      var data, elem, len1, m;
+      var data, elem, index, len1, m;
       if (array == null) {
         array = [];
       }
@@ -460,14 +460,14 @@
         start = true;
       }
       data = [];
-      for (m = 0, len1 = array.length; m < len1; m++) {
-        elem = array[m];
+      for (index = m = 0, len1 = array.length; m < len1; index = ++m) {
+        elem = array[index];
         data.push({
-          func: (function(elem) {
+          func: (function(elem, index) {
             return function() {
-              return callback(elem);
+              return callback(elem, index);
             };
-          })(elem)
+          })(elem, index)
         });
       }
       return new JSUtils.Barrier(data, start);
