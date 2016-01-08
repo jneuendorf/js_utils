@@ -43,11 +43,11 @@ class JSUtils.Barrier
     # callback is called on every element of the given array. its result is returned (and therefore accessible in Barrier::funcResults when done)
     @forArray: (array = [], callback, start = true) ->
         data = []
-        for elem in array
+        for elem, index in array
             data.push {
-                func: do (elem) ->
+                func: do (elem, index) ->
                     return () ->
-                        return callback(elem)
+                        return callback(elem, index)
             }
         return new JSUtils.Barrier(data, start)
 
