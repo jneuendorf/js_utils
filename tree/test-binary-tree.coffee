@@ -35,7 +35,6 @@
                 tree.inorder (node) ->
                     arr.push node.n
                     true
-                console.log arr
 
                 expect tree.left.n
                     .toBe 1
@@ -355,3 +354,96 @@
                     .toBe 4
                 expect @tree.right.n
                     .toBe 16
+
+        describe "balancing a tree", () ->
+
+            it "balance", () ->
+                tree = JSUtils.BinaryTree.new(
+                    {n: 100}
+                    {
+                        compareNodes: (currentNode, newNode) ->
+                            return newNode.n - currentNode.n
+                    }
+                )
+
+                tree.addChild {n: 90}
+                tree.addChild {n: 80}
+                tree.addChild {n: 70}
+                tree.addChild {n: 60}
+                tree.addChild {n: 50}
+                tree.addChild {n: 40}
+                tree.addChild {n: 30}
+                tree.addChild {n: 20}
+                tree.addChild {n: 10}
+
+                expect tree.depth
+                    .toBe 9
+                expect tree.left.left.left.left.left.left.left.left.left.n
+                    .toBe 10
+
+                tree.balance()
+                expect tree.serialize()
+                    .toEqual {
+                        n: 60
+                        children: [
+                            {
+                                n: 40
+                                children: [
+                                    {
+                                        n: 20
+                                        children: [
+                                            {
+                                                n: 10
+                                            }
+                                            {
+                                                n: 30
+                                            }
+                                        ]
+                                    }
+                                    {
+                                        n: 50
+                                    }
+                                ]
+                            }
+                            {
+                                n: 90
+                                children: [
+                                    {
+                                        n: 80
+                                    }
+                                    {
+                                        n: 100
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                expect tree.level
+                    .toBe 0
+
+                # 40
+                expect tree.left.level
+                    .toBe 1
+                # 20
+                expect tree.left.left.level
+                    .toBe 2
+                # 50
+                expect tree.left.right.level
+                    .toBe 2
+
+                # 10
+                expect tree.left.left.left.level
+                    .toBe 3
+                # 30
+                expect tree.left.left.right.level
+                    .toBe 3
+
+                # 90
+                expect tree.right.level
+                    .toBe 1
+                # 80
+                expect tree.right.left.level
+                    .toBe 2
+                # 100
+                expect tree.right.right.level
+                    .toBe 2

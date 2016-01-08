@@ -570,7 +570,6 @@
     };
 
     Barrier.prototype._funcDone = function() {
-      console.log("barrier: decrementing remainingThreads from " + this.remainingThreads + " to " + (this.remainingThreads - 1));
       if (--this.remainingThreads <= 0) {
         this._isDone = true;
         if (typeof this._endCallback === "function") {
@@ -2140,10 +2139,7 @@
       if ((node.parent != null) || options.getParent instanceof Function) {
         return CLASS["new"].byParentRef(node, options);
       }
-      if (DEBUG) {
-        console.warn("No recursive structure found! Use correct options.");
-      }
-      return null;
+      return new CLASS(node, options);
     };
 
 
@@ -2343,23 +2339,27 @@
     /**
     * Find all occurences of a node.
     * @method findNodes
-    * @param equalsFunction {JSUtils.Tree}
+    * @param equalsFunction {Function}
     *
      */
 
-    Tree.prototype.findNodes = function(param) {
-      var len1, m, node, ref2, res;
-      res = [];
-      if (param instanceof Function) {
-        ref2 = this.descendants;
-        for (m = 0, len1 = ref2.length; m < len1; m++) {
-          node = ref2[m];
-          if ((node != null) && param(node)) {
-            res.push(node);
+    Tree.prototype.findNodes = function(filter) {
+      var node;
+      if (filter instanceof Function) {
+        return (function() {
+          var len1, m, ref2, results;
+          ref2 = this.descendants;
+          results = [];
+          for (m = 0, len1 = ref2.length; m < len1; m++) {
+            node = ref2[m];
+            if ((node != null) && filter(node)) {
+              results.push(node);
+            }
           }
-        }
+          return results;
+        }).call(this);
       }
-      return res;
+      return [];
     };
 
     Tree.prototype.findDescendants = function() {
@@ -2446,8 +2446,11 @@
     *
      */
 
-    Tree.prototype.serialize = function(format, doneNodes) {
+    Tree.prototype.serialize = function(toString, format, doneNodes) {
       var base, base1, child, len1, m, ref2, res, serializedChildren;
+      if (toString == null) {
+        toString = false;
+      }
       if (doneNodes == null) {
         doneNodes = [];
       }
@@ -2459,16 +2462,23 @@
           continue;
         }
         doneNodes.push(child);
-        serializedChildren.push((child != null ? typeof child.serialize === "function" ? child.serialize(format, doneNodes) : void 0 : void 0) || {});
+        serializedChildren.push((child != null ? typeof child.serialize === "function" ? child.serialize(false, format, doneNodes) : void 0 : void 0) || {});
       }
       if (format == null) {
         res = (typeof (base = this.data).serialize === "function" ? base.serialize() : void 0) || JSON.parse(JSON.stringify(this.data));
         if (serializedChildren.length > 0) {
           res.children = serializedChildren;
         }
+        if (!toString) {
+          return res;
+        }
+        return JSON.stringify(res);
+      }
+      res = format(this, serializedChildren, (typeof (base1 = this.data).serialize === "function" ? base1.serialize() : void 0) || JSON.parse(JSON.stringify(this.data)));
+      if (!toString) {
         return res;
       }
-      return format(this, serializedChildren, (typeof (base1 = this.data).serialize === "function" ? base1.serialize() : void 0) || JSON.parse(JSON.stringify(this.data)));
+      return JSON.stringify(res);
     };
 
     Tree.prototype.deserialize = function(data) {
@@ -2489,8 +2499,22 @@
     };
 
     Tree.prototype.getSiblings = function() {
-      var ref2;
-      return ((ref2 = this.parent) != null ? ref2.children.except(this) : void 0) || [];
+      var node;
+      if ((this.parent != null) && this.parent.children.length > 0) {
+        return (function() {
+          var len1, m, ref2, results;
+          ref2 = this.parent.children;
+          results = [];
+          for (m = 0, len1 = ref2.length; m < len1; m++) {
+            node = ref2[m];
+            if (node !== this) {
+              results.push(node);
+            }
+          }
+          return results;
+        }).call(this);
+      }
+      return [];
     };
 
     Tree.prototype.getLevelSiblings = function() {
@@ -2846,7 +2870,6 @@
       options = $.extend(defaultOptions, options);
       adjustLevels = options.adjustLevels;
       options.adjustLevels = false;
-      console.log(node);
       tree = options.instantiate(node, options.compareNodes);
       options.afterInstantiate(node, tree);
       ref2 = options.getChildren(node) || [];
@@ -2861,9 +2884,12 @@
       return tree;
     };
 
-    BinaryTree.init(BinaryTree);
+    BinaryTree.init();
 
     function BinaryTree(node, compareNodes) {
+      if (compareNodes != null ? compareNodes.compareNodes : void 0) {
+        compareNodes = compareNodes.compareNodes;
+      }
       if (!(compareNodes instanceof Function) || compareNodes.length !== 2) {
         throw new Error("BinaryTree::constructor: Invalid nodes compare function given!");
       }
@@ -2892,6 +2918,61 @@
     }
 
     BinaryTree.prototype.balance = function() {
+      var CLASS, index, insertNodes, n, nodes, resetNodeRelations, root;
+      CLASS = this.constructor;
+      nodes = [];
+      this.inorder(function(node) {
+        nodes.push(node);
+        return true;
+      });
+      resetNodeRelations = function(node) {
+        node.children = [];
+        node.descendants = [];
+        node.parent = null;
+        return node;
+      };
+      index = Math.floor(nodes.length / 2);
+      root = nodes[index];
+      resetNodeRelations(root);
+      nodes = (function() {
+        var len1, m, results;
+        results = [];
+        for (m = 0, len1 = nodes.length; m < len1; m++) {
+          n = nodes[m];
+          if (n !== root) {
+            results.push(n);
+          }
+        }
+        return results;
+      })();
+      insertNodes = (function(_this) {
+        return function(list) {
+          var idx, len, node;
+          len = list.length;
+          if (len === 0) {
+            return true;
+          }
+          idx = Math.floor(len / 2);
+          if (idx === 2) {
+            idx++;
+          }
+          node = list[idx];
+          if (node !== _this) {
+            node = resetNodeRelations(node);
+          } else {
+            node = new CLASS(node.data, _this.compareNodes);
+          }
+          root.addChild(node, false);
+          insertNodes(list.slice(0, idx));
+          insertNodes(list.slice(idx + 1));
+          return true;
+        };
+      })(this);
+      insertNodes(nodes.slice(0, index));
+      insertNodes(nodes.slice(index + 1));
+      this.data = root.data;
+      this.children = root.children;
+      this._adjustLevels();
       return this;
     };
 
@@ -2979,6 +3060,34 @@
           this[key] = val;
         }
       }
+      return this;
+    };
+
+    BinaryTree.prototype.inorder = function(callback, level, index, info) {
+      var ref2, ref3;
+      if (level == null) {
+        level = 0;
+      }
+      if (index == null) {
+        index = Math.floor(this.children.length / 2);
+      }
+      if (info == null) {
+        info = {
+          idx: 0,
+          ctx: this
+        };
+      }
+      if ((ref2 = this.left) != null) {
+        ref2.inorder(callback, level + 1, index, info);
+      }
+      info.idx++;
+      if (callback.call(info.ctx, this, level, info.idx) === false) {
+        return this;
+      }
+      if ((ref3 = this.right) != null) {
+        ref3.inorder(callback, level + 1, index, info);
+      }
+      info.idx++;
       return this;
     };
 

@@ -211,7 +211,6 @@ class JSUtils.Sequence
                         @interrupt()
                         @_errorCallback?(error)
 
-                # TODO: enable sequence concatenation: if res is a sequence somehow pass the last result to next function (as if they were defined in 1 sequence)
                 # ASYNC
                 # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
                 if res?.done? and res?.context?

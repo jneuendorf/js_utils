@@ -16,7 +16,6 @@ class JSUtils.BinaryTree extends JSUtils.Tree
         adjustLevels = options.adjustLevels
         options.adjustLevels = false
 
-        console.log node
         tree = options.instantiate node, options.compareNodes
         options.afterInstantiate node, tree
 
@@ -29,10 +28,12 @@ class JSUtils.BinaryTree extends JSUtils.Tree
 
         return tree
 
-    @init(@)
+    @init()
 
     # CONSTRUCTOR
     constructor: (node, compareNodes) ->
+        if compareNodes?.compareNodes
+            compareNodes = compareNodes.compareNodes
         if compareNodes not instanceof Function or compareNodes.length isnt 2
             throw new Error("BinaryTree::constructor: Invalid nodes compare function given!")
 
@@ -57,18 +58,64 @@ class JSUtils.BinaryTree extends JSUtils.Tree
         }
 
     balance: () ->
-        # TODO
+        CLASS = @constructor
+
+        # get list of sorted nodes
+        nodes = []
+        @inorder (node) ->
+            nodes.push node
+            return true
+
+        resetNodeRelations = (node) ->
+            # node._level = 0
+            node.children = []
+            node.descendants = []
+            node.parent = null
+            return node
+
+        index = nodes.length // 2
+        root = nodes[index]
+        resetNodeRelations(root)
+
+        nodes = (n for n in nodes when n isnt root)
+
+        insertNodes = (list) =>
+            len = list.length
+            if len is 0
+                return true
+
+            idx = len // 2
+            # if list would be split into lists with sizes 2 and (5 or 6) -> use lists with sizes 3 and (4 or 5) instead
+            # this results in a perfect(ly balanced) left subtree and a potentially better balanced right subtree
+            if idx is 2
+                idx++
+            node = list[idx]
+            # when we put the node into the tree that is current 'self' -> create new instance to avoid 'this.children' containing 'this'
+            if node isnt @
+                node = resetNodeRelations(node)
+            else
+                node = new CLASS(node.data, @compareNodes)
+
+            root.addChild node, false
+            insertNodes(list.slice(0, idx))
+            insertNodes(list.slice(idx + 1))
+            return true
+
+        insertNodes(nodes.slice(0, index))
+        insertNodes(nodes.slice(index + 1))
+
+        @data = root.data
+        @children = root.children
+        @_adjustLevels()
+
         return @
 
+    ################################################################################
     # @Override
-
-    # TODO: override findNodes for better performance
 
     addChild: (node, adjustLevels = true) ->
         if not isTree(node)
             node = new @constructor(node, @compareNodes)
-
-        # console.log "adding child: #{node.n} to #{@n}"
 
         relation = @compareNodes(@, node)
         # node already exists
@@ -92,7 +139,6 @@ class JSUtils.BinaryTree extends JSUtils.Tree
                 @right = node
                 node.parent = @
 
-        # @descendants.push(node)
         if adjustLevels
             @getRoot()._adjustLevels()
         return @
@@ -127,5 +173,17 @@ class JSUtils.BinaryTree extends JSUtils.Tree
 
         for key, val of data when key isnt "children"
             @[key] = val
+
+        return @
+
+    inorder: (callback, level = 0, index = @children.length // 2, info = {idx: 0, ctx: @}) ->
+        @left?.inorder(callback, level + 1, index, info)
+        info.idx++
+
+        if callback.call(info.ctx, @, level, info.idx) is false
+            return @
+
+        @right?.inorder(callback, level + 1, index, info)
+        info.idx++
 
         return @

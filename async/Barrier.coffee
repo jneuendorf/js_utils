@@ -126,7 +126,7 @@ class JSUtils.Barrier
         return @
 
     _funcDone: () ->
-        console.log "barrier: decrementing remainingThreads from #{@remainingThreads} to #{@remainingThreads - 1}"
+        # console.log "barrier: decrementing remainingThreads from #{@remainingThreads} to #{@remainingThreads - 1}"
         if --@remainingThreads <= 0 # no problem here because JS is not multi-threaded
             @_isDone = true
             @_endCallback?()

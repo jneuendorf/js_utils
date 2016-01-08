@@ -40,10 +40,10 @@ class JSUtils.Tree
         if node.parent? or options.getParent instanceof Function
             return CLASS.new.byParentRef(node, options)
 
-        if DEBUG
-            console.warn "No recursive structure found! Use correct options."
+        # if DEBUG
+        #     console.warn "No recursive structure found! Use correct options."
 
-        return null
+        return new CLASS(node, options)
 
     ###*
     * @method new.byChildRef
@@ -203,15 +203,12 @@ class JSUtils.Tree
     ###*
     * Find all occurences of a node.
     * @method findNodes
-    * @param equalsFunction {JSUtils.Tree}
+    * @param equalsFunction {Function}
     *###
-    findNodes: (param) ->
-        res = []
-        # find by match criterea function
-        if param instanceof Function
-            res.push(node) for node in @descendants when node? and param(node)
-        # not found
-        return res
+    findNodes: (filter) ->
+        if filter instanceof Function
+            return (node for node in @descendants when node? and filter(node))
+        return []
 
     findDescendants: () ->
         return @findNodes.apply(@, arguments)
@@ -258,18 +255,24 @@ class JSUtils.Tree
     * Serialize the tree to a plain object.
     *###
     # doneNodes is carried along to prevent serializing circles
-    serialize: (format, doneNodes = []) ->
+    serialize: (toString = false, format, doneNodes = []) ->
         serializedChildren = []
         for child in @children when child not in doneNodes
             doneNodes.push child
-            serializedChildren.push child?.serialize?(format, doneNodes) or {}
+            serializedChildren.push child?.serialize?(false, format, doneNodes) or {}
 
         if not format?
             res = @data.serialize?() or JSON.parse(JSON.stringify(@data))
             if serializedChildren.length > 0
                 res.children = serializedChildren
+            if not toString
+                return res
+            return JSON.stringify(res)
+
+        res = format(@, serializedChildren, @data.serialize?() or JSON.parse(JSON.stringify(@data)))
+        if not toString
             return res
-        return format(@, serializedChildren, @data.serialize?() or JSON.parse(JSON.stringify(@data)))
+        return JSON.stringify(res)
 
     deserialize: (data) ->
         tree = @constructor.new(data)
@@ -287,8 +290,9 @@ class JSUtils.Tree
     ##################################################################################################
     # NODE RELATIONS
     getSiblings: () ->
-        # TODO remove array proto dependency
-        return @parent?.children.except(@) or []
+        if @parent? and @parent.children.length > 0
+            return (node for node in @parent.children when node isnt @)
+        return []
 
     getLevelSiblings: () ->
         self = @
@@ -382,12 +386,7 @@ class JSUtils.Tree
     remove: (adjustLevels = true) ->
         if @parent?
             @parent.children = (child for child in @parent.children when child isnt @)
-
-            # # TODO remove array proto dependency
-            # @parent.descendants = @parent.descendants.except(@descendants.and(@))
-            # @parent.descendants = (descendant for descendant in @parent.descendants when descendant isnt @)
             @parent._cacheDescendants()
-
             @parent = null
             if adjustLevels
                 @_adjustLevels()

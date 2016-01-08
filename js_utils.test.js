@@ -1961,7 +1961,6 @@
             arr.push(node.n);
             return true;
           });
-          console.log(arr);
           expect(tree.left.n).toBe(1);
           expect(tree.left.left).toEqual(null);
           expect(tree.left.right.n).toBe(3);
@@ -2262,7 +2261,7 @@
           }).call(this)).toEqual([10, 1, 3]);
         });
       });
-      return describe("converting a tree", function() {
+      describe("converting a tree", function() {
         beforeEach(function() {
           return this.tree = JSUtils.BinaryTree["new"]({
             n: 10,
@@ -2321,6 +2320,88 @@
           expect(this.tree.left.n).toBe(2);
           expect(this.tree.left.right.n).toBe(4);
           return expect(this.tree.right.n).toBe(16);
+        });
+      });
+      return describe("balancing a tree", function() {
+        return it("balance", function() {
+          var tree;
+          tree = JSUtils.BinaryTree["new"]({
+            n: 100
+          }, {
+            compareNodes: function(currentNode, newNode) {
+              return newNode.n - currentNode.n;
+            }
+          });
+          tree.addChild({
+            n: 90
+          });
+          tree.addChild({
+            n: 80
+          });
+          tree.addChild({
+            n: 70
+          });
+          tree.addChild({
+            n: 60
+          });
+          tree.addChild({
+            n: 50
+          });
+          tree.addChild({
+            n: 40
+          });
+          tree.addChild({
+            n: 30
+          });
+          tree.addChild({
+            n: 20
+          });
+          tree.addChild({
+            n: 10
+          });
+          expect(tree.depth).toBe(9);
+          expect(tree.left.left.left.left.left.left.left.left.left.n).toBe(10);
+          tree.balance();
+          expect(tree.serialize()).toEqual({
+            n: 60,
+            children: [
+              {
+                n: 40,
+                children: [
+                  {
+                    n: 20,
+                    children: [
+                      {
+                        n: 10
+                      }, {
+                        n: 30
+                      }
+                    ]
+                  }, {
+                    n: 50
+                  }
+                ]
+              }, {
+                n: 90,
+                children: [
+                  {
+                    n: 80
+                  }, {
+                    n: 100
+                  }
+                ]
+              }
+            ]
+          });
+          expect(tree.level).toBe(0);
+          expect(tree.left.level).toBe(1);
+          expect(tree.left.left.level).toBe(2);
+          expect(tree.left.right.level).toBe(2);
+          expect(tree.left.left.left.level).toBe(3);
+          expect(tree.left.left.right.level).toBe(3);
+          expect(tree.right.level).toBe(1);
+          expect(tree.right.left.level).toBe(2);
+          return expect(tree.right.right.level).toBe(2);
         });
       });
     });
