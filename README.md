@@ -11,9 +11,7 @@ The library contains the following modules:
 - prototyping
 - tree
 
-All modules are independent.
-
-The files `js_utils.js` and `js_utils.min.js` in this repository contain all modules.
+All modules are independent so far.
 
 ### Usage
 
