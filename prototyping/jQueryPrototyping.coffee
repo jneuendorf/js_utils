@@ -75,6 +75,8 @@ prototyping["$.fn"] =
         # this is the wrapping
         wrapper.append @
         return @
+    matches: (selector) ->
+        return @filter(selector).length is @length
 
 ##############################################
 # $.Color prototyping
