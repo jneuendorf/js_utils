@@ -1,3 +1,5 @@
+$.fn.wrapAllOrig = $.fn.wrapAll
+
 prototyping["$.fn"] =
     content: (content) ->
         # set method
@@ -69,6 +71,10 @@ prototyping["$.fn"] =
         return $.contains(document.documentElement, @[0])
     # Override jQuery's .wrapAll() function in order to also work for element that are NOT (yet) attached to the DOM
     wrapAll: (wrapper) ->
+        # the element is in the DOM => call jQuery's function
+        if @inDom()
+            return @wrapAllOrig.call(@, wrapper)
+
         # make sure wrapper is a jQuery object
         if wrapper not instanceof $
             wrapper = $ wrapper
