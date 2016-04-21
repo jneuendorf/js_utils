@@ -323,7 +323,7 @@ prototyping["Array.prototype"] =
         set: (val) ->
             @[10] = val
             return @
-    twelveth:
+    twelfth:
         get: () ->
             return @[11]
         set: (val) ->
