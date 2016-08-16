@@ -4,8 +4,6 @@ isTree = (obj) ->
 
 class JSUtils.Tree
 
-    # CLASS = @
-
     @_newOptions: (CLASS) ->
         return {
             getChildren: (nodeData) ->
@@ -92,18 +90,21 @@ class JSUtils.Tree
     @_newByParentRef: (node, getParent) ->
         tree = new CLASS()
 
-    @init: () ->
-        CLASS = @
-        @new = () ->
-            return CLASS._new.apply(CLASS, arguments)
-        @new.byChildRef = () ->
-            return CLASS._newByChildRef.apply(CLASS, arguments)
-        @new.byParentRef = () ->
-            return CLASS._newByParentRef.apply(CLASS, arguments)
+    # init static stuff
+    do () ->
+        Object.defineProperty @, "new", {
+            get: () ->
+                CLASS = @
+                f = () ->
+                    return CLASS._new.apply(CLASS, arguments)
+                f.byChildRef = () ->
+                    return CLASS._newByChildRef.apply(CLASS, arguments)
+                f.byParentRef = () ->
+                    return CLASS._newByParentRef.apply(CLASS, arguments)
+                return f
+        }
 
         @fromRecursive = @new
-
-    @init()
 
     ##################################################################################################
     ##################################################################################################
