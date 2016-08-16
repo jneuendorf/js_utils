@@ -102,6 +102,9 @@ class JSUtils.Barrier
     * @chainable
     *###
     _invokeNextFunction: (data, idx) ->
+        if @_isStopped
+            return @
+            
         func = data.func or data[0]
         scope = data.scope or data[1]
         params = data.params or data[2]
@@ -112,6 +115,11 @@ class JSUtils.Barrier
                     try
                         return func.apply(scope, params)
                     catch error
+                        console.error "================================================================="
+                        console.error "App.Barrier::_invokeNextFunction: Given function (at index #{idx}) threw an Error!"
+                        console.warn "Here is the data:", data
+                        console.warn "Here is the error:", error
+                        console.error "================================================================="
                         return error
             }
             {
@@ -195,4 +203,23 @@ class JSUtils.Barrier
             @_startCallback = startCallback
             @_endCallback   = endCallback
 
+        return @
+
+    stop: (execCallbacks = true) ->
+        @_isStopped = true
+
+        sequence.stop(execCallbacks) for sequence in @_sequences
+
+        if execCallbacks
+            @_endCallback?()
+            @_execDoneCallbacks()
+        return @
+
+    interrupt: () ->
+        return @stop(false)
+
+    resume: () ->
+        @_isStopped = false
+        # TODO: pass correct params here (prev res....)
+        @_invokeNextFunction()
         return @
