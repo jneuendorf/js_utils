@@ -207,9 +207,9 @@ class JSUtils.Sequence
                     console.warn "Here is the data:", data
                     console.warn "Here is the error:", error
                     console.error "================================================================="
+                    @_errorCallback?(error, data, @idx)
                     if @stopOnError
                         @interrupt()
-                        @_errorCallback?(error)
 
                 # ASYNC
                 # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
@@ -299,10 +299,14 @@ class JSUtils.Sequence
                 return callback.apply(context, args)
         return @
 
+    ###*
+    * Callback that gets called after the queue is processed but before the done callbacks are triggered.
+    * @method onEnd
+    *###
     onError: (callback, context, args...) ->
         if typeof callback is "function"
-            @_errorCallback = (error) ->
-                return callback.apply(context, [error].concat(args))
+            @_errorCallback = (error, data, index) ->
+                return callback.apply(context, [error, data, index].concat(args))
         return @
 
     ###*
