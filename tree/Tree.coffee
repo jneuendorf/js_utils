@@ -91,7 +91,7 @@ class JSUtils.Tree
         tree = new CLASS()
 
     # init static stuff
-    do () ->
+    @init: () ->
         Object.defineProperty @, "new", {
             get: () ->
                 CLASS = @
@@ -105,6 +105,8 @@ class JSUtils.Tree
         }
 
         @fromRecursive = @new
+
+    @init()
 
     ##################################################################################################
     ##################################################################################################
@@ -256,7 +258,16 @@ class JSUtils.Tree
     * Serialize the tree to a plain object.
     *###
     # doneNodes is carried along to prevent serializing circles
-    serialize: (toString = false, format, doneNodes = []) ->
+    serialize: (toString, format, doneNodes) ->
+        # toString parameter omitted => shift parameters
+        if toString instanceof Function
+            doneNodes = format or []
+            format = toString
+            toString = false
+        # set default values manually
+        else
+            toString = toString or false
+            doneNodes = doneNodes or []
         serializedChildren = []
         for child in @children when child not in doneNodes
             doneNodes.push child

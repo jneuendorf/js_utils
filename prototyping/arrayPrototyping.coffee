@@ -29,9 +29,8 @@ prototyping["Array.prototype"] =
         return (elem for elem in @ when elem in arr).unique()
     intersects: (arr) ->
         return @intersect(arr).length > 0
-    groupBy: (groupFun, equality) ->
-        # TODO: remove dependency
-        dict = new JSUtils.Hash(null, null, equality)
+    groupBy: (groupFun, equality, dictClass = JSUtils.Hash) ->
+        dict = new dictClass(null, null, equality)
         for elem in @
             grouped = groupFun(elem)
             if not dict.get(grouped)?

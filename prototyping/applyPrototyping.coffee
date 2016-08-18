@@ -19,7 +19,7 @@ for setName, set of prototyping
             if method instanceof Function
                 Object.defineProperty parent, methodName, {
                     value: method
-                    configurable: false
+                    configurable: true
                     enumerable: false
                     writable: false
                 }
@@ -41,7 +41,7 @@ for setName, set of prototyping
             if method instanceof Function
                 Object.defineProperty parent, methodName, {
                     value: method
-                    configurable: false
+                    configurable: true
                     enumerable: false
                     writable: false
                 }
