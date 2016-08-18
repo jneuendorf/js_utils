@@ -15,7 +15,8 @@ class JSUtils.Leaf extends JSUtils.Tree
             get: () ->
                 return []
             set: () ->
-                throw new Error("JSUtils.Leaf::children=: Cannot set children of a leaf!")
+                # throw new Error("JSUtils.Leaf::children=: Cannot set children of a leaf!")
+                return @
         }
 
     ##################################################################################################
