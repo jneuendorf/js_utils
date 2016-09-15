@@ -364,8 +364,10 @@ class JSUtils.Tree
         return @addChild.apply(@, arguments)
 
     addChildren: (nodes, index, adjustLevels = true) ->
-        # inverse for correct indices
-        for node in nodes by -1 when node?
+        if index?
+            # inverse for correct indices (due to splice at index)
+            nodes.reverse()
+        for node in nodes when node?
             @addChild node, index, false
         if adjustLevels
             @_adjustLevels @level
