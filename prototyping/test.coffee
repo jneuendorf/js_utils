@@ -169,6 +169,13 @@ describe "prototyping", () ->
 
             expect "some string".isNumeric()
                 .toBe false
+                
+            expect "10e2".isNumeric()
+                .toBe true
+            expect ".01".isNumeric()
+                .toBe true
+            expect "NaN".isNumeric()
+                .toBe false
 
         it "endsWith", () ->
             expect "myAwesomeFunction".endsWith("Function")

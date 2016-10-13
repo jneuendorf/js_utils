@@ -47,7 +47,7 @@ describe "overload", () ->
                     .toBe "No function given for argument lists: [[\"String\",\"A\"],[\"A\",\"Boolean\"]]"
 
     ##################################################################################################################
-    it "overloading", () ->
+    it "func results of overloading", () ->
         testInstance = new TestClass()
         a = new A()
 
@@ -76,3 +76,25 @@ describe "overload", () ->
 
         expect testInstance.method3
             .toBeUndefined()
+
+
+    ##################################################################################################################
+    it "supports subclass checking", () ->
+        class Super
+        class Sub extends Super
+
+        f = JSUtils.overload(
+            [Super]
+            () ->
+                return true
+        )
+
+        expect f(new Super())
+            .toBe true
+        expect f(new Sub())
+            .toBe true
+        try
+            f("asdf")
+        catch e
+            expect e.message
+                .toBe "Arguments do not match any known argument list!"

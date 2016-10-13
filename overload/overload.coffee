@@ -1,19 +1,19 @@
 # non-recursive version
-arrEquals = (arr1, arr2) ->
-    if arr1.length isnt arr2.length
+validArgList = (definedArgList, currentArgList) ->
+    if definedArgList.length isnt currentArgList.length
         return false
 
-    for x, i in arr1 when x isnt arr2[i]
-        return false
-
+    for expected, i in definedArgList
+        current = currentArgList[i]
+        if expected isnt current and not JSUtils.overload.isSubclass(current, expected)
+            return false
     return true
 
 # find matching arglist and then find according function
 funcForArgs = (args, argLists, funcs) ->
     argListToCheck = (arg.constructor for arg in args)
-
     for argList, i in argLists
-        if arrEquals(argList, argListToCheck)
+        if validArgList(argList, argListToCheck)
             return funcs[i] or funcs[lastMatchedIdx]
         lastMatchedIdx = i
     return null
@@ -50,3 +50,7 @@ JSUtils.overload = (args...) ->
             return f.apply(@, arguments)
 
         throw new Error("Arguments do not match any known argument list!")
+
+###Set this to "return sub == sup" to disable support for subclass checking###
+JSUtils.overload.isSubclass = (sub, sup) ->
+    return sub.prototype instanceof sup
