@@ -1,0 +1,14 @@
+--name       "Codo"
+--readme     README.md
+--title      "js_utils"
+--private
+--quiet
+--extension  coffee
+--output     ./doc
+async
+hash
+overload
+prototyping
+tree
+-
+LICENSE

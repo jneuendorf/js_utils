@@ -1,1 +1,2 @@
+# @namespace JSUtils
 window.JSUtils = {}

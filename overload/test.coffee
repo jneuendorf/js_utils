@@ -9,11 +9,11 @@ describe "overload", () ->
         class window.TestClass
 
             method1: JSUtils.overload(
-                {a: Number, b: String}
+                [Number, String]
                 (a, b) ->
                     return a + parseInt(b, 10)
 
-                {a: String, b: Number}
+                [String, Number]
                 (a, b) ->
                     return parseInt(a, 10) + b
 

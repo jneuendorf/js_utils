@@ -834,15 +834,9 @@
 
         function TestClass() {}
 
-        TestClass.prototype.method1 = JSUtils.overload({
-          a: Number,
-          b: String
-        }, function(a, b) {
+        TestClass.prototype.method1 = JSUtils.overload([Number, String], function(a, b) {
           return a + parseInt(b, 10);
-        }, {
-          a: String,
-          b: Number
-        }, function(a, b) {
+        }, [String, Number], function(a, b) {
           return parseInt(a, 10) + b;
         }, [Boolean, String], [String, Boolean], function(x, y) {
           return x + y;
