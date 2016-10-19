@@ -15,6 +15,10 @@ All modules are independent so far.
 
 ### Usage
 
+See the [API documentation](http://jneuendorf.github.io/js_utils/) (yet incomplete).
+
+### Building
+
 See the `README.md` in the according module directory.
 
 The files `js_utils.js` and `js_utils.min.js` can be created using the `make` shell script (using `./make`).
