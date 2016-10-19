@@ -1,14 +1,25 @@
---name       "Codo"
+--name       "js_utils"
 --readme     README.md
 --title      "js_utils"
 --private
 --quiet
 --extension  coffee
 --output     ./doc
-async
-hash
-overload
-prototyping
-tree
+./_init/init.coffee
+./async/Sequence.coffee
+./async/Barrier.coffee
+./async/Doneable.coffee
+./hash/Hash.coffee
+./overload/overload.coffee
+./prototyping/init.coffee
+./prototyping/nativesPrototyping.coffee
+./prototyping/stringPrototyping.coffee
+./prototyping/arrayPrototyping.coffee
+./prototyping/jQueryPrototyping.coffee
+./prototyping/applyPrototyping.coffee
+./tree/Tree.coffee
+./tree/BinaryTree.coffee
+./tree/Leaf.coffee
+
 -
 LICENSE

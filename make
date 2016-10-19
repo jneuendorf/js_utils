@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 
+# realpath() {
+#     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+# }
+
+
+
 # define all modules (in correct order)
 MODULES=(_init async hash overload prototyping tree)
 FILES_TO_CAT="debug.coffee "
@@ -30,6 +36,28 @@ elif [[ "$1" == "test" ]]; then
 elif [[ "$1" == "doc" ]]; then
     # options are in .codoopts file
     node_modules/.bin/codo
+    exit 0
+elif [[ "$1" == "codoopts" ]]; then
+    module_files=($(find . -type f -name files.txt))
+    files=""
+    for module_file in ${module_files[@]}; do
+        path=$(dirname $module_file)
+        source_files=($(cat $module_file))
+        for source_file in ${source_files[@]}; do
+            files+="$path/$source_file"
+            files+=$'\n'
+        done
+    done
+    echo "--name       \"js_utils\"
+--readme     README.md
+--title      \"js_utils\"
+--private
+--quiet
+--extension  coffee
+--output     ./doc
+$files
+-
+LICENSE" > .codoopts
     exit 0
 fi
 
