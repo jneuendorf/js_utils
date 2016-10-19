@@ -1,6 +1,8 @@
 ###*
  * A class that executes asynchronous functions in an order.
- *
+ * # It waits for them to finish before going to the next.
+ # The cool thing is that the function can be both: synchronous or asynchronous.
+ # Each asynchronous function MUST return an object that implements a `done()` method.
  * @example
  * `var seq = new Sequence([
  *     {

@@ -37,48 +37,35 @@
       </table>
       <h2>Overview</h2>
       <div class='docstring'>
-  <p>*</p><ul>
-<li>A class that starts executing asynchronous functions and waits for them to finish.
-*</li>
-<li>@example</li>
-<li>`var barrier = new Barrier([</li>
-<li>{</li>
-<li>func: () -&gt;</li>
-<li>return true</li>
-<li>scope: someObject</li>
-<li>params: [1,2,3]</li>
-<li>}</li>
-<li>{</li>
-<li>func: () -&gt;</li>
-<li>return new JSUtils.Sequence(...)</li>
-<li>scope: someObject</li>
-<li>[</li>
-<li>() -&gt; return true,</li>
-<li>someObject,</li>
-<li>[1,2,3]</li>
-<li>]</li>
-<li>])`
-*</li>
-<li>Each asynchronous function MUST return an object that implements a <code>done()</code> method!
-*</li>
-<li>This <code>done()</code> method takes 1 callback function as parameter (not like jQuery which can take multiple and arrays)! If parameters are to be passed to the callback, take care of it yourself (closuring?!).</li>
-<li>When using <code>done()</code> callbacks in that asynchronous function those callbacks MUST be synchronous to make sure the order remains correct.
-*</li>
-<li>@class Barrier</li>
-<li>@extends Object</li>
-<li>@constructor</li>
-<li>@param data {Array}</li>
-<li>Each element of that array is either an object like <code>{func: ..., scope: ..., params: ...}</code> and an array with the same values in that order.</li>
-<li>For each element applies:</li>
-<li>&#39;func&#39; (or the 1st array element) is the function being executed.</li>
-<li>&#39;scope&#39; (or the 2nd element) is an object that serves as <code>this</code> in &#39;func&#39;.</li>
-<li>&#39;params&#39; (or the 3rd element) is an array of parameters being passed to &#39;func&#39;</li>
-<li>or a function that creates such an array. In that case that function must have the form:</li>
-<li>@param start {Boolean}</li>
-<li>Optional. Default is <code>true</code>. If it&#39;s <code>!== true</code> the Sequence will not start automatically. The <code>start()</code> method can be used to start it whenever.
-*</li>
-</ul>
-
+  <p>A class that starts executing functions - called &quot;threads&quot; - (pretty much) simultaneously and is done iff. all threads are done.
+Each function can be both: synchronous or asynchronous.
+Each asynchronous function MUST return an object that implements a <code>done()</code> method.
+This is due to jQuery&#39;s done().
+This <code>done()</code> method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
+If parameters are to be passed to the callback, take care of it yourself (closuring).</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffeescript'>barrier = new Barrier([
+    {
+        func: () -&gt;
+            return true
+        scope: someObject
+        params: [1,2,3]
+    }
+    {
+        func: () -&gt;
+            return new JSUtils.Sequence(...)
+        scope: someObject
+    [
+        () -&gt; return true,
+        someObject,
+        [1,2,3]
+    ]
+])</code></pre>
+  </div>
 </div>
 <div class='tags'>
 </div>
@@ -99,11 +86,12 @@
     <span class='signature'>
       <a href='#forArray-static'>
         .
-(void)
-<b>forArray</b><span>(array = [], callback, start = true)</span>
+(Barrier)
+<b>forArray</b><span>(array, callback, start = true)</span>
       </a>
     </span>
     <span class='desc'>
+      This method can be used to define multiple &quot;threads&quot; doing the same thing with different data (which is based on the array). 
     </span>
   </li>
 </ul>
@@ -113,30 +101,25 @@
     <span class='signature'>
       <a href='#start-dynamic'>
         #
-(void)
+(Barrier)
 <b>start</b><span>(newData)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-This method starts the Barrier in case it has been created with <code>false</code> as start parameter.
-
-
+      This method starts the Barrier in case it has been created with <code>false</code> as constructor parameter. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_invokeNextFunction-dynamic'>
         #
-(void)
+(Barrier)
 <b>_invokeNextFunction</b><span>(data, idx)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-This method invokes the next function in the list.
-
-
+      This method invokes the next function in the list. 
     </span>
   </li>
   <li>
@@ -147,100 +130,95 @@ This method invokes the next function in the list.
 <b>_funcDone</b><span>()</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
+      This method is called when a sequence has completed (-&gt; when a &quot;thread&quot; is done). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#done-dynamic'>
         #
-(void)
+(Barrier)
 <b>done</b><span>(callback, context, args...)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-This method adds a callback that will be executed after all functions have returned.
-
-
+      This method adds a callback that will be executed after all functions have returned (including the <code>endCallback</code>). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#progress-dynamic'>
         #
-(void)
+(?)
 <b>progress</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-This method returns the progress (how many async function have already reached the Barrier) in [0,1].
-
-
+      This method returns the progress (how many async function have already reached the Barrier) in [0,1]. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_execDoneCallbacks-dynamic'>
         #
-(void)
+(Barrier)
 <b>_execDoneCallbacks</b><span>()</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-This method is called when the Sequence has executed all of its functions.
-
-
+      This method is called when the Sequence has executed all of its functions. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#while-dynamic'>
         #
-(void)
+(Barrier)
 <b>while</b><span>(startCallback, endCallback, context)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed).
-
-
+      This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#stop-dynamic'>
         #
-(void)
+(Barrier)
 <b>stop</b><span>(execCallbacks = true)</span>
       </a>
     </span>
     <span class='desc'>
+      This method stops more &quot;thread&quot; from being started. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#interrupt-dynamic'>
         #
-(void)
+(Barrier)
 <b>interrupt</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      This method stops more &quot;thread&quot; from being started. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#resume-dynamic'>
         #
-(void)
+(Barrier)
 <b>resume</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      This method resumes the barrier meaning more &quot;thread&quot; can be started. 
     </span>
   </li>
 </ul>
@@ -249,11 +227,72 @@ This method sets the start and end callback that are executed before the Barrier
   <div class='method_details'>
     <p class='signature' id='forArray-static'>
       .
-(void)
-<b>forArray</b><span>(array = [], callback, start = true)</span>
+(Barrier)
+<b>forArray</b><span>(array, callback, start = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>This method can be used to define multiple &quot;threads&quot; doing the same thing with different data (which is based on the array).
+That means the callback is called on every element of the given array.
+Its result is accessible in the callback to <code>done()</code> (@see <a href='../../class/JSUtils/Barrier.html#done-dynamic'>JSUtils.Barrier#done</a>).</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffeescript'>urls = [&quot;localhost&#47;books.json&quot;, &quot;localhost&#47;authors&#47;2&quot;]
+barrier = JSUtils.Barrier
+    .forArray urls, (url, index) -&gt;
+        return $.get(url)
+    .done () -&gt;</code></pre>
+  </div>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>array</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The array will be used to construct the data for the barrier. </span>
+    </li>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function <code>(element, index) -&gt;</code> that will be called on each array element. </span>
+    </li>
+    <li>
+      <span class='name'>start</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to start the barrier immediately. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>The barrier. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
       <h2>Constructor Details</h2>
@@ -261,11 +300,51 @@ This method sets the start and end callback that are executed before the Barrier
   <div class='method_details'>
     <p class='signature' id='constructor-dynamic'>
       #
-(void)
-<b>constructor</b><span>(data = [], start = true)</span>
+(Barrier)
+<b>constructor</b><span>(data, start = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>&#39;func&#39;   (or the 1st array element) is the function being executed.
+      &#39;scope&#39;  (or the 2nd element) is an object that serves as <code>this</code> in &#39;func&#39;.
+      &#39;params&#39; (or the 3rd element) is an array of parameters being passed to &#39;func&#39;.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>data</span>
+      <span class='type'>
+        (
+          <tt>Array of Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Each element of <code>data</code> is either an object like <code>{.func, .scope, .params}</code> or an array with the same values (see the example). Each element looks like: </span>
+    </li>
+    <li>
+      <span class='name'>start</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to start the barrier immediately. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>An instance of <code>JSUtils.Barrier</code> </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
       <h2>Instance Method Details</h2>
@@ -273,46 +352,76 @@ This method sets the start and end callback that are executed before the Barrier
   <div class='method_details'>
     <p class='signature' id='start-dynamic'>
       #
-(void)
+(Barrier)
 <b>start</b><span>(newData)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>This method starts the Barrier in case it has been created with <code>false</code> as start parameter.</li>
-<li>@method start</li>
-<li>@param newData {Array}</li>
-<li>Optional. If an array is given it will replace the possibly previously set data.</li>
-<li>@return This istance. {Barrier}</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>This method starts the Barrier in case it has been created with <code>false</code> as constructor parameter.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>newData</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. If an array is given it will replace the possibly previously set data. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_invokeNextFunction-dynamic'>
       #
-(void)
+(Barrier)
 <b>_invokeNextFunction</b><span>(data, idx)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>This method invokes the next function in the list.</li>
-<li>@protected</li>
-<li>@method _invokeNextFunction</li>
-<li>@param data {Object|Array}</li>
-<li>Function data (same structure as in JSUtils.Sequence)</li>
-<li>@return This istance. {Barrier}</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>This method invokes the next function in the list.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>data</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Function data (same structure as in the constructor) </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
@@ -320,122 +429,273 @@ This method sets the start and end callback that are executed before the Barrier
       #
 (void)
 <b>_funcDone</b><span>()</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>This method is called when a sequence has completed (-&gt; when a &quot;thread&quot; is done).</p>
+</div>
+<div class='tags'>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='done-dynamic'>
       #
-(void)
+(Barrier)
 <b>done</b><span>(callback, context, args...)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>This method adds a callback that will be executed after all functions have returned.</li>
-<li>@method done</li>
-<li>@param callback {Function}</li>
-<li>A function (without parameters).</li>
-<li>@param context {Object}</li>
-<li>@param args... {Function}</li>
-<li>Arguments to be passed to the callback function.</li>
-<li>@return This istance. {Barrier}</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>This method adds a callback that will be executed after all functions have returned (including the <code>endCallback</code>).
+If the barrier is done already the callback will be executed right away.
+In addition of the optional <code>args</code> that are passed to the callback the results of the barrier will be passed as well.
+So the callback gets <code>arg1, ... , argN, resultOfThread1, ... , resultOfThreadM</code> (if there would be M threads).</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback invoked with the following parameters. </span>
+    </li>
+    <li>
+      <span class='name'>context</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This object serves as context (<code>this</code>) for the callback. </span>
+    </li>
+    <li>
+      <span class='name'>args...</span>
+      <span class='type'>
+        (
+          <tt>Mixed...</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Arguments to be passed to the callback function. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='progress-dynamic'>
       #
-(void)
+(?)
 <b>progress</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>This method returns the progress (how many async function have already reached the Barrier) in [0,1].</li>
-<li>@method progress</li>
-<li>@return progress {Number}
-*</li>
-</ul>
-
+  <p>This method returns the progress (how many async function have already reached the Barrier) in [0,1].</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>?</tt>
+      )
+      &mdash;
+      <span class='desc'>progress [Number] </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_execDoneCallbacks-dynamic'>
       #
-(void)
+(Barrier)
 <b>_execDoneCallbacks</b><span>()</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>This method is called when the Sequence has executed all of its functions. It will then start executing all callbacks that previously have been added via <code>done()</code> (in the order they were added). No callback receives any parameters.</li>
-<li>@protected</li>
-<li>@method _execDoneCallbacks</li>
-<li>@return This istance. {Barrier}</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>This method is called when the Sequence has executed all of its functions.
+It will then start executing all callbacks that previously have been added via <code>done()</code> (in the order they were added).
+No callback receives any parameters.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='while-dynamic'>
       #
-(void)
+(Barrier)
 <b>while</b><span>(startCallback, endCallback, context)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed).</li>
-<li>@protected</li>
-<li>@method while</li>
-<li>@return This istance. {Barrier}</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed).</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>startCallback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback being executed before the barrier starts. </span>
+    </li>
+    <li>
+      <span class='name'>endCallback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback being executed after the barrier starts. </span>
+    </li>
+    <li>
+      <span class='name'>context</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The <code>this</code> context for both callbacks. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='stop-dynamic'>
       #
-(void)
+(Barrier)
 <b>stop</b><span>(execCallbacks = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>This method stops more &quot;thread&quot; from being started.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>execCallbacks</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to execute previously added callbacks. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='interrupt-dynamic'>
       #
-(void)
+(Barrier)
 <b>interrupt</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>This method stops more &quot;thread&quot; from being started.
+Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='resume-dynamic'>
       #
-(void)
+(Barrier)
 <b>resume</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <div class='note todo'>
+    <strong>TODO:</strong>
+    this probably won&#39;t work... 
+  </div>
+  <p>This method resumes the barrier meaning more &quot;thread&quot; can be started.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Barrier</tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
     </div>

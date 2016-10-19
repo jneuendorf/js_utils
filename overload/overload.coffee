@@ -23,6 +23,14 @@ funcForArgs = (args, argLists, funcs) ->
 
 # Overload functions be defining a set of signatures for a function so that function gets executed if the current call's arguments match one of the signatures.
 # @param arguments... [Blocks] For what a block can be see the example and the overload section.
+# @return [Function] The overloaded function.
+#
+# @overload JSUtils.overload(signatures1toN, functionToExecute1)
+#   Defines one function for N different signatures.
+#   So let's call such a block a list of signatures belonging to one function: Any number of blocks can be passed to JSUtils.overload().
+#   @param signatures1toN... [Array of Array of class] Signatures. Any number of arrays (of classes).
+#   @param functionToExecute1 [Function] Function body for the previously defined signatures.
+#   @return [Function] The overloaded function
 #
 # @example Simple overload example
 #   f = JSUtils.overload(
@@ -40,13 +48,6 @@ funcForArgs = (args, argLists, funcs) ->
 #       (x, y) ->           # |
 #           return x + y    # /
 #   )
-#
-# @overload JSUtils.overload(signatures1toN, functionToExecute1)
-#   Defines one function for N different signatures.
-#   So let's call such a block a list of signatures belonging to one function: Any number of blocks can be passed to JSUtils.overload().
-#   @param signatures1toN... [Array of Array of class] Signatures. Any number of arrays (of classes).
-#   @param functionToExecute1 [Function] Function body for the previously defined signatures.
-#   @return [Function] The overloaded function
 JSUtils.overload = (args...) ->
     argLists = []
     funcs = []

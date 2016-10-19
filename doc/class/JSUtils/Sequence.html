@@ -38,8 +38,11 @@
       <h2>Overview</h2>
       <div class='docstring'>
   <p>*</p><ul>
-<li>A class that executes asynchronous functions in an order.
-*</li>
+<li>A class that executes asynchronous functions in an order.</li>
+<li><h1 id="it-waits-for-them-to-finish-before-going-to-the-next-">It waits for them to finish before going to the next.</h1>
+<h1 id="the-cool-thing-is-that-the-function-can-be-both-synchronous-or-asynchronous-">The cool thing is that the function can be both: synchronous or asynchronous.</h1>
+<h1 id="each-asynchronous-function-must-return-an-object-that-implements-a-done-method-">Each asynchronous function MUST return an object that implements a <code>done()</code> method.</h1>
+</li>
 <li>@example</li>
 <li>`var seq = new Sequence([</li>
 <li>{</li>
