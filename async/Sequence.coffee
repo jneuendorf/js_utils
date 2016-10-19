@@ -1,98 +1,76 @@
-###*
- * A class that executes asynchronous functions in an order.
- * # It waits for them to finish before going to the next.
- # The cool thing is that the function can be both: synchronous or asynchronous.
- # Each asynchronous function MUST return an object that implements a `done()` method.
- * @example
- * `var seq = new Sequence([
- *     {
- *      func: () ->
- *          return true
- *      scope: someObject
- *      params: [1,2,3]
- *     }
- *     {
- *      func: () ->
- *          return new JSUtils.Sequence(...)
- *      scope: someObject
- *      params: (prevRes, presFunc, prevParams, idx) ->
- *          return [...]
- *     }
- *     [
- *      () -> return true,
- *      someObject,
- *      [1,2,3]
- *     ]
- * ])`
- *
- * Each asynchronous function MUST return an object that implements a `done()` method!
- *
- * This `done()` method takes 1 callback function as parameter (not like jQuery which can take multiple and arrays)! If parameters are to be passed to the callback, take care of it yourself (closuring?!).
- * When using `done()` callbacks in that asynchronous function those callbacks MUST be synchronous to make sure the order remains correct.
- *
- * @class Sequence
- * @extends Object
- * @constructor
- * @param data {Array}
- * Each element of that array is either an object like `{func: ..., scope: ..., params: ...}` and an array with the same values in that order.
- * For each element applies:
- * 'func' (or the 1st array element) is the function being executed.
- * 'scope' (or the 2nd element) is an object that serves as `this` in 'func'.
- * 'params' (or the 3rd element) is either
- * an array of parameters being passed to 'func'
- * or a function that creates such an array. In that case that function must have the form:
- * `(resultOfPreviouslyExecutedFunction, parametersOfPreviousCallback, previouslyExecutedFunction, scopeOfPreviouslyExecutedFunction, parametersOfPreviouslyExecutedFunction, indexInExecutionList) ->
- *     params = [...do stuff...]
- *     return params`
- * See the example or the static `test()` method for details.
- * @param start {Boolean}
- * Optional. Default is `true`. If it's `!== true` the Sequence will not start automatically. The `start()` method can be used to start it whenever.
-*###
+# A class that executes functions in order.
+# It waits for each function to finish before going to the next.
+# The cool thing is that the function can be both: synchronous or asynchronous.
+# Each asynchronous function MUST return an object that implements a `done()` method in order to be waited on.
+# This is due to jQuery's done().
+# This `done()` method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
+# If parameters are to be passed to the callback, take care of it yourself (closuring).
+#
+# @example Sample structure
+#   seq = new Sequence([
+#       {
+#           func: () ->
+#               return true
+#           scope: someObject
+#           params: [1,2,3]
+#       }
+#       {
+#           func: () ->
+#               return new JSUtils.Sequence(...)
+#           scope: someObject
+#           params: (prevRes, presFunc, prevParams, idx) ->
+#               return [...]
+#       }
+#       [
+#           () -> return true,
+#           someObject,
+#           [1,2,3]
+#       ]
+#   ])
 class JSUtils.Sequence
 
     @PARAM_MODES =
-        CONTEXT:    "CONTEXT"
-        IMPLICIT:   "IMPLICIT"
-        EXPLICIT:   "EXPLICIT"
+        CONTEXT: "CONTEXT"
+        IMPLICIT: "IMPLICIT"
+        EXPLICIT: "EXPLICIT"
 
-    ###*
-    * This method does the same as window.setTimeout() but makes it useable by JSUtils.Sequence. It also takes an additional (optional) scope parameter.
-    * Basically window.setTimeout() is used in order to delay a whole Sequence.
-    *
-    * The mechanism is lik so:
-    * An empty Sequence is created and returned (after it returns the `done()` callback is added by the Sequence itself).
-    * The empty Sequence is delayed by 'delay' (with the help of window.setTimeout()) and when before it starts the passed function 'func', 'scope', and all 'params' passed to the Sequence.
-    * @static
-    * @method setTimeout
-    * @param {Function|String} func
-    * This parameter is either a function or a code string.
-    * @param {Integer} delay
-    * @param {Function} scope
-    * @param {mixed} param1
-    * @param {mixed} param2
-    * @param ...
-    *###
-    # @setTimeout: (func, delay, scope, params...) ->
-    #     seq = new @([], false)
-    #
-    #     window.setTimeout(
-    #         () ->
-    #             seq.start([
-    #                 func: func
-    #                 scope: scope
-    #                 params: params
-    #             ])
-    #         delay
-    #     )
-    #
-    #     # return empty sequence in order to attach a done() callback to it which will be triggered when seq.start() finishes
-    #     return seq
+    # This method does the same as `window.setTimeout()` but makes it useable by {JSUtils.Sequence}.
+    # Basically `window.setTimeout()` is used in order to delay a whole Sequence.
+    # @param func [Function] The function to execute.
+    # @param delay [Integer] Delay in ms.
+    # @param scope [Object] Optional. The context for the `func` parameter (-> `this` within `func`).
+    # @param params [Array] Optional. Arguments for the `func` parameter.
+    # @return [JSUtils.Sequence] A sequence (so `done()` can be called on it).
+    @setTimeout: (func, delay, scope, params) ->
+        seq = new @([
+            func: func
+            scope: scope
+            params: params
+        ], false)
+        window.setTimeout(
+            () ->
+                seq.start()
+            delay
+        )
+        # return empty sequence in order to attach a done() callback to it which will be triggered when seq.start() finishes
+        return seq
+
 
     ################################################################################################
     # CONSTRUCTOR
-    constructor: (data = [], start = true, stopOnError = true) ->
-        @data   = data
-        @idx    = 0
+
+    # @param data [Array of Object]
+    #   Each element of `data` is either an object like `{.func, .scope, .params}` or an array with the same values (see the example).
+    #   Each element looks like:
+    #   `func` (or the 1st array element) is the function being executed.
+    #   `scope` (or the 2nd element) is an object that serves as `this` in 'func'.
+    #   `params` (or the 3rd element) is an array of parameters being passed to 'func'.
+    # @param start [Boolean] Optional. Whether to start the sequence immediately.
+    # @param stopOnError [Boolean] Optional. Whether an error within a sequence item will cause the sequence to stop executing any more items.
+    # @return [JSUtils.Sequence] A new instance of `JSUtils.Sequence`
+    constructor: (data, start = true, stopOnError = true) ->
+        @data = data
+        @idx = 0
         @stopOnError = stopOnError
         @_doneCallbacks = []
         @_startCallback = null
@@ -112,67 +90,76 @@ class JSUtils.Sequence
         if start is true
             @start()
 
-    ###*
-    * This method starts the Sequence in case it has been created with `false` as start parameter.
-    * @method start
-    * @param newData {Array}
-    * Optional. If an array is given it will replace the possibly previously set data.
-    * @return This istance. {Sequence}
-    * @chainable
-    *###
+    # This method starts the Sequence in case it has been created with `false` as constructor parameter.
+    # @param newData [Array] Optional. If an array is given it will replace the possibly previously set data.
+    # @return [JSUtils.Sequence] This instance.
     start: (newData) ->
         if newData instanceof Array
             @data = newData
-
         @_startCallback?()
-
         @_invokeNextFunction()
         return @
 
+    # This method stops the sequence from executing any more functions.
+    # @param execCallbacks [Boolean] Optional. Whether to execute previously added callbacks.
+    # @return [JSUtils.Sequence] This instance.
+    stop: (execCallbacks = true) ->
+        @_isStopped = true
+        if execCallbacks
+            @_endCallback?()
+            @_execDoneCallbacks()
+        return @
+
+    # This method stops the sequence from executing any more functions.
+    # Differently than `stop()` callbacks won't be executed.
+    # @return [JSUtils.Sequence] This instance.
+    interrupt: () ->
+        return @stop(false)
+
+    # This method resumes the sequence.
+    # @return [JSUtils.Sequence] This instance.
+    # @todo this probably won't work...
+    resume: () ->
+        @_isStopped = false
+        # TODO: pass correct params here (prev res....)
+        @_invokeNextFunction()
+        return @
+
+    # This method creates a list or arguments for a function from an object or an array.
+    # @private
+    # @param func [Function] The function to read the signature from.
+    # @param context [Object|Array] Keyword arguments or arguments.
+    # @return [Array] The arguments.
     _createParamListFromContext: (func, context) ->
         if context not instanceof Array
             paramList = func.toString()
-                .split /[()]/g
-                .second
-                .split /\s*,\s*/g
+                .split(/[()]/g)[1]
+                .split(/\s*,\s*/g)
             temp = []
             for argName in paramList
                 temp.push context[argName]
             return temp
         return context.slice(0)
 
-    ###*
-    * This method invokes the next function in the list.
-    * @protected
-    * @method _invokeNextFunction
-    * @param previousReult {mixed}
-    * The result the previously executed function returned or `null`.
-    * @param args... {mixed}
-    * These are the arguments passed to the callback itself.
-    * @return This istance. {Sequence}
-    * @chainable
-    *###
-    # _invokeNextFunction: (prevRes, callbackArgs...) ->
+    # This method invokes the next function in the list.
+    # @private
+    # @param previousReult [mixed] The result the previously executed function returned or `null`.
+    # @param args... [mixed] These are the arguments passed to the callback itself.
+    # @return [JSUtils.Sequence] This instance.
     _invokeNextFunction: (args...) ->
         if @_isStopped
             return @
 
         data = @data[@idx]
-
         # there is data (data = next function in the list) => do stuff
         if data?
-            if data instanceof Array
-                func    = data[0]
-                scope   = data[1]
-                params  = data[2]
-            else
-                func    = data.func
-                scope   = data.scope
-                params  = data.params
+            func = data.func or data[0]
+            scope = data.scope or data[1]
+            params = data.params or data[2]
 
             if func?
-                CLASS   = @constructor
-                self    = @
+                CLASS = @constructor
+                self = @
 
                 # valid params are given explicitly => override param mode
                 if params instanceof Array and params.length > 0
@@ -188,13 +175,13 @@ class JSUtils.Sequence
                     newParams = args
 
                 # config function given as params
-                if params instanceof Function #and params.isParameterFunction is true
+                if params instanceof Function
                     d = @data[@idx - 1]
                     newParams = params(
                         args
                         {
-                            func:   d?.func or d?[0]
-                            scope:  d?.scope or d?[1] or null
+                            func: d?.func or d?[0]
+                            scope: d?.scope or d?[1] or null
                             params: d?.params?.slice(0) or d?[2]?.slice(0) or []
                         }
                         @idx
@@ -246,82 +233,61 @@ class JSUtils.Sequence
             @lastResult = args[0]
             if @_parameterMode is @constructor.PARAM_MODES.CONTEXT
                 @lastResult = @lastResult.context
-
-
             @_endCallback?()
             @_execDoneCallbacks()
-
         return @
 
-    ###*
-    * This method is called when the Sequence has executed all of its functions. It will then start executing all callbacks that previously have been added via `done()` (in the order they were added). No callback receives any parameters.
-    * @protected
-    * @method _execDoneCallbacks
-    * @return This istance. {Sequence}
-    * @chainable
-    *###
+    # This method is called when the Sequence has executed all of its functions.
+    # It will then start executing all callbacks that previously have been added via `done()` (in the order they were added).
+    # No callback receives any parameters.
+    # @private
+    # @return [JSUtils.Sequence] This instance.
     _execDoneCallbacks: () ->
         @_isDone = true
         cb() for cb in @_doneCallbacks
         return @
 
-    stop: (execCallbacks = true) ->
-        @_isStopped = true
-        if execCallbacks
-            @_endCallback?()
-            @_execDoneCallbacks()
-        return @
-
-    interrupt: () ->
-        return @stop(false)
-
-    resume: () ->
-        @_isStopped = false
-        # TODO: pass correct params here (prev res....)
-        @_invokeNextFunction()
-        return @
-
-    ###*
-    * Callback that gets called before the queue is being processed.
-    * @method onStart
-    *###
+    # Set the callback that is executed before the sequence starts.
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
     onStart: (callback, context, args...) ->
         if typeof callback is "function"
             @_startCallback = () ->
                 return callback.apply(context, args)
         return @
 
-    ###*
-    * Callback that gets called after the queue is processed but before the done callbacks are triggered.
-    * @method onEnd
-    *###
+    # Set the callback that is executed after the sequence is done (but before the done callbacks are triggered).
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
     onEnd: (callback, context, args...) ->
         if typeof callback is "function"
             @_endCallback = () ->
                 return callback.apply(context, args)
         return @
 
-    ###*
-    * Callback that gets called after the queue is processed but before the done callbacks are triggered.
-    * @method onEnd
-    *###
+    # Callback that gets called in case an error occurs while a sequence item is being executed.
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
     onError: (callback, context, args...) ->
         if typeof callback is "function"
             @_errorCallback = (error, data, index) ->
                 return callback.apply(context, [error, data, index].concat(args))
         return @
 
-    ###*
-    * This method adds a callback that will be executed after all functions have returned.
-    * @method done
-    * @param callback {Function}
-    * A function (without parameters).
-    * @param context {Object}
-    * @param args... {Function}
-    * Arguments to be passed to the callback function.
-    * @return This istance. {Sequence}
-    * @chainable
-    *###
+    # This method adds a callback that will be executed after all sequence items are done (but after the `endCallback`).
+    # If the sequence is already done the callback will be executed right away.
+    # In addition of the optional `args` that are passed to the callback the result of the previous sequence item will be passed as well.
+    # So the previous return value is accessible by the last argument of the callback's arguments.
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
     done: (callback, context, args...) ->
         if typeof callback is "function"
             self = @
@@ -336,20 +302,18 @@ class JSUtils.Sequence
 
     then: @::done
 
-    ###*
-    * This method returns the progress of the Sequence in [0,1].
-    * @method getProgress
-    * @return progress {Number}
-    *###
+    # This method returns the progress of the sequence in [0,1].
+    # @return [Number] progress
     progress: () ->
         return @idx / @data.length
 
-    ###*
-    * @method while
-    * @return {Sequence}
-    * @chainable
-    *###
-    while: (startFunc, endFunc, context, args) ->
-        @onStart startFunc, context, args
-        @onEnd endFunc, context, args
+    # This method is a shortcut for calling `onStart()` (see {JSUtils.Sequence#onStart}) and `onEnd()` (see {JSUtils.Sequence#onEnd}).
+    # @param startFunc [Function] The callback to be executed before the sequence starts.
+    # @param endFunc [Function] The callback to be executed after the sequence is done.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
+    while: (startFunc, endFunc, context, args...) ->
+        @onStart(startFunc, context, args...)
+        @onEnd(endFunc, context, args...)
         return @

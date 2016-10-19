@@ -39,7 +39,7 @@
       <div class='docstring'>
   <p>A class that starts executing functions - called &quot;threads&quot; - (pretty much) simultaneously and is done iff. all threads are done.
 Each function can be both: synchronous or asynchronous.
-Each asynchronous function MUST return an object that implements a <code>done()</code> method.
+Each asynchronous function MUST return an object that implements a <code>done()</code> method in order to be waited on.
 This is due to jQuery&#39;s done().
 This <code>done()</code> method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
 If parameters are to be passed to the callback, take care of it yourself (closuring).</p>
@@ -86,7 +86,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     <span class='signature'>
       <a href='#forArray-static'>
         .
-(Barrier)
+(JSUtils.Barrier)
 <b>forArray</b><span>(array, callback, start = true)</span>
       </a>
     </span>
@@ -101,7 +101,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     <span class='signature'>
       <a href='#start-dynamic'>
         #
-(Barrier)
+(JSUtils.Barrier)
 <b>start</b><span>(newData)</span>
       </a>
     </span>
@@ -111,9 +111,45 @@ If parameters are to be passed to the callback, take care of it yourself (closur
   </li>
   <li>
     <span class='signature'>
+      <a href='#stop-dynamic'>
+        #
+(JSUtils.Barrier)
+<b>stop</b><span>(execCallbacks = true)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This method stops more &quot;thread&quot; from being started. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#interrupt-dynamic'>
+        #
+(JSUtils.Barrier)
+<b>interrupt</b><span>()</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This method stops more &quot;thread&quot; from being started. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#resume-dynamic'>
+        #
+(JSUtils.Barrier)
+<b>resume</b><span>()</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This method resumes the barrier meaning more &quot;thread&quot; can be started. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
       <a href='#_invokeNextFunction-dynamic'>
         #
-(Barrier)
+(JSUtils.Barrier)
 <b>_invokeNextFunction</b><span>(data, idx)</span>
       </a>
     </span>
@@ -139,7 +175,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     <span class='signature'>
       <a href='#done-dynamic'>
         #
-(Barrier)
+(JSUtils.Barrier)
 <b>done</b><span>(callback, context, args...)</span>
       </a>
     </span>
@@ -163,7 +199,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     <span class='signature'>
       <a href='#_execDoneCallbacks-dynamic'>
         #
-(Barrier)
+(JSUtils.Barrier)
 <b>_execDoneCallbacks</b><span>()</span>
       </a>
     </span>
@@ -176,7 +212,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     <span class='signature'>
       <a href='#while-dynamic'>
         #
-(Barrier)
+(JSUtils.Barrier)
 <b>while</b><span>(startCallback, endCallback, context)</span>
       </a>
     </span>
@@ -185,56 +221,20 @@ If parameters are to be passed to the callback, take care of it yourself (closur
       This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed). 
     </span>
   </li>
-  <li>
-    <span class='signature'>
-      <a href='#stop-dynamic'>
-        #
-(Barrier)
-<b>stop</b><span>(execCallbacks = true)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method stops more &quot;thread&quot; from being started. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#interrupt-dynamic'>
-        #
-(Barrier)
-<b>interrupt</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method stops more &quot;thread&quot; from being started. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#resume-dynamic'>
-        #
-(Barrier)
-<b>resume</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method resumes the barrier meaning more &quot;thread&quot; can be started. 
-    </span>
-  </li>
 </ul>
       <h2>Class Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='forArray-static'>
       .
-(Barrier)
+(JSUtils.Barrier)
 <b>forArray</b><span>(array, callback, start = true)</span>
       <br>
     </p>
     <div class='docstring'>
   <p>This method can be used to define multiple &quot;threads&quot; doing the same thing with different data (which is based on the array).
 That means the callback is called on every element of the given array.
-Its result is accessible in the callback to <code>done()</code> (@see <a href='../../class/JSUtils/Barrier.html#done-dynamic'>JSUtils.Barrier#done</a>).</p>
+Its result is accessible in the callback to <code>done()</code> (see <a href='../../class/JSUtils/Barrier.html#done-dynamic'>JSUtils.Barrier#done</a>).</p>
   <div class='examples'>
     <h3>Examples:</h3>
     <h4>
@@ -286,7 +286,7 @@ barrier = JSUtils.Barrier
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>The barrier. </span>
@@ -300,16 +300,11 @@ barrier = JSUtils.Barrier
   <div class='method_details'>
     <p class='signature' id='constructor-dynamic'>
       #
-(Barrier)
+(JSUtils.Barrier)
 <b>constructor</b><span>(data, start = true)</span>
       <br>
     </p>
-    <div class='docstring'>
-  <p>&#39;func&#39;   (or the 1st array element) is the function being executed.
-      &#39;scope&#39;  (or the 2nd element) is an object that serves as <code>this</code> in &#39;func&#39;.
-      &#39;params&#39; (or the 3rd element) is an array of parameters being passed to &#39;func&#39;.</p>
-</div>
-<div class='tags'>
+    <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
@@ -320,7 +315,7 @@ barrier = JSUtils.Barrier
         )
       </span>
       &mdash;
-      <span class='desc'>Each element of <code>data</code> is either an object like <code>{.func, .scope, .params}</code> or an array with the same values (see the example). Each element looks like: </span>
+      <span class='desc'>Each element of <code>data</code> is either an object like <code>{.func, .scope, .params}</code> or an array with the same values (see the example). Each element looks like: <code>func</code> (or the 1st array element) is the function being executed. <code>scope</code> (or the 2nd element) is an object that serves as <code>this</code> in &#39;func&#39;. <code>params</code> (or the 3rd element) is an array of parameters being passed to &#39;func&#39;. </span>
     </li>
     <li>
       <span class='name'>start</span>
@@ -338,7 +333,7 @@ barrier = JSUtils.Barrier
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>An instance of <code>JSUtils.Barrier</code> </span>
@@ -352,7 +347,7 @@ barrier = JSUtils.Barrier
   <div class='method_details'>
     <p class='signature' id='start-dynamic'>
       #
-(Barrier)
+(JSUtils.Barrier)
 <b>start</b><span>(newData)</span>
       <br>
     </p>
@@ -378,7 +373,97 @@ barrier = JSUtils.Barrier
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='stop-dynamic'>
+      #
+(JSUtils.Barrier)
+<b>stop</b><span>(execCallbacks = true)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method stops more &quot;thread&quot; from being started.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>execCallbacks</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to execute previously added callbacks. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='interrupt-dynamic'>
+      #
+(JSUtils.Barrier)
+<b>interrupt</b><span>()</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method stops more &quot;thread&quot; from being started.
+Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='resume-dynamic'>
+      #
+(JSUtils.Barrier)
+<b>resume</b><span>()</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <div class='note todo'>
+    <strong>TODO:</strong>
+    this probably won&#39;t work... 
+  </div>
+  <p>This method resumes the barrier meaning more &quot;thread&quot; can be started.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>This instance. </span>
@@ -389,7 +474,7 @@ barrier = JSUtils.Barrier
   <div class='method_details'>
     <p class='signature' id='_invokeNextFunction-dynamic'>
       #
-(Barrier)
+(JSUtils.Barrier)
 <b>_invokeNextFunction</b><span>(data, idx)</span>
       <span class='note private'>Private</span>
       <br>
@@ -416,7 +501,7 @@ barrier = JSUtils.Barrier
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>This instance. </span>
@@ -441,7 +526,7 @@ barrier = JSUtils.Barrier
   <div class='method_details'>
     <p class='signature' id='done-dynamic'>
       #
-(Barrier)
+(JSUtils.Barrier)
 <b>done</b><span>(callback, context, args...)</span>
       <br>
     </p>
@@ -490,7 +575,7 @@ So the callback gets <code>arg1, ... , argN, resultOfThread1, ... , resultOfThre
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>This instance. </span>
@@ -525,7 +610,7 @@ So the callback gets <code>arg1, ... , argN, resultOfThread1, ... , resultOfThre
   <div class='method_details'>
     <p class='signature' id='_execDoneCallbacks-dynamic'>
       #
-(Barrier)
+(JSUtils.Barrier)
 <b>_execDoneCallbacks</b><span>()</span>
       <span class='note private'>Private</span>
       <br>
@@ -541,7 +626,7 @@ No callback receives any parameters.</p>
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>This instance. </span>
@@ -552,7 +637,7 @@ No callback receives any parameters.</p>
   <div class='method_details'>
     <p class='signature' id='while-dynamic'>
       #
-(Barrier)
+(JSUtils.Barrier)
 <b>while</b><span>(startCallback, endCallback, context)</span>
       <span class='note private'>Private</span>
       <br>
@@ -599,97 +684,7 @@ No callback receives any parameters.</p>
     <li>
       <span class='type'></span>
       (
-        <tt>Barrier</tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='stop-dynamic'>
-      #
-(Barrier)
-<b>stop</b><span>(execCallbacks = true)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method stops more &quot;thread&quot; from being started.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>execCallbacks</span>
-      <span class='type'>
-        (
-          <tt>Boolean</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Optional. Whether to execute previously added callbacks. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt>Barrier</tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='interrupt-dynamic'>
-      #
-(Barrier)
-<b>interrupt</b><span>()</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method stops more &quot;thread&quot; from being started.
-Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
-</div>
-<div class='tags'>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt>Barrier</tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='resume-dynamic'>
-      #
-(Barrier)
-<b>resume</b><span>()</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <div class='note todo'>
-    <strong>TODO:</strong>
-    this probably won&#39;t work... 
-  </div>
-  <p>This method resumes the barrier meaning more &quot;thread&quot; can be started.</p>
-</div>
-<div class='tags'>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt>Barrier</tt>
+        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
       )
       &mdash;
       <span class='desc'>This instance. </span>

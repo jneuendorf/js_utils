@@ -33,7 +33,7 @@ elif [[ "$1" == "test" ]]; then
     done
     cat $FILES_TO_CAT | coffee -sc > js_utils.test.js
     exit 0
-elif [[ "$1" == "doc" ]]; then
+elif [[ "$1" == "docs" ]]; then
     # options are in .codoopts file
     node_modules/.bin/codo
     exit 0
@@ -54,7 +54,7 @@ elif [[ "$1" == "codoopts" ]]; then
 --private
 --quiet
 --extension  coffee
---output     ./doc
+--output     ./docs
 $files
 -
 LICENSE" > .codoopts

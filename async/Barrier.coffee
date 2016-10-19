@@ -1,6 +1,6 @@
 # A class that starts executing functions - called "threads" - (pretty much) simultaneously and is done iff. all threads are done.
 # Each function can be both: synchronous or asynchronous.
-# Each asynchronous function MUST return an object that implements a `done()` method.
+# Each asynchronous function MUST return an object that implements a `done()` method in order to be waited on.
 # This is due to jQuery's done().
 # This `done()` method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
 # If parameters are to be passed to the callback, take care of it yourself (closuring).
@@ -27,11 +27,11 @@ class JSUtils.Barrier
 
     # This method can be used to define multiple "threads" doing the same thing with different data (which is based on the array).
     # That means the callback is called on every element of the given array.
-    # Its result is accessible in the callback to `done()` (@see {JSUtils.Barrier#done}).
+    # Its result is accessible in the callback to `done()` (see {JSUtils.Barrier#done}).
     # @param array [Array] The array will be used to construct the data for the barrier.
     # @param callback [Function] The function `(element, index) ->` that will be called on each array element.
     # @param start [Boolean] Optional. Whether to start the barrier immediately.
-    # @return [Barrier] The barrier.
+    # @return [JSUtils.Barrier] The barrier.
     # @example
     #   urls = ["localhost/books.json", "localhost/authors/2"]
     #   barrier = JSUtils.Barrier
@@ -48,17 +48,18 @@ class JSUtils.Barrier
             }
         return new JSUtils.Barrier(data, start)
 
+
     ################################################################################################
     # CONSTRUCTOR
 
     # @param data [Array of Object]
     #   Each element of `data` is either an object like `{.func, .scope, .params}` or an array with the same values (see the example).
     #   Each element looks like:
-    #       'func'   (or the 1st array element) is the function being executed.
-    #       'scope'  (or the 2nd element) is an object that serves as `this` in 'func'.
-    #       'params' (or the 3rd element) is an array of parameters being passed to 'func'.
+    #   `func` (or the 1st array element) is the function being executed.
+    #   `scope` (or the 2nd element) is an object that serves as `this` in 'func'.
+    #   `params` (or the 3rd element) is an array of parameters being passed to 'func'.
     # @param start [Boolean] Optional. Whether to start the barrier immediately.
-    # @return [Barrier] An instance of `JSUtils.Barrier`
+    # @return [JSUtils.Barrier] An instance of `JSUtils.Barrier`
     constructor: (data, start = true) ->
         @data               = data
         @remainingThreads   = data.length
@@ -75,9 +76,8 @@ class JSUtils.Barrier
             @start()
 
     # This method starts the Barrier in case it has been created with `false` as constructor parameter.
-    # @param [Array] newData
-    #   Optional. If an array is given it will replace the possibly previously set data.
-    # @return [Barrier] This instance.
+    # @param newData [Array] Optional. If an array is given it will replace the possibly previously set data.
+    # @return [JSUtils.Barrier] This instance.
     start: (newData) ->
         if newData instanceof Array
             @data = newData
@@ -90,10 +90,36 @@ class JSUtils.Barrier
             @_funcDone()
         return @
 
+    # This method stops more "thread" from being started.
+    # @param execCallbacks [Boolean] Optional. Whether to execute previously added callbacks.
+    # @return [JSUtils.Barrier] This instance.
+    stop: (execCallbacks = true) ->
+        @_isStopped = true
+        sequence.stop(execCallbacks) for sequence in @_sequences
+        if execCallbacks
+            @_endCallback?()
+            @_execDoneCallbacks()
+        return @
+
+    # This method stops more "thread" from being started.
+    # Differently than `stop()` callbacks won't be executed.
+    # @return [JSUtils.Barrier] This instance.
+    interrupt: () ->
+        return @stop(false)
+
+    # This method resumes the barrier meaning more "thread" can be started.
+    # @return [JSUtils.Barrier] This instance.
+    # @todo this probably won't work...
+    resume: () ->
+        @_isStopped = false
+        # TODO: pass correct params here (prev res....)
+        @_invokeNextFunction()
+        return @
+
     # This method invokes the next function in the list.
     # @private
     # @param data [Array] Function data (same structure as in the constructor)
-    # @return [Barrier] This instance.
+    # @return [JSUtils.Barrier] This instance.
     _invokeNextFunction: (data, idx) ->
         if @_isStopped
             return @
@@ -144,7 +170,7 @@ class JSUtils.Barrier
     # @param callback [Function] The callback invoked with the following parameters.
     # @param context [Object] Optional. This object serves as context (`this`) for the callback.
     # @param args... [Mixed...] Optional. Arguments to be passed to the callback function.
-    # @return [Barrier] This instance.
+    # @return [JSUtils.Barrier] This instance.
     done: (callback, context, args...) ->
         if typeof callback is "function"
             # not done => push to queue
@@ -167,7 +193,7 @@ class JSUtils.Barrier
     # It will then start executing all callbacks that previously have been added via `done()` (in the order they were added).
     # No callback receives any parameters.
     # @private
-    # @return [Barrier] This instance.
+    # @return [JSUtils.Barrier] This instance.
     _execDoneCallbacks: () ->
         cb() for cb in @_doneCallbacks
         return @
@@ -177,7 +203,7 @@ class JSUtils.Barrier
     # @param startCallback [Function] The callback being executed before the barrier starts.
     # @param endCallback [Function] The callback being executed after the barrier starts.
     # @param context [Object] Optional. The `this` context for both callbacks.
-    # @return [Barrier] This instance.
+    # @return [JSUtils.Barrier] This instance.
     while: (startCallback, endCallback, context) ->
         if context?
             @_startCallback = () ->
@@ -187,30 +213,4 @@ class JSUtils.Barrier
         else
             @_startCallback = startCallback
             @_endCallback   = endCallback
-        return @
-
-    # This method stops more "thread" from being started.
-    # @param execCallbacks [Boolean] Optional. Whether to execute previously added callbacks.
-    # @return [Barrier] This instance.
-    stop: (execCallbacks = true) ->
-        @_isStopped = true
-        sequence.stop(execCallbacks) for sequence in @_sequences
-        if execCallbacks
-            @_endCallback?()
-            @_execDoneCallbacks()
-        return @
-
-    # This method stops more "thread" from being started.
-    # Differently than `stop()` callbacks won't be executed.
-    # @return [Barrier] This instance.
-    interrupt: () ->
-        return @stop(false)
-
-    # This method resumes the barrier meaning more "thread" can be started.
-    # @return [Barrier] This instance.
-    # @todo this probably won't work...
-    resume: () ->
-        @_isStopped = false
-        # TODO: pass correct params here (prev res....)
-        @_invokeNextFunction()
         return @
