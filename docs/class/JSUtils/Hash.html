@@ -37,13 +37,10 @@
       </table>
       <h2>Overview</h2>
       <div class='docstring'>
-  <p>*</p><ul>
-<li>This is an implementation of a dictionary/hash that does not convert its keys into Strings. Keys can therefore actually by anything! :)</li>
-<li>@class Configurator</li>
-<li>@constructor
-*</li>
-</ul>
-
+  <p>This is an implementation of a dictionary/hash that does not convert its keys into Strings.
+Keys can therefore actually by anything!
+This class is not built for performance but for easy usage (without hashing anything).
+o the lookup is <code>O(n)</code> since the keys are stored in an array.</p>
 </div>
 <div class='tags'>
 </div>
@@ -53,15 +50,12 @@
     <span class='signature'>
       <a href='#fromObject-static'>
         .
-(void)
+(JSUtils.Hash)
 <b>fromObject</b><span>(obj)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Creates a new Hash from a given JavaScript object.
-
-
+      Creates a new Hash from a given JavaScript object. 
     </span>
   </li>
 </ul>
@@ -71,215 +65,197 @@ Creates a new Hash from a given JavaScript object.
     <span class='signature'>
       <a href='#toObject-dynamic'>
         #
-(void)
-<b>toObject</b><span>()</span>
+(Object)
+<b>toObject</b><span>(toString = function(key) {
+  return &quot;&quot; + key;
+})</span>
       </a>
     </span>
     <span class='desc'>
+      Converts the hash into a native JavaScript Object. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#clone-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>clone</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Clones the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#invert-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>invert</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Inverts the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_findKeyIdx-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>_findKeyIdx</b><span>(key)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-Return the index of the given key
-@method _findKeyIdx
-@param key {mixed}
-@return {Hash} This instance.
-
-
+      Return the index of the given key (or <code>-1</code>). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#put-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>put</b><span>(key, val)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Adds a new key-value pair or overwrites an existing one.
-
-
+      Add a new key-value pair or overwrite an existing one. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#get-dynamic'>
         #
-(void)
+(mixed)
 <b>get</b><span>(key)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Returns the value (or null) for the specified key.
-
-
+      Retrieve the value for the specified key. 
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#getAll-dynamic'>
+      <a href='#items-dynamic'>
         #
-(void)
-<b>getAll</b><span>()</span>
+(Array)
+<b>items</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Returns a list of all key-value pairs.
-
-
+      Returns a list of all key-value pairs. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#has-dynamic'>
         #
-(void)
+(Boolean)
 <b>has</b><span>(key)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Indicates whether the Hash has the specified key.
-
-
+      Indicates whether the hash has the specified key. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#hasKey-dynamic'>
         #
-(void)
+(Boolean)
 <b>hasKey</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Hash.html#has-dynamic'>JSUtils.Hash#has</a>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#size-dynamic'>
         #
-(void)
+(Number)
 <b>size</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Returns the number of entries in the Hash.
-
-
+      Returns the number of entries in the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getKeys-dynamic'>
         #
-(void)
+(Array)
 <b>getKeys</b><span>(clone = true)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Returns all the keys of the Hash.
-
-
+      Returns all keys of the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getValues-dynamic'>
         #
-(void)
+(Array)
 <b>getValues</b><span>(clone = true)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Returns all the values of the Hash.
-
-
+      Returns all values of the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getKeysForValue-dynamic'>
         #
-(void)
-<b>getKeysForValue</b><span>(value)</span>
+(Array)
+<b>getKeysForValue</b><span>(value, equality = function(a, b) {
+  return a === b;
+})</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Returns a list of keys that have val (or anything equal as specified in &#39;eqFunc&#39;) as value.
-
-
+      Returns a list of keys that have val (or anything equal as specified in &#39;eqFunc&#39;) as value. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#empty-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>empty</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Remove all entries from the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#remove-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>remove</b><span>(key)</span>
       </a>
     </span>
     <span class='desc'>
+      Remove the entry with key <code>key</code> from the hash. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#each-dynamic'>
         #
-(void)
+(JSUtils.Hash)
 <b>each</b><span>(callback, order)</span>
       </a>
     </span>
     <span class='desc'>
+      Iterates all entries in the hash. 
     </span>
   </li>
 </ul>
@@ -288,21 +264,38 @@ Returns a list of keys that have val (or anything equal as specified in &#39;eqF
   <div class='method_details'>
     <p class='signature' id='fromObject-static'>
       .
-(void)
+(JSUtils.Hash)
 <b>fromObject</b><span>(obj)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Creates a new Hash from a given JavaScript object.</li>
-<li>@static</li>
-<li>@method fromObject</li>
-<li>@param object {Object}
-*</li>
-</ul>
-
+  <p>Creates a new Hash from a given JavaScript object.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>object</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The native object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
 </div>
@@ -311,13 +304,58 @@ Returns a list of keys that have val (or anything equal as specified in &#39;eqF
   <div class='method_details'>
     <p class='signature' id='constructor-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>constructor</b><span>(obj, defaultVal = null, equality = function(a, b) {
   return a === b;
 })</span>
       <br>
     </p>
-    
+    <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>obj</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. A JavaScript Object whose values to use to initialize the hash. </span>
+    </li>
+    <li>
+      <span class='name'>defaultVal</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This value will be returned by <a href='../../class/JSUtils/Hash.html#get-dynamic'>JSUtils.Hash#get</a> if the keys was not found. If this parameter is a function it will be called with the key that&#39;s currently looked up. </span>
+    </li>
+    <li>
+      <span class='name'>equality</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This parameter defines what keys are considered equal. Defaults to <code>===</code>. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
       <h2>Instance Method Details</h2>
@@ -325,244 +363,568 @@ Returns a list of keys that have val (or anything equal as specified in &#39;eqF
   <div class='method_details'>
     <p class='signature' id='toObject-dynamic'>
       #
-(void)
-<b>toObject</b><span>()</span>
+(Object)
+<b>toObject</b><span>(toString = function(key) {
+  return &quot;&quot; + key;
+})</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Converts the hash into a native JavaScript Object.
+Note that the keys will be stringified.
+You can use the optional parameter for customizing the stringification.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>toString</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This function defines how to convert a key into a string. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Object</tt>
+      )
+      &mdash;
+      <span class='desc'>A native JavaScript Object (whose keys are stringified). </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='clone-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>clone</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Clones the hash.
+Note that neither keys nor values are deeply cloned:
+I.e. cloning <code>{[1] -&gt; 1}</code> and pushing an element to the key would modify both hashes.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The clone. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='invert-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>invert</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Inverts the hash.
+The inverted hash has the keys of the original hash as values and vice versa.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The inverted hash. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_findKeyIdx-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>_findKeyIdx</b><span>(key)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Return the index of the given key</li>
-<li>@method _findKeyIdx</li>
-<li>@param key {mixed}</li>
-<li>@return {Hash} This instance.</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>Return the index of the given key (or <code>-1</code>).</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The key to find. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='put-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>put</b><span>(key, val)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Adds a new key-value pair or overwrites an existing one.</li>
-<li>@method put</li>
-<li>@param key {mixed}</li>
-<li>@param val {mixed}</li>
-<li>@return {Hash} This instance.</li>
-<li>@chainable
-*</li>
-</ul>
-
+  <p>Add a new key-value pair or overwrite an existing one.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The key of the entry to be created. </span>
+    </li>
+    <li>
+      <span class='name'>val</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The value of the entry to be created. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='get-dynamic'>
       #
-(void)
+(mixed)
 <b>get</b><span>(key)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Returns the value (or null) for the specified key.</li>
-<li>@method get</li>
-<li>@param key {mixed}</li>
-<li>@return {mixed}
-*</li>
-</ul>
-
+  <p>Retrieve the value for the specified key.
+If not found <code>defaultVal</code> (defined in the constructor) will be returned.
+If <code>defaultVal</code> is a function the return value of it - called with the key parameter - will be returned instaed.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The key to look up. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      <tt>mixed</tt>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='getAll-dynamic'>
+    <p class='signature' id='items-dynamic'>
       #
-(void)
-<b>getAll</b><span>()</span>
+(Array)
+<b>items</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Returns a list of all key-value pairs. Each pair is an Array with the 1st element being the key, the 2nd being the value.</li>
-<li>@method getAll</li>
-<li>@return {Array} Key-value pairs.
-*</li>
-</ul>
-
+  <p>Returns a list of all key-value pairs.
+Each pair is an Array with the 1st element being the key, the 2nd being the value.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>Key-value pairs. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='has-dynamic'>
       #
-(void)
+(Boolean)
 <b>has</b><span>(key)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Indicates whether the Hash has the specified key.</li>
-<li>@method hasKey</li>
-<li>@param key {mixed}</li>
-<li>@return {Boolean}
-*</li>
-</ul>
-
+  <p>Indicates whether the hash has the specified key.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The key to check. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Boolean</tt>
+      )
+      &mdash;
+      <span class='desc'>If the hash has an entry with the specified key. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='hasKey-dynamic'>
       #
-(void)
+(Boolean)
 <b>hasKey</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Hash.html#has-dynamic'>JSUtils.Hash#has</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The key to check. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Boolean</tt>
+      )
+      &mdash;
+      <span class='desc'>If the hash has an entry with the specified key. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='size-dynamic'>
       #
-(void)
+(Number)
 <b>size</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Returns the number of entries in the Hash.</li>
-<li>@method size</li>
-<li>@return {Integer}
-*</li>
-</ul>
-
+  <p>Returns the number of entries in the hash.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>The number of entries. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getKeys-dynamic'>
       #
-(void)
+(Array)
 <b>getKeys</b><span>(clone = true)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Returns all the keys of the Hash.</li>
-<li>@method getKeys()</li>
-<li>@return {Array}
-*</li>
-</ul>
-
+  <p>Returns all keys of the hash.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>clone</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Indicates whether to clone the internal <code>keys</code> array or not. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The keys of the hash. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getValues-dynamic'>
       #
-(void)
+(Array)
 <b>getValues</b><span>(clone = true)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Returns all the values of the Hash.</li>
-<li>@method getValues()</li>
-<li>@return {Array}
-*</li>
-</ul>
-
+  <p>Returns all values of the hash.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>clone</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Indicates whether to clone the internal <code>values</code> array or not. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The values of the hash. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getKeysForValue-dynamic'>
       #
-(void)
-<b>getKeysForValue</b><span>(value)</span>
+(Array)
+<b>getKeysForValue</b><span>(value, equality = function(a, b) {
+  return a === b;
+})</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Returns a list of keys that have val (or anything equal as specified in &#39;eqFunc&#39;) as value.</li>
-<li>@method getKeysForValue</li>
-<li>@param val {mixed}</li>
-<li>@return {mixed}
-*</li>
-</ul>
-
+  <p>Returns a list of keys that have val (or anything equal as specified in &#39;eqFunc&#39;) as value.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>value</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The value to look for. </span>
+    </li>
+    <li>
+      <span class='name'>equal</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This function defines values are considered equal. Defaults to <code>===</code>. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>A list of keys that map to the <code>value</code> parameter. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='empty-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>empty</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Remove all entries from the hash.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='remove-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>remove</b><span>(key)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Remove the entry with key <code>key</code> from the hash.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The key of the entry that should be removed. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='each-dynamic'>
       #
-(void)
+(JSUtils.Hash)
 <b>each</b><span>(callback, order)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Iterates all entries in the hash.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback will be called for every entry in the hash. The callback receives has the following signature: <code>(mixed key, mixed value, Number iterationIndex) -&gt;</code>. If it returns <code>false</code> the iteration will be stopped. </span>
+    </li>
+    <li>
+      <span class='name'>order</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This compare function specifies the order of the keys for the iteration. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Hash.html'>JSUtils.Hash</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
     </div>
