@@ -134,6 +134,7 @@ All properties of that <code>data</code> object that are made accesible on the n
 <b>_cacheDescendants</b><span>()</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
       Cache all descendants of this node. 
     </span>
@@ -146,6 +147,7 @@ All properties of that <code>data</code> object that are made accesible on the n
 <b>_adjustLevels</b><span>(startLevel = 0)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
       Set the correct level for all nodes in the tree. 
     </span>
@@ -844,7 +846,8 @@ If you use <code>children</code> anyway you can also use <code>JSUtils.Tree.new.
       <br>
     </p>
     <div class='docstring'>
-  <p>Each <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> instance has the following read-only properties: <code>depth</code> same as <code>getDepth()</code> <code>size</code> same as <code>getSize()</code> <code>level</code> same as <code>getLevel()</code> <code>root</code> same as <code>getRoot()</code></p>
+  <p>Each <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> instance has the following read-only properties: <code>depth</code> same as <code>getDepth()</code> <code>size</code> same as <code>getSize()</code> <code>level</code> same as <code>getLevel()</code> <code>root</code> same as <code>getRoot()</code>
+Additionally, all properties of the data object are made accesible on the node directly.</p>
 </div>
 <div class='tags'>
   <div class='overloads'>
@@ -968,6 +971,7 @@ If you use <code>children</code> anyway you can also use <code>JSUtils.Tree.new.
       #
 (JSUtils.Tree)
 <b>_cacheDescendants</b><span>()</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
@@ -992,6 +996,7 @@ If you use <code>children</code> anyway you can also use <code>JSUtils.Tree.new.
       #
 (JSUtils.Tree)
 <b>_adjustLevels</b><span>(startLevel = 0)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>

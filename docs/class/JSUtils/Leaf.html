@@ -41,6 +41,14 @@
           </td>
         </tr>
       </table>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  <p>This class is like <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> but with more constraints.
+The constraints are enforced by throwing errors on some inherited methods.
+E.g. there must be no children.</p>
+</div>
+<div class='tags'>
+</div>
       <h2>Class Method Summary</h2>
       <ul class='summary'>
   <li>
@@ -61,113 +69,121 @@
     <span class='signature'>
       <a href='#_cacheDescendants-dynamic'>
         #
-(void)
+(JSUtils.Leaf)
 <b>_cacheDescendants</b><span>()</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      ################################################################################################ 
+      This method does nothing since there are no descendants. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#findNodes-dynamic'>
         #
-(void)
+(null)
 <b>findNodes</b><span>(param)</span>
       </a>
     </span>
     <span class='desc'>
-      ################################################################################################ 
+      See <a href='../../class/JSUtils/Tree.html#findNodes-dynamic'>JSUtils.Tree#findNodes</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getDepth-dynamic'>
         #
-(void)
+(Number)
 <b>getDepth</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#getDepth-dynamic'>JSUtils.Tree#getDepth</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getSize-dynamic'>
         #
-(void)
+(Number)
 <b>getSize</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#getSize-dynamic'>JSUtils.Tree#getSize</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getLevel-dynamic'>
         #
-(void)
+(Number)
 <b>getLevel</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#getLevel-dynamic'>JSUtils.Tree#getLevel</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getLeaves-dynamic'>
         #
-(void)
+(Number)
 <b>getLeaves</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#getLeaves-dynamic'>JSUtils.Tree#getLeaves</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#isLeaf-dynamic'>
         #
-(void)
+(Boolean)
 <b>isLeaf</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#isLeaf-dynamic'>JSUtils.Tree#isLeaf</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#serialize-dynamic'>
         #
-(void)
+(Object)
 <b>serialize</b><span>(format)</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#deserialize-dynamic'>JSUtils.Tree#deserialize</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#deserialize-dynamic'>
         #
-(void)
+(JSUtils.Leaf)
 <b>deserialize</b><span>(data)</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#deserialize-dynamic'>JSUtils.Tree#deserialize</a> for details. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getChildren-dynamic'>
         #
-(void)
+(Array)
 <b>getChildren</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      ################################################################################################ 
+      See <a href='../../class/JSUtils/Tree.html#getChildren-dynamic'>JSUtils.Tree#getChildren</a> for details. 
     </span>
   </li>
   <li>
@@ -179,7 +195,7 @@
       </a>
     </span>
     <span class='desc'>
-      ################################################################################################ 
+      Children can&#39;t be added to leaves. 
     </span>
   </li>
   <li>
@@ -191,6 +207,7 @@
       </a>
     </span>
     <span class='desc'>
+      Children can&#39;t be added to leaves. 
     </span>
   </li>
   <li>
@@ -202,6 +219,7 @@
       </a>
     </span>
     <span class='desc'>
+      Children can&#39;t be added to leaves. 
     </span>
   </li>
   <li>
@@ -213,28 +231,19 @@
       </a>
     </span>
     <span class='desc'>
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#removeChildAt-dynamic'>
-        #
-(void)
-<b>removeChildAt</b><span>(idx)</span>
-      </a>
-    </span>
-    <span class='desc'>
+      Children can&#39;t be removed from leaves. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#adjustLevels-dynamic'>
         #
-(void)
+(JSUtils.Leaf)
 <b>adjustLevels</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      See <a href='../../class/JSUtils/Tree.html#getChildren-dynamic'>JSUtils.Tree#getChildren</a> for details. 
     </span>
   </li>
 </ul>
@@ -313,10 +322,22 @@
       <br>
     </p>
     <div class='docstring'>
-  <p>#################################################################################################</p><p>#################################################################################################
-CONSTRUCTOR</p>
+  <p>See <a href='../../class/JSUtils/Tree.html#constructor-dynamic'>JSUtils.Tree#constructor</a> for details.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A tree node or data object. </span>
+    </li>
+  </ul>
 </div>
   </div>
 </div>
@@ -325,106 +346,268 @@ CONSTRUCTOR</p>
   <div class='method_details'>
     <p class='signature' id='_cacheDescendants-dynamic'>
       #
-(void)
+(JSUtils.Leaf)
 <b>_cacheDescendants</b><span>()</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>#################################################################################################
-INTERNAL</p>
+  <p>This method does nothing since there are no descendants.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='findNodes-dynamic'>
       #
-(void)
+(null)
 <b>findNodes</b><span>(param)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>#################################################################################################
-INFORMATION ABOUT THE TREE</p>
+  <p>See <a href='../../class/JSUtils/Tree.html#findNodes-dynamic'>JSUtils.Tree#findNodes</a> for details. Always `nulin this case.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>null</tt>
+      )
+      &mdash;
+      <span class='desc'>null. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getDepth-dynamic'>
       #
-(void)
+(Number)
 <b>getDepth</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#getDepth-dynamic'>JSUtils.Tree#getDepth</a> for details. Always <code>0</code> in this case.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>0. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getSize-dynamic'>
       #
-(void)
+(Number)
 <b>getSize</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#getSize-dynamic'>JSUtils.Tree#getSize</a> for details. Always <code>0</code> in this case.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>0. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getLevel-dynamic'>
       #
-(void)
+(Number)
 <b>getLevel</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#getLevel-dynamic'>JSUtils.Tree#getLevel</a> for details.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>The level. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getLeaves-dynamic'>
       #
-(void)
+(Number)
 <b>getLeaves</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#getLeaves-dynamic'>JSUtils.Tree#getLeaves</a> for details. Always <code>[]</code> in this case.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>The leaves. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='isLeaf-dynamic'>
       #
-(void)
+(Boolean)
 <b>isLeaf</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#isLeaf-dynamic'>JSUtils.Tree#isLeaf</a> for details. Always <code>true</code> in this case.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Boolean</tt>
+      )
+      &mdash;
+      <span class='desc'><code>true</code>. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='serialize-dynamic'>
       #
-(void)
+(Object)
 <b>serialize</b><span>(format)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#deserialize-dynamic'>JSUtils.Tree#deserialize</a> for details.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>format</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The postprocessing function. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Object</tt>
+      )
+      &mdash;
+      <span class='desc'>The serialized tree. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='deserialize-dynamic'>
       #
-(void)
+(JSUtils.Leaf)
 <b>deserialize</b><span>(data)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#deserialize-dynamic'>JSUtils.Tree#deserialize</a> for details.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>data</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The data object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getChildren-dynamic'>
       #
-(void)
+(Array)
 <b>getChildren</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>#################################################################################################
-NODE RELATIONS</p>
+  <p>See <a href='../../class/JSUtils/Tree.html#getChildren-dynamic'>JSUtils.Tree#getChildren</a> for details. Always <code>[]</code> in this case.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'><code>[]</code>. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
@@ -435,10 +618,20 @@ NODE RELATIONS</p>
       <br>
     </p>
     <div class='docstring'>
-  <p>#################################################################################################
-MODIFYING THE TREE</p>
+  <p>Children can&#39;t be added to leaves.</p>
 </div>
 <div class='tags'>
+  <h3>Throws:</h3>
+  <ul class='throw'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Error</tt>
+      )
+      &mdash;
+      <span class='desc'>Cannot add a child to a leaf! </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
@@ -448,7 +641,22 @@ MODIFYING THE TREE</p>
 <b>addChildren</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Children can&#39;t be added to leaves.</p>
+</div>
+<div class='tags'>
+  <h3>Throws:</h3>
+  <ul class='throw'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Error</tt>
+      )
+      &mdash;
+      <span class='desc'>Cannot add children to a leaf! </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='setChildren-dynamic'>
@@ -457,7 +665,22 @@ MODIFYING THE TREE</p>
 <b>setChildren</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Children can&#39;t be added to leaves.</p>
+</div>
+<div class='tags'>
+  <h3>Throws:</h3>
+  <ul class='throw'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Error</tt>
+      )
+      &mdash;
+      <span class='desc'>Cannot set children of a leaf! </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='removeChild-dynamic'>
@@ -466,25 +689,46 @@ MODIFYING THE TREE</p>
 <b>removeChild</b><span>()</span>
       <br>
     </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='removeChildAt-dynamic'>
-      #
-(void)
-<b>removeChildAt</b><span>(idx)</span>
-      <br>
-    </p>
-    
+    <div class='docstring'>
+  <p>Children can&#39;t be removed from leaves.</p>
+</div>
+<div class='tags'>
+  <h3>Throws:</h3>
+  <ul class='throw'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Error</tt>
+      )
+      &mdash;
+      <span class='desc'>Cannot remove children from a leaf! </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='adjustLevels-dynamic'>
       #
-(void)
+(JSUtils.Leaf)
 <b>adjustLevels</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>See <a href='../../class/JSUtils/Tree.html#getChildren-dynamic'>JSUtils.Tree#getChildren</a> for details.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
     </div>

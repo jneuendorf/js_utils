@@ -127,6 +127,7 @@ class JSUtils.Tree
     #   `size` same as `getSize()`
     #   `level` same as `getLevel()`
     #   `root` same as `getRoot()`
+    # Additionally, all properties of the data object are made accesible on the node directly.
     # @overload constructor()
     #   Create a tree node without data.
     #   @param node [JSUtils.Tree] An instance of {JSUtils.Tree}
@@ -202,6 +203,7 @@ class JSUtils.Tree
     # INTERNAL
 
     # Cache all descendants of this node.
+    # @private
     # @return [JSUtils.Tree] This instance.
     _cacheDescendants: () ->
         res = []
@@ -213,6 +215,7 @@ class JSUtils.Tree
         return @
 
     # Set the correct level for all nodes in the tree.
+    # @private
     # @return [JSUtils.Tree] This instance.
     _adjustLevels: (startLevel = 0) ->
         @_cacheDescendants().each (n, l, i) ->
