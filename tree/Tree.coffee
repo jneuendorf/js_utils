@@ -1,9 +1,19 @@
-# __instanceof__ to support Halo.js
-isTree = (obj) ->
-    return obj instanceof JSUtils.Tree or obj?.__instanceof__?(JSUtils.Tree) or false
-
+# This class is an implementation of a tree structure supporting an extended set of traversal and selection methods.
+# Each node has a `data` object that is filled upon instantiation.
+# All properties of that `data` object that are made accesible on the node directly (except if they would collide with class method names).
 class JSUtils.Tree
 
+    # This function checks if an object is an instance of the {JSUtils.Tree} class.
+    # This should be overriden in case you have something like multi inheritance for example.
+    # @param obj [mixed] The object to check for being an instance of {JSUtils.Tree}.
+    # @return [Boolean] If `obj` is an instance of {JSUtils.Tree}
+    @isTree: (obj) ->
+        return obj instanceof @
+
+    # This method creates the default options used when calling {JSUtils.Tree.new}.
+    # @private
+    # @param CLASS {JSUtils.Tree} The tree class (or a subclass).
+    # @return [Object] The default instantiation options.
     @_newOptions: (CLASS) ->
         return {
             getChildren: (nodeData) ->
@@ -15,21 +25,18 @@ class JSUtils.Tree
             adjustLevels: true
         }
 
-    ###*
-    * @method new
-    * @static
-    * @param node {Object}
-    * @param options {Object}
-    * Optional. Any given key will override the default. Here are the keys:
-    * adjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you're doing the aftermath later!!
-    * afterInstantiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
-    * getChildren: Function that specifies how to retrieve the children from the node object.
-    * getParent: Function that specifies how to retrieve the parent from the node object. getChildren is checked 1st so it doesn't make sense to pass getChildren AND getParent!
-    * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
-    *###
+    # @private
+    # @param node [Object]
+    # @param options [Object] Optional. Any given key will override the default. Here are the keys:
+    #   `adjustLevels`: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to `false` if you do it later
+    #   `afterInstantiate`: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
+    #   `getChildren`: Function that specifies how to retrieve the children from the node object.
+    #   `getParent`: Function that specifies how to retrieve the parent from the node object. This is used only if `getChildren` is is not set
+    #   `instantiate`: how to create an instance from the node object. Parameter is the node object.
+    # @return [JSUtils.Tree] The new instance.
     @_new: (node, options) ->
         CLASS = @
-        if not node? or isTree(node)
+        if not node? or CLASS.isTree(node)
             return new CLASS(node)
 
         if node.children? or options.getChildren instanceof Function
@@ -38,22 +45,16 @@ class JSUtils.Tree
         if node.parent? or options.getParent instanceof Function
             return CLASS.new.byParentRef(node, options)
 
-        # if DEBUG
-        #     console.warn "No recursive structure found! Use correct options."
-
         return new CLASS(node, options)
 
-    ###*
-    * @method new.byChildRef
-    * @static
-    * @param node {Object}
-    * @param options {Object}
-    * Optional. Any given key will override the default. Here are the keys:
-    * adjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you're doing the aftermath later!!
-    * afterInstantiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
-    * getChildren: Function that specifies how to retrieve the children from the node object.
-    * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
-    *###
+    # @private
+    # @param node [Object]
+    # @param options [Object] Optional. Any given key will override the default. Here are the keys:
+    #   `adjustLevels`: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to `false` if you do it later
+    #   `afterInstantiate`: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
+    #   `getChildren`: Function that specifies how to retrieve the children from the node object.
+    #   `instantiate`: how to create an instance from the node object. Parameter is the node object.
+    # @return [JSUtils.Tree] The new instance.
     @_newByChildRef: (node, options) ->
         CLASS = @
         defaultOptions = CLASS._newOptions(CLASS)
@@ -75,22 +76,31 @@ class JSUtils.Tree
 
         return tree
 
-    ###*
-    * @method new.byParentRef
-    * @static
-    * @param node {Object}
-    * @param options {Object}
-    * Optional. Any given key will override the default. Here are the keys:
-    * adjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you're doing the aftermath later!!
-    * afterInstantiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
-    * getParent: Function that specifies how to retrieve the parent from the node object.
-    * instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
-    *###
-    # TODO !!!
+    # @private
+    # @param node [Object]
+    # @param options [Object] Optional. Any given key will override the default. Here are the keys:
+    #   `adjustLevels`: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to `false` if you do it later
+    #   `afterInstantiate`: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
+    #   `getParent`: Function that specifies how to retrieve the parent from the node object. This is used only if `getChildren` is is not set
+    #   `instantiate`: how to create an instance from the node object. Parameter is the node object.
+    # @return [JSUtils.Tree] The new instance.
+    # @todo This still needs to be implemented
     @_newByParentRef: (node, getParent) ->
+        # TODO
         tree = new CLASS()
 
-    # init static stuff
+    # This method initializes the `new` class method.
+    # The `new` class method has two properties itself: `byChildRef` and `byParentRef`.
+    # Use that method to construct a new tree from an object with a tree structure.
+    # Usually, the object has a `children` property which is used to create the hierarchy.
+    # If you use `children` anyway you can also use `JSUtils.Tree.new.byChildRef()`.
+    #
+    # @example
+    #   tree = JSUtils.Tree.new(
+    #       {label: "root", children: [
+    #           {...}, ...
+    #       ]}
+    #   )
     @init: () ->
         Object.defineProperty @, "new", {
             get: () ->
@@ -108,16 +118,33 @@ class JSUtils.Tree
 
     @init()
 
-    ##################################################################################################
+
     ##################################################################################################
     # CONSTRUCTOR
-    constructor: (node) ->
-        self = @
 
+    # Each {JSUtils.Tree} instance has the following read-only properties:
+    #   `depth` same as `getDepth()`
+    #   `size` same as `getSize()`
+    #   `level` same as `getLevel()`
+    #   `root` same as `getRoot()`
+    # @overload constructor()
+    #   Create a tree node without data.
+    #   @param node [JSUtils.Tree] An instance of {JSUtils.Tree}
+    #   @return [JSUtils.Tree] The new instance.
+    # @overload constructor(data)
+    #   Create a tree node with `data`.
+    #   @param node [JSUtils.Tree] An instance of {JSUtils.Tree}
+    #   @return [JSUtils.Tree] The new instance.
+    # @overload constructor(treeNode)
+    #   Create a tree node with the same data as `treeNode`.
+    #   @param node [JSUtils.Tree] An instance of {JSUtils.Tree}
+    #   @return [JSUtils.Tree] The new instance.
+    constructor: (node) ->
         @children = []
         @parent = null
         @descendants = []
         @orderMode = "postorder"
+        self = @
 
         if not node?
             @data = {}
@@ -170,8 +197,12 @@ class JSUtils.Tree
                 return @
     }
 
+
     ##################################################################################################
     # INTERNAL
+
+    # Cache all descendants of this node.
+    # @return [JSUtils.Tree] This instance.
     _cacheDescendants: () ->
         res = []
         for child in @children when child?
@@ -181,41 +212,51 @@ class JSUtils.Tree
         @descendants = @children.concat res
         return @
 
+    # Set the correct level for all nodes in the tree.
+    # @return [JSUtils.Tree] This instance.
     _adjustLevels: (startLevel = 0) ->
         @_cacheDescendants().each (n, l, i) ->
             n._level = startLevel + l
             return true
         return @
 
+
     ##################################################################################################
     # INFORMATION ABOUT THE TREE
+
+    # Indicates whether a node is within this subtree.
+    # @return [Boolean] If the node is in the tree.
     hasNode: (node) ->
         return @ is node or node in @descendants
 
-    ###*
-    * Find (first occurence of) a node
-    * @method findNode
-    * @param equalsFunction {Function}
-    *###
+    # Find the first occurence of a node in the subtree that fulfills `filter`.
+    # @param filter [Function] The function that defines when a node is matched. It gets the currently iterated tree node as argument.
+    # @return [JSUtils.Tree] The matched node or `null`.
     findNode: (filter) ->
         return @findNodes(filter)?.first or null
 
+    # Alias for {JSUtils.Tree#findNode}.
+    # @param filter [Function] The function that defines when a node is matched. It gets the currently iterated tree node as argument.
+    # @return [JSUtils.Tree] The matched node or `null`.
     findDescendant: () ->
         return @findNode.apply(@, arguments)
 
-    ###*
-    * Find all occurences of a node.
-    * @method findNodes
-    * @param equalsFunction {Function}
-    *###
+    # Find all nodes in the subtree that fulfill `filter`.
+    # @param filter {Function} The function that defines when a node is matched. It gets the currently iterated tree node as argument.
+    # @return [Array] An array of all matched nodes.
     findNodes: (filter) ->
         if filter instanceof Function
             return (node for node in @descendants when node? and filter(node))
         return []
 
+    # Alias for {JSUtils.Tree#findNodes}.
+    # @param filter {Function} The function that defines when a node is matched. It gets the currently iterated tree node as argument.
+    # @return [Array] An array of all matched nodes.
     findDescendants: () ->
         return @findNodes.apply(@, arguments)
 
+    # Get the depth of the subtree (meaning the distance from this node to the farthest descendant).
+    # @return [Number] The depth.
     getDepth: () ->
         if @children.length > 0
             maxLevel = null
@@ -224,24 +265,27 @@ class JSUtils.Tree
             return maxLevel - @level
         return 0
 
-    ###*
-    * Get number of nodes in (sub)tree
-    *###
+    # Get number of nodes in subtree.
+    # @return [Number] The size.
     getSize: () ->
         return (descendant for descendant in @descendants when descendant?).length + 1
 
+    # Get the level of the node (meaning the distance to the root node).
+    # @return [Number] The level.
     getLevel: () ->
         return @_level
 
+    # Get root node of the tree.
+    # @return [JSUtils.Tree] The root node.
     getRoot: () ->
         if not (root = @parent)?
             return @
-
         while root.parent?
             root = root.parent
-
         return root
 
+    # Get all leaves of the subtree.
+    # @return [Array] An array of tree leaves.
     getLeaves: () ->
         leaves = []
         for child in @children when child?
@@ -251,14 +295,18 @@ class JSUtils.Tree
                 leaves.push child
         return leaves
 
+    # Indicate if this node is a leaf (meaning it has no children).
+    # @return [Boolean] If this node is a leaf.
     isLeaf: () ->
         return @children.length is 0
 
-    ###*
-    * Serialize the tree to a plain object.
-    *###
-    # doneNodes is carried along to prevent serializing circles
+    # Serialize the tree to a plain object or a string.
+    # @param toString [Boolean] Whether to return the result as a string.
+    # @param format [Function] Optional. This function can postprocess the current object before returning it.
+    # @param doneNodes [Array] This list is carried along to prevent serializing circles.
+    # @return [Object|String] The serialized tree.
     serialize: (toString, format, doneNodes) ->
+        # TODO: remove the toString option
         # toString parameter omitted => shift parameters
         if toString instanceof Function
             doneNodes = format or []
@@ -286,41 +334,61 @@ class JSUtils.Tree
             return res
         return JSON.stringify(res)
 
+    # Alias for {JSUtils.Tree#serialize}.
+    # @param toString [Boolean] Whether to return the result as a string.
+    # @param format [Function] Optional. This function can postprocess the current object before returning it.
+    # @param doneNodes [Array] This list is carried along to prevent serializing circles.
+    # @return [Object|String] The serialized tree.
+    toObject: () ->
+        return @serialize.apply(@, arguments)
+
+    # Deserialize a data object to this tree.
+    # @param data [Object] The data object.
+    # @return [JSUtils.Tree] This instance.
     deserialize: (data) ->
         tree = @constructor.new(data)
         @setChildren tree.children
 
         for key, val of data when key isnt "children"
             @[key] = val
-
         return @
-
-    toObject: () ->
-        return @serialize.apply(@, arguments)
 
 
     ##################################################################################################
     # NODE RELATIONS
+
+    # Get all siblings of this node (meaning the parent's children without this node).
+    # @return [Array] The siblings.
     getSiblings: () ->
         if @parent? and @parent.children.length > 0
             return (node for node in @parent.children when node isnt @)
         return []
 
+    # Get all siblings of this node across the entire tree (meaning all nodes in the tree with the same level).
+    # @return [Array] The siblings.
     getLevelSiblings: () ->
         self = @
         siblings = @getRoot().findNodes (node) ->
             return node.level is self.level and node isnt self
         return siblings or []
 
+    # Get the parent of this node.
+    # @return [JSUtils.Tree] This parent or `null`.
     getParent: () ->
         return @parent
 
+    # Get the (direct) children of this node.
+    # @return [Array] The children.
     getChildren: () ->
         return @children
 
+    # Get all descendants of this node (meaning all nodes in the subtree without this node).
+    # @return [Array] This descendants.
     getDescendants: () ->
         return @descendants
 
+    # Get a list of nodes from this node to the root.
+    # @return [Array] This path to the root.
     pathToRoot: () ->
         res = [@]
         parent = @parent
@@ -329,16 +397,25 @@ class JSUtils.Tree
             parent = parent.parent
         return res
 
+    # Get a list of nodes from the root to this node.
+    # @return [Array] This path from the root.
     pathFromRoot: () ->
         res = @pathToRoot()
         res.reverse()
         return res
 
+
     ##################################################################################################
     # MODIFYING THE TREE
-    # this can also move nodes within the tree or between trees
+
+    # Add a node as child of this node.
+    # This can also move nodes within the tree or between trees (if the node was attached somewhere else before).
+    # @param node [mixed] A tree node or a data object (just like using the constructor).
+    # @param index [Number] Optional. The index where to insert the node. If no index is given the child will be appended.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     addChild: (node, index, adjustLevels = true) ->
-        if not isTree(node)
+        if not @constructor.isTree(node)
             node = new @constructor(node)
 
         # node is attached somewhere else => correctly move between (sub)trees
@@ -353,16 +430,25 @@ class JSUtils.Tree
             @children.splice index, 0, node
 
         node.parent = @
-
-        # @descendants.push(node)
+        # TODO: isn't it enough to just adjust the levels of the new node?
         if adjustLevels
             @getRoot()._adjustLevels()
-
         return @
 
+    # Alias for {JSUtils.Tree#addChild}.
+    # @param node [mixed] A tree node or a data object (just like using the constructor).
+    # @param index [Number] Optional. The index where to insert the node. If no index is given the child will be appended.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     appendChild: () ->
         return @addChild.apply(@, arguments)
 
+    # Add mutlipe nodes as children of this node.
+    # This can also move nodes within the tree or between trees (if a node was attached somewhere else before).
+    # @param nodes [Array] An array containing tree nodes or data objects (just like using the constructor).
+    # @param index [Number] Optional. The index where to insert the node. If no index is given the child will be appended.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     addChildren: (nodes, index, adjustLevels = true) ->
         if index?
             # inverse for correct indices (due to splice at index)
@@ -370,17 +456,28 @@ class JSUtils.Tree
         for node in nodes when node?
             @addChild node, index, false
         if adjustLevels
+            # TODO: see TODO in addChild()
             @_adjustLevels @level
         return @
 
+    # Alias for {JSUtils.Tree#addChildren}.
+    # @param nodes [Array] An array containing tree nodes or data objects (just like using the constructor).
+    # @param index [Number] Optional. The index where to insert the node. If no index is given the child will be appended.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     appendChildren: () ->
         return @addChildren.apply(@, arguments)
 
+    # Set the children of this node (discarding the previous ones).
+    # @param nodes [Array] An array containing tree nodes or data objects (just like using the constructor).
+    # @param clone [Boolean] Optional. Whether to clone the nodes before using them as children.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     setChildren: (nodes, clone = false, adjustLevels = true) ->
         @children = []
 
         if clone
-            nodes = (node?.clone() for node in nodes)
+            nodes = (node.clone?() for node in nodes when node?)
 
         for node in nodes
             @addChild node
@@ -389,14 +486,27 @@ class JSUtils.Tree
             @_adjustLevels @level
         return @
 
+    # Moves this node to a new parent.
+    # @param targetParent [JSUtils.Tree] The new parent.
+    # @param index [Number] Optional. The index where to insert this node among the parent's children.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     moveTo: (targetParent, index, adjustLevels = true) ->
         @remove(false)
         targetParent.addChild @, index, adjustLevels
         return @
 
+    # Alias for {JSUtils.Tree#moveTo}.
+    # @param targetParent [JSUtils.Tree] The new parent.
+    # @param index [Number] Optional. The index where to insert this node among the parent's children.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     appendTo: () ->
         return @moveTo.apply(@, arguments)
 
+    # Removes this node (and the whoel subtree) from its parent.
+    # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct.
+    # @return [JSUtils.Tree] This instance.
     remove: (adjustLevels = true) ->
         if @parent?
             @parent.children = (child for child in @parent.children when child isnt @)
@@ -406,6 +516,19 @@ class JSUtils.Tree
                 @_adjustLevels()
         return @
 
+    # Removes a child from this node.
+    # @overload removeChild(index)
+    #   Removes the child at `index`.
+    #   @param index [Number] The index specifying the child to remove.
+    #   @return [JSUtils.Tree] This instance.
+    # @overload removeChild(filter)
+    #   Removes the child that fulfills `filter`.
+    #   @param filter [Function] A function defining what child node to remove.
+    #   @return [JSUtils.Tree] This instance.
+    # @overload removeChild(node)
+    #   Removes `node` form the children (if it is a child).
+    #   @param node [JSUtils.Tree] A tree node.
+    #   @return [JSUtils.Tree] This instance.
     removeChild: (param) ->
         if typeof param is "number" or param instanceof Number
             node = @children[param]
@@ -420,64 +543,78 @@ class JSUtils.Tree
 
     ##################################################################################################
     # TRAVERSING THE TREE
-    ###*
-    * @method _traverse
-    * @param callback {Function}
-    * Gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters.
-    * @param orderMode {String}
-    * Optional. Default is "postorder". Possible are "postorder", "preorder", "inorder", "levelorder".
-    * @param searchMode {String}
-    * Optional. Default is "depthFirst". Posible are "depthFirst", "breadthFirst".
-    *###
-    _traverse: (callback, orderMode = @orderMode or "postorder", info = {idx: 0, ctx: @}) ->
+
+    # Traverses the tree calling `callback` for every visisted node.
+    # @param callback [Function] The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback `this` refers to the root of traversal. Returning `false` causes the traversal to stop.
+    # @param orderMode [String] Optional. Default is "postorder". Possible are "postorder", "preorder", "inorder", "levelorder".
+    # @param info [Object] This parameter should not be used. It is used primarily to provide the correct index to the callback.
+    # @return [JSUtils.Tree] This instance.
+    traverse: (callback, orderMode = @orderMode or "postorder", info = {idx: 0, ctx: @}) ->
         return @[orderMode](callback, null, info)
 
+    # Alias for {JSUtils.Tree#traverse}
+    # @param callback [Function] The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback `this` refers to the root of traversal. Returning `false` causes the traversal to stop.
+    # @param orderMode [String] Optional. Default is "postorder". Possible are "postorder", "preorder", "inorder", "levelorder".
+    # @param info [Object] This parameter should not be used. It is used primarily to provide the correct index to the callback.
+    # @return [JSUtils.Tree] This instance.
     each: () ->
-        return @_traverse.apply(@, arguments)
+        return @traverse.apply(@, arguments)
 
+    # Shortcut for `tree.each(callback, "postorder")`.
+    # @param callback [Function] The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback `this` refers to the root of traversal. Returning `false` causes the traversal to stop.
+    # @param level [Number] This parameter should not be used. It is used to provide the correct relative level to the callback.
+    # @param info [Object] This parameter should not be used. It is used primarily to provide the correct index to the callback.
+    # @return [JSUtils.Tree] This instance.
     postorder: (callback, level = 0, info = {idx: 0, ctx: @}) ->
         for child in @children when child?
             child.postorder(callback, level + 1, info)
             info.idx++
-
         if callback.call(info.ctx, @, level, info.idx) is false
             return @
         return @
 
+    # Shortcut for `tree.each(callback, "preorder")`.
+    # @param callback [Function] The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback `this` refers to the root of traversal. Returning `false` causes the traversal to stop.
+    # @param level [Number] This parameter should not be used. It is used to provide the correct relative level to the callback.
+    # @param info [Object] This parameter should not be used. It is used primarily to provide the correct index to the callback.
+    # @return [JSUtils.Tree] This instance.
     preorder: (callback, level = 0, info = {idx: 0, ctx: @}) ->
         if callback.call(info.ctx, @, level, info.idx) is false
             return @
-
         for child in @children when child?
             child.preorder(callback, level + 1, info)
             info.idx++
-
         return @
 
+    # Shortcut for `tree.each(callback, "inorder")`.
+    # @param callback [Function] The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback `this` refers to the root of traversal. Returning `false` causes the traversal to stop.
+    # @param level [Number] This parameter should not be used. It is used to provide the correct relative level to the callback.
+    # @param info [Object] This parameter should not be used. It is used primarily to provide the correct index to the callback.
+    # @return [JSUtils.Tree] This instance.
     inorder: (callback, level = 0, index = @children.length // 2, info = {idx: 0, ctx: @}) ->
         for i in [0...index]
             @children[i]?.inorder(callback, level + 1, index, info)
             info.idx++
-
         if callback.call(info.ctx, @, level, info.idx) is false
             return @
-
         for i in [index...@children.length]
             @children[i]?.inorder(callback, level + 1, index, info)
             info.idx++
-
         return @
 
+    # Shortcut for `tree.each(callback, "levelorder")`.
+    # @param callback [Function] The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback `this` refers to the root of traversal. Returning `false` causes the traversal to stop.
+    # @param level [Number] This parameter should not be used. It is used to provide the correct relative level to the callback.
+    # @param info [Object] This parameter should not be used. It is used primarily to provide the correct index to the callback.
+    # @return [JSUtils.Tree] This instance.
     levelorder: (callback, level = 0, info = {idx: 0, ctx: @, levelIdx: 0}) ->
         list = [@]
-
         startLevel = @level
         prevLevel = 0
 
         while list.length > 0
             # remove 1st elem from list
             el = list.shift()
-
             # this is only in case any child is null. this is the case with binary trees
             if el?
                 currentLevel = el.level - startLevel
@@ -485,15 +622,10 @@ class JSUtils.Tree
                 # going to new level => reset level index
                 if currentLevel > prevLevel
                     info.levelIdx = 0
-
                 if callback.call(info.ctx, el, currentLevel, info) is false
                     return @
-
                 prevLevel = currentLevel
-
                 info.idx++
                 info.levelIdx++
-
                 list = list.concat el.children
-
         return @

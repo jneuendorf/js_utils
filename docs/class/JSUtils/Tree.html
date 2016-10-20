@@ -35,6 +35,14 @@
           <td>tree&#47;Tree.coffee</td>
         </tr>
       </table>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  <p>This class is an implementation of a tree structure supporting an extended set of traversal and selection methods.
+Each node has a <code>data</code> object that is filled upon instantiation.
+All properties of that <code>data</code> object that are made accesible on the node directly (except if they would collide with class method names).</p>
+</div>
+<div class='tags'>
+</div>
       <h2>Direct Known Subclasses</h2>
       <p class='children'>
         <a href='../../class/JSUtils/BinaryTree.html'>JSUtils.BinaryTree</a>
@@ -44,70 +52,63 @@
       <ul class='summary'>
   <li>
     <span class='signature'>
-      <a href='#_newOptions-static'>
+      <a href='#isTree-static'>
         .
-(void)
-<b>_newOptions</b><span>(CLASS)</span>
+(Boolean)
+<b>isTree</b><span>(obj)</span>
       </a>
     </span>
     <span class='desc'>
+      This function checks if an object is an instance of the <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> class. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#_newOptions-static'>
+        .
+(Object)
+<b>_newOptions</b><span>(CLASS)</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+      This method creates the default options used when calling {JSUtils.Tree.new}. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_new-static'>
         .
-(void)
+(JSUtils.Tree)
 <b>_new</b><span>(node, options)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-@method new
-@static
-@param node {Object}
-@param options {Object}
-Optional.
-
-
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_newByChildRef-static'>
         .
-(void)
+(JSUtils.Tree)
 <b>_newByChildRef</b><span>(node, options)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-@method new.byChildRef
-@static
-@param node {Object}
-@param options {Object}
-Optional.
-
-
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_newByParentRef-static'>
         .
-(void)
+(JSUtils.Tree)
 <b>_newByParentRef</b><span>(node, getParent)</span>
       </a>
     </span>
+    <span class='note private title'>Private</span>
     <span class='desc'>
-      * 
-@method new.byParentRef
-@static
-@param node {Object}
-@param options {Object}
-Optional.
-
-
     </span>
   </li>
   <li>
@@ -119,6 +120,7 @@ Optional.
       </a>
     </span>
     <span class='desc'>
+      This method initializes the <code>new</code> class method. 
     </span>
   </li>
 </ul>
@@ -128,532 +130,671 @@ Optional.
     <span class='signature'>
       <a href='#_cacheDescendants-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>_cacheDescendants</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Cache all descendants of this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#_adjustLevels-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>_adjustLevels</b><span>(startLevel = 0)</span>
       </a>
     </span>
     <span class='desc'>
+      Set the correct level for all nodes in the tree. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#hasNode-dynamic'>
         #
-(void)
+(Boolean)
 <b>hasNode</b><span>(node)</span>
       </a>
     </span>
     <span class='desc'>
+      Indicates whether a node is within this subtree. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#findNode-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>findNode</b><span>(filter)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Find (first occurence of) a node
-@method findNode
-@param equalsFunction {Function}
-*
-
-
+      Find the first occurence of a node in the subtree that fulfills <code>filter</code>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#findDescendant-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>findDescendant</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#findNode-dynamic'>JSUtils.Tree#findNode</a>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#findNodes-dynamic'>
         #
-(void)
+(Array)
 <b>findNodes</b><span>(filter)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Find all occurences of a node.
-
-
+      Find all nodes in the subtree that fulfill <code>filter</code>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#findDescendants-dynamic'>
         #
-(void)
+(Array)
 <b>findDescendants</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#findNodes-dynamic'>JSUtils.Tree#findNodes</a>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getDepth-dynamic'>
         #
-(void)
+(Number)
 <b>getDepth</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get the depth of the subtree (meaning the distance from this node to the farthest descendant). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getSize-dynamic'>
         #
-(void)
+(Number)
 <b>getSize</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Get number of nodes in (sub)tree
-*
-
-
+      Get number of nodes in subtree. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getLevel-dynamic'>
         #
-(void)
+(Number)
 <b>getLevel</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get the level of the node (meaning the distance to the root node). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getRoot-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>getRoot</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get root node of the tree. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getLeaves-dynamic'>
         #
-(void)
+(Array)
 <b>getLeaves</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get all leaves of the subtree. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#isLeaf-dynamic'>
         #
-(void)
+(Boolean)
 <b>isLeaf</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Indicate if this node is a leaf (meaning it has no children). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#serialize-dynamic'>
         #
-(void)
+(Object|String)
 <b>serialize</b><span>(toString, format, doneNodes)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-Serialize the tree to a plain object.
-
-
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#deserialize-dynamic'>
-        #
-(void)
-<b>deserialize</b><span>(data)</span>
-      </a>
-    </span>
-    <span class='desc'>
+      Serialize the tree to a plain object or a string. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#toObject-dynamic'>
         #
-(void)
+(Object|String)
 <b>toObject</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#serialize-dynamic'>JSUtils.Tree#serialize</a>. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#deserialize-dynamic'>
+        #
+(JSUtils.Tree)
+<b>deserialize</b><span>(data)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      Deserialize a data object to this tree. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getSiblings-dynamic'>
         #
-(void)
+(Array)
 <b>getSiblings</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get all siblings of this node (meaning the parent&#39;s children without this node). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getLevelSiblings-dynamic'>
         #
-(void)
+(Array)
 <b>getLevelSiblings</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get all siblings of this node across the entire tree (meaning all nodes in the tree with the same level). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getParent-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>getParent</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get the parent of this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getChildren-dynamic'>
         #
-(void)
+(Array)
 <b>getChildren</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get the (direct) children of this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#getDescendants-dynamic'>
         #
-(void)
+(Array)
 <b>getDescendants</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get all descendants of this node (meaning all nodes in the subtree without this node). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#pathToRoot-dynamic'>
         #
-(void)
+(Array)
 <b>pathToRoot</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get a list of nodes from this node to the root. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#pathFromRoot-dynamic'>
         #
-(void)
+(Array)
 <b>pathFromRoot</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Get a list of nodes from the root to this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#addChild-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>addChild</b><span>(node, index, adjustLevels = true)</span>
       </a>
     </span>
     <span class='desc'>
+      Add a node as child of this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#appendChild-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>appendChild</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#addChild-dynamic'>JSUtils.Tree#addChild</a>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#addChildren-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>addChildren</b><span>(nodes, index, adjustLevels = true)</span>
       </a>
     </span>
     <span class='desc'>
+      Add mutlipe nodes as children of this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#appendChildren-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>appendChildren</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#addChildren-dynamic'>JSUtils.Tree#addChildren</a>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#setChildren-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>setChildren</b><span>(nodes, clone = false, adjustLevels = true)</span>
       </a>
     </span>
     <span class='desc'>
+      Set the children of this node (discarding the previous ones). 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#moveTo-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>moveTo</b><span>(targetParent, index, adjustLevels = true)</span>
       </a>
     </span>
     <span class='desc'>
+      Moves this node to a new parent. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#appendTo-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>appendTo</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#moveTo-dynamic'>JSUtils.Tree#moveTo</a>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#remove-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>remove</b><span>(adjustLevels = true)</span>
       </a>
     </span>
     <span class='desc'>
+      Removes this node (and the whoel subtree) from its parent. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#removeChild-dynamic'>
-        #
-(void)
-<b>removeChild</b><span>(param)</span>
+        ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(index)</span>
       </a>
     </span>
     <span class='desc'>
+      Removes a child from this node. 
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#_traverse-dynamic'>
+      <a href='#traverse-dynamic'>
         #
-(void)
-<b>_traverse</b><span>(callback, orderMode, info)</span>
+(JSUtils.Tree)
+<b>traverse</b><span>(callback, orderMode, info)</span>
       </a>
     </span>
     <span class='desc'>
-      * 
-@method _traverse
-@param callback {Function}
-Gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters.
-
-
+      Traverses the tree calling <code>callback</code> for every visisted node. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#each-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>each</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Alias for <a href='../../class/JSUtils/Tree.html#traverse-dynamic'>JSUtils.Tree#traverse</a> 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#postorder-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>postorder</b><span>(callback, level = 0, info)</span>
       </a>
     </span>
     <span class='desc'>
+      Shortcut for <code>tree.each(callback, &quot;postorder&quot;)</code>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#preorder-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>preorder</b><span>(callback, level = 0, info)</span>
       </a>
     </span>
     <span class='desc'>
+      Shortcut for <code>tree.each(callback, &quot;preorder&quot;)</code>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#inorder-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>inorder</b><span>(callback, level = 0, index, info)</span>
       </a>
     </span>
     <span class='desc'>
+      Shortcut for <code>tree.each(callback, &quot;inorder&quot;)</code>. 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#levelorder-dynamic'>
         #
-(void)
+(JSUtils.Tree)
 <b>levelorder</b><span>(callback, level = 0, info)</span>
       </a>
     </span>
     <span class='desc'>
+      Shortcut for <code>tree.each(callback, &quot;levelorder&quot;)</code>. 
     </span>
   </li>
 </ul>
       <h2>Class Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
-    <p class='signature' id='_newOptions-static'>
+    <p class='signature' id='isTree-static'>
       .
-(void)
-<b>_newOptions</b><span>(CLASS)</span>
+(Boolean)
+<b>isTree</b><span>(obj)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>This function checks if an object is an instance of the <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> class.
+This should be overriden in case you have something like multi inheritance for example.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>obj</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The object to check for being an instance of <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a>. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Boolean</tt>
+      )
+      &mdash;
+      <span class='desc'>If <code>obj</code> is an instance of <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='_newOptions-static'>
+      .
+(Object)
+<b>_newOptions</b><span>(CLASS)</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method creates the default options used when calling {JSUtils.Tree.new}.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>CLASS</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The tree class (or a subclass). </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Object</tt>
+      )
+      &mdash;
+      <span class='desc'>The default instantiation options. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_new-static'>
       .
-(void)
+(JSUtils.Tree)
 <b>_new</b><span>(node, options)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
-    <div class='docstring'>
-  <p>*</p><ul>
-<li>@method new</li>
-<li>@static</li>
-<li>@param node {Object}</li>
-<li>@param options {Object}</li>
-<li>Optional. Any given key will override the default. Here are the keys:</li>
-<li>adjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you&#39;re doing the aftermath later!!</li>
-<li>afterInstantiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.</li>
-<li>getChildren: Function that specifies how to retrieve the children from the node object.</li>
-<li>getParent: Function that specifies how to retrieve the parent from the node object. getChildren is checked 1st so it doesn&#39;t make sense to pass getChildren AND getParent!</li>
-<li>instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
-*</li>
-</ul>
-
-</div>
-<div class='tags'>
+    <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+    </li>
+    <li>
+      <span class='name'>options</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Any given key will override the default. Here are the keys: <code>adjustLevels</code>: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to <code>false</code> if you do it later <code>afterInstantiate</code>: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance. <code>getChildren</code>: Function that specifies how to retrieve the children from the node object. <code>getParent</code>: Function that specifies how to retrieve the parent from the node object. This is used only if <code>getChildren</code> is is not set <code>instantiate</code>: how to create an instance from the node object. Parameter is the node object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_newByChildRef-static'>
       .
-(void)
+(JSUtils.Tree)
 <b>_newByChildRef</b><span>(node, options)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
-    <div class='docstring'>
-  <p>*</p><ul>
-<li>@method new.byChildRef</li>
-<li>@static</li>
-<li>@param node {Object}</li>
-<li>@param options {Object}</li>
-<li>Optional. Any given key will override the default. Here are the keys:</li>
-<li>adjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you&#39;re doing the aftermath later!!</li>
-<li>afterInstantiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.</li>
-<li>getChildren: Function that specifies how to retrieve the children from the node object.</li>
-<li>instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
-*</li>
-</ul>
-
-</div>
-<div class='tags'>
+    <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+    </li>
+    <li>
+      <span class='name'>options</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Any given key will override the default. Here are the keys: <code>adjustLevels</code>: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to <code>false</code> if you do it later <code>afterInstantiate</code>: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance. <code>getChildren</code>: Function that specifies how to retrieve the children from the node object. <code>instantiate</code>: how to create an instance from the node object. Parameter is the node object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_newByParentRef-static'>
       .
-(void)
+(JSUtils.Tree)
 <b>_newByParentRef</b><span>(node, getParent)</span>
+      <span class='note private'>Private</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>@method new.byParentRef</li>
-<li>@static</li>
-<li>@param node {Object}</li>
-<li>@param options {Object}</li>
-<li>Optional. Any given key will override the default. Here are the keys:</li>
-<li>adjustLevels: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to false if you&#39;re doing the aftermath later!!</li>
-<li>afterInstantiate: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.</li>
-<li>getParent: Function that specifies how to retrieve the parent from the node object.</li>
-<li>instantiate: Function that specifies how to create an instance from the node object. Parameter is the node object.
-*</li>
-</ul>
-
+  <div class='note todo'>
+    <strong>TODO:</strong>
+    This still needs to be implemented 
+  </div>
+  
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+    </li>
+    <li>
+      <span class='name'>options</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Any given key will override the default. Here are the keys: <code>adjustLevels</code>: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to <code>false</code> if you do it later <code>afterInstantiate</code>: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance. <code>getParent</code>: Function that specifies how to retrieve the parent from the node object. This is used only if <code>getChildren</code> is is not set <code>instantiate</code>: how to create an instance from the node object. Parameter is the node object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
@@ -663,19 +804,161 @@ Gets the current node, the current level relative to the root of the current tra
 <b>init</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>This method initializes the <code>new</code> class method.
+The <code>new</code> class method has two properties itself: <code>byChildRef</code> and <code>byParentRef</code>.
+Use that method to construct a new tree from an object with a tree structure.
+Usually, the object has a <code>children</code> property which is used to create the hierarchy.
+If you use <code>children</code> anyway you can also use <code>JSUtils.Tree.new.byChildRef()</code>.</p>
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      
+    </h4>
+    <pre><code class='coffeescript'>tree = JSUtils.Tree.new(
+    {label: &quot;root&quot;, children: [
+        {...}, ...
+    ]}
+)</code></pre>
+  </div>
+</div>
+<div class='tags'>
+</div>
   </div>
 </div>
       <h2>Constructor Details</h2>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='constructor-dynamic'>
-      #
-(void)
-<b>constructor</b><span>(node)</span>
+      ~
+(JSUtils.Tree)
+<b>constructor</b><span>()</span>
+      <br>
+      ~
+(JSUtils.Tree)
+<b>constructor</b><span>(data)</span>
+      <br>
+      ~
+(JSUtils.Tree)
+<b>constructor</b><span>(treeNode)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Each <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> instance has the following read-only properties: <code>depth</code> same as <code>getDepth()</code> <code>size</code> same as <code>getSize()</code> <code>level</code> same as <code>getLevel()</code> <code>root</code> same as <code>getRoot()</code></p>
+</div>
+<div class='tags'>
+  <div class='overloads'>
+    <h3>Overloads:</h3>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(JSUtils.Tree)
+<b>constructor</b><span>()</span>
+      </p>
+      <div class='docstring'>
+  <p>Create a tree node without data.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An instance of <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(JSUtils.Tree)
+<b>constructor</b><span>(data)</span>
+      </p>
+      <div class='docstring'>
+  <p>Create a tree node with <code>data</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An instance of <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(JSUtils.Tree)
+<b>constructor</b><span>(treeNode)</span>
+      </p>
+      <div class='docstring'>
+  <p>Create a tree node with the same data as <code>treeNode</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An instance of <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The new instance. </span>
+    </li>
+  </ul>
+</div>
+    </div>
+  </div>
+</div>
   </div>
 </div>
       <h2>Instance Method Details</h2>
@@ -683,394 +966,1597 @@ Gets the current node, the current level relative to the root of the current tra
   <div class='method_details'>
     <p class='signature' id='_cacheDescendants-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>_cacheDescendants</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Cache all descendants of this node.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='_adjustLevels-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>_adjustLevels</b><span>(startLevel = 0)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Set the correct level for all nodes in the tree.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='hasNode-dynamic'>
       #
-(void)
+(Boolean)
 <b>hasNode</b><span>(node)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Indicates whether a node is within this subtree.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Boolean</tt>
+      )
+      &mdash;
+      <span class='desc'>If the node is in the tree. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='findNode-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>findNode</b><span>(filter)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Find (first occurence of) a node</li>
-<li>@method findNode</li>
-<li>@param equalsFunction {Function}
-*</li>
-</ul>
-
+  <p>Find the first occurence of a node in the subtree that fulfills <code>filter</code>.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>filter</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function that defines when a node is matched. It gets the currently iterated tree node as argument. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The matched node or <code>null</code>. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='findDescendant-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>findDescendant</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#findNode-dynamic'>JSUtils.Tree#findNode</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>filter</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function that defines when a node is matched. It gets the currently iterated tree node as argument. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The matched node or <code>null</code>. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='findNodes-dynamic'>
       #
-(void)
+(Array)
 <b>findNodes</b><span>(filter)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Find all occurences of a node.</li>
-<li>@method findNodes</li>
-<li>@param equalsFunction {Function}
-*</li>
-</ul>
-
+  <p>Find all nodes in the subtree that fulfill <code>filter</code>.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>filter</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function that defines when a node is matched. It gets the currently iterated tree node as argument. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>An array of all matched nodes. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='findDescendants-dynamic'>
       #
-(void)
+(Array)
 <b>findDescendants</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#findNodes-dynamic'>JSUtils.Tree#findNodes</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>filter</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function that defines when a node is matched. It gets the currently iterated tree node as argument. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>An array of all matched nodes. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getDepth-dynamic'>
       #
-(void)
+(Number)
 <b>getDepth</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get the depth of the subtree (meaning the distance from this node to the farthest descendant).</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>The depth. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getSize-dynamic'>
       #
-(void)
+(Number)
 <b>getSize</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Get number of nodes in (sub)tree
-*</li>
-</ul>
-
+  <p>Get number of nodes in subtree.</p>
 </div>
 <div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>The size. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getLevel-dynamic'>
       #
-(void)
+(Number)
 <b>getLevel</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get the level of the node (meaning the distance to the root node).</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Number</tt>
+      )
+      &mdash;
+      <span class='desc'>The level. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getRoot-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>getRoot</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get root node of the tree.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The root node. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getLeaves-dynamic'>
       #
-(void)
+(Array)
 <b>getLeaves</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get all leaves of the subtree.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>An array of tree leaves. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='isLeaf-dynamic'>
       #
-(void)
+(Boolean)
 <b>isLeaf</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Indicate if this node is a leaf (meaning it has no children).</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Boolean</tt>
+      )
+      &mdash;
+      <span class='desc'>If this node is a leaf. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='serialize-dynamic'>
       #
-(void)
+(Object|String)
 <b>serialize</b><span>(toString, format, doneNodes)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>Serialize the tree to a plain object.
-*</li>
-</ul>
-
+  <p>Serialize the tree to a plain object or a string.</p>
 </div>
 <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>toString</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Whether to return the result as a string. </span>
+    </li>
+    <li>
+      <span class='name'>format</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This function can postprocess the current object before returning it. </span>
+    </li>
+    <li>
+      <span class='name'>doneNodes</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This list is carried along to prevent serializing circles. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Object|String</tt>
+      )
+      &mdash;
+      <span class='desc'>The serialized tree. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='toObject-dynamic'>
+      #
+(Object|String)
+<b>toObject</b><span>()</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#serialize-dynamic'>JSUtils.Tree#serialize</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>toString</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Whether to return the result as a string. </span>
+    </li>
+    <li>
+      <span class='name'>format</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. This function can postprocess the current object before returning it. </span>
+    </li>
+    <li>
+      <span class='name'>doneNodes</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This list is carried along to prevent serializing circles. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Object|String</tt>
+      )
+      &mdash;
+      <span class='desc'>The serialized tree. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='deserialize-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>deserialize</b><span>(data)</span>
       <br>
     </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='toObject-dynamic'>
-      #
-(void)
-<b>toObject</b><span>()</span>
-      <br>
-    </p>
-    
+    <div class='docstring'>
+  <p>Deserialize a data object to this tree.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>data</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The data object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getSiblings-dynamic'>
       #
-(void)
+(Array)
 <b>getSiblings</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get all siblings of this node (meaning the parent&#39;s children without this node).</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The siblings. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getLevelSiblings-dynamic'>
       #
-(void)
+(Array)
 <b>getLevelSiblings</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get all siblings of this node across the entire tree (meaning all nodes in the tree with the same level).</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The siblings. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getParent-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>getParent</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get the parent of this node.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This parent or <code>null</code>. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getChildren-dynamic'>
       #
-(void)
+(Array)
 <b>getChildren</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get the (direct) children of this node.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The children. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='getDescendants-dynamic'>
       #
-(void)
+(Array)
 <b>getDescendants</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get all descendants of this node (meaning all nodes in the subtree without this node).</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>This descendants. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='pathToRoot-dynamic'>
       #
-(void)
+(Array)
 <b>pathToRoot</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get a list of nodes from this node to the root.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>This path to the root. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='pathFromRoot-dynamic'>
       #
-(void)
+(Array)
 <b>pathFromRoot</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Get a list of nodes from the root to this node.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>This path from the root. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='addChild-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>addChild</b><span>(node, index, adjustLevels = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Add a node as child of this node.
+This can also move nodes within the tree or between trees (if the node was attached somewhere else before).</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A tree node or a data object (just like using the constructor). </span>
+    </li>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The index where to insert the node. If no index is given the child will be appended. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='appendChild-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>appendChild</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#addChild-dynamic'>JSUtils.Tree#addChild</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A tree node or a data object (just like using the constructor). </span>
+    </li>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The index where to insert the node. If no index is given the child will be appended. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='addChildren-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>addChildren</b><span>(nodes, index, adjustLevels = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Add mutlipe nodes as children of this node.
+This can also move nodes within the tree or between trees (if a node was attached somewhere else before).</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>nodes</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An array containing tree nodes or data objects (just like using the constructor). </span>
+    </li>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The index where to insert the node. If no index is given the child will be appended. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='appendChildren-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>appendChildren</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#addChildren-dynamic'>JSUtils.Tree#addChildren</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>nodes</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An array containing tree nodes or data objects (just like using the constructor). </span>
+    </li>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The index where to insert the node. If no index is given the child will be appended. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='setChildren-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>setChildren</b><span>(nodes, clone = false, adjustLevels = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Set the children of this node (discarding the previous ones).</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>nodes</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>An array containing tree nodes or data objects (just like using the constructor). </span>
+    </li>
+    <li>
+      <span class='name'>clone</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to clone the nodes before using them as children. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='moveTo-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>moveTo</b><span>(targetParent, index, adjustLevels = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Moves this node to a new parent.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>targetParent</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The new parent. </span>
+    </li>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The index where to insert this node among the parent&#39;s children. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='appendTo-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>appendTo</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#moveTo-dynamic'>JSUtils.Tree#moveTo</a>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>targetParent</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The new parent. </span>
+    </li>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. The index where to insert this node among the parent&#39;s children. </span>
+    </li>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='remove-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>remove</b><span>(adjustLevels = true)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Removes this node (and the whoel subtree) from its parent.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>adjustLevels</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Whether to make sure the levels of all nodes (i.e. the newly inserted ones) are correct. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='removeChild-dynamic'>
-      #
-(void)
-<b>removeChild</b><span>(param)</span>
+      ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(index)</span>
       <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_traverse-dynamic'>
-      #
-(void)
-<b>_traverse</b><span>(callback, orderMode, info)</span>
+      ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(filter)</span>
+      <br>
+      ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(node)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>*</p><ul>
-<li>@method _traverse</li>
-<li>@param callback {Function}</li>
-<li>Gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters.</li>
-<li>@param orderMode {String}</li>
-<li>Optional. Default is &quot;postorder&quot;. Possible are &quot;postorder&quot;, &quot;preorder&quot;, &quot;inorder&quot;, &quot;levelorder&quot;.</li>
-<li>@param searchMode {String}</li>
-<li>Optional. Default is &quot;depthFirst&quot;. Posible are &quot;depthFirst&quot;, &quot;breadthFirst&quot;.
-*</li>
-</ul>
-
+  <p>Removes a child from this node.</p>
 </div>
 <div class='tags'>
+  <div class='overloads'>
+    <h3>Overloads:</h3>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(index)</span>
+      </p>
+      <div class='docstring'>
+  <p>Removes the child at <code>index</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>index</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The index specifying the child to remove. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(filter)</span>
+      </p>
+      <div class='docstring'>
+  <p>Removes the child that fulfills <code>filter</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>filter</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A function defining what child node to remove. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+    </div>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(JSUtils.Tree)
+<b>removeChild</b><span>(node)</span>
+      </p>
+      <div class='docstring'>
+  <p>Removes <code>node</code> form the children (if it is a child).</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A tree node. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+    </div>
+  </div>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='traverse-dynamic'>
+      #
+(JSUtils.Tree)
+<b>traverse</b><span>(callback, orderMode, info)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Traverses the tree calling <code>callback</code> for every visisted node.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback <code>this</code> refers to the root of traversal. Returning <code>false</code> causes the traversal to stop. </span>
+    </li>
+    <li>
+      <span class='name'>orderMode</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Default is &quot;postorder&quot;. Possible are &quot;postorder&quot;, &quot;preorder&quot;, &quot;inorder&quot;, &quot;levelorder&quot;. </span>
+    </li>
+    <li>
+      <span class='name'>info</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used primarily to provide the correct index to the callback. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
 </div>
   </div>
   <div class='method_details'>
     <p class='signature' id='each-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>each</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Alias for <a href='../../class/JSUtils/Tree.html#traverse-dynamic'>JSUtils.Tree#traverse</a></p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback <code>this</code> refers to the root of traversal. Returning <code>false</code> causes the traversal to stop. </span>
+    </li>
+    <li>
+      <span class='name'>orderMode</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Optional. Default is &quot;postorder&quot;. Possible are &quot;postorder&quot;, &quot;preorder&quot;, &quot;inorder&quot;, &quot;levelorder&quot;. </span>
+    </li>
+    <li>
+      <span class='name'>info</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used primarily to provide the correct index to the callback. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='postorder-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>postorder</b><span>(callback, level = 0, info)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Shortcut for <code>tree.each(callback, &quot;postorder&quot;)</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback <code>this</code> refers to the root of traversal. Returning <code>false</code> causes the traversal to stop. </span>
+    </li>
+    <li>
+      <span class='name'>level</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used to provide the correct relative level to the callback. </span>
+    </li>
+    <li>
+      <span class='name'>info</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used primarily to provide the correct index to the callback. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='preorder-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>preorder</b><span>(callback, level = 0, info)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Shortcut for <code>tree.each(callback, &quot;preorder&quot;)</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback <code>this</code> refers to the root of traversal. Returning <code>false</code> causes the traversal to stop. </span>
+    </li>
+    <li>
+      <span class='name'>level</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used to provide the correct relative level to the callback. </span>
+    </li>
+    <li>
+      <span class='name'>info</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used primarily to provide the correct index to the callback. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='inorder-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>inorder</b><span>(callback, level = 0, index, info)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Shortcut for <code>tree.each(callback, &quot;inorder&quot;)</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback <code>this</code> refers to the root of traversal. Returning <code>false</code> causes the traversal to stop. </span>
+    </li>
+    <li>
+      <span class='name'>level</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used to provide the correct relative level to the callback. </span>
+    </li>
+    <li>
+      <span class='name'>info</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used primarily to provide the correct index to the callback. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='levelorder-dynamic'>
       #
-(void)
+(JSUtils.Tree)
 <b>levelorder</b><span>(callback, level = 0, info)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Shortcut for <code>tree.each(callback, &quot;levelorder&quot;)</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The callback gets the current node, the current level relative to the root of the current traversal, and iteration index as parameters. In the callback <code>this</code> refers to the root of traversal. Returning <code>false</code> causes the traversal to stop. </span>
+    </li>
+    <li>
+      <span class='name'>level</span>
+      <span class='type'>
+        (
+          <tt>Number</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used to provide the correct relative level to the callback. </span>
+    </li>
+    <li>
+      <span class='name'>info</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>This parameter should not be used. It is used primarily to provide the correct index to the callback. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
     </div>
