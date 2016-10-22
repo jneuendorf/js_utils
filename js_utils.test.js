@@ -672,23 +672,25 @@
         return key1[0] + key1[1] === key2[0] + key2[1];
       });
     });
-    it("put", function() {
+    it("get & put", function() {
+      var arr, objectKey, objectVal;
+      expect(this.hash.get(1)).toBe("2");
+      expect(this.hash.get(["a", "b"])).toBe(void 0);
+      expect(this.hash.get(2)).toBe("3");
       this.hash.put(2, "4");
-      this.hash.put(["a", "b"], "3");
-      this.hash.put({
-        key1: "val1",
-        key2: "val2"
-      });
-      expect(this.hash.keys).toEqual([1, 2, ["a", "b"], "key1", "key2"]);
-      return expect(this.hash.values).toEqual(["2", "4", "3", "val1", "val2"]);
-    });
-    it("get", function() {
-      var arr;
+      expect(this.hash.get(2)).toBe("4");
       arr = ["a", "b"];
       this.hash.put(arr, "3");
-      expect(this.hash.get(1)).toBe("2");
-      expect(this.hash.get(["a", "b"])).toBe(null);
       expect(this.hash.get(arr)).toBe("3");
+      expect(this.hash.get(["a", "b"])).toBeUndefined();
+      objectKey = {
+        key: "object"
+      };
+      objectVal = {
+        someObject: "that's me"
+      };
+      this.hash.put(objectKey, objectVal);
+      expect(this.hash.get(objectKey)).toBe(objectVal);
       this.hashEq.put([1, 2], 3);
       expect(this.hashEq.get([1, 2])).toBe(3);
       expect(this.hashEq.get([2, 1])).toBe(3);
@@ -701,7 +703,7 @@
       arr = ["a", "b"];
       this.hash.put(arr, "3");
       this.hash.remove(1);
-      expect(this.hash.get(1)).toBe(null);
+      expect(this.hash.get(1)).toBeUndefined();
       expect(this.hash.get(2)).toBe("3");
       this.hashEq.put([1, 2], 3);
       this.hashEq.remove([2, 1]);
@@ -715,11 +717,11 @@
       expect(this.hash.keys.length).toBe(0);
       return expect(this.hash.values.length).toBe(0);
     });
-    it("getAll", function() {
+    it("items", function() {
       var arr;
       arr = ["a", "b"];
       this.hash.put(arr, "3");
-      return expect(this.hash.getAll()).toEqual([[1, "2"], [2, "3"], [["a", "b"], "3"]]);
+      return expect(this.hash.items()).toEqual([[1, "2"], [2, "3"], [["a", "b"], "3"]]);
     });
     it("has (== hasKey)", function() {
       var arr;
@@ -732,17 +734,21 @@
       return expect(this.hash.has(3)).toBe(false);
     });
     it("size", function() {
+      var obj;
       expect(this.hash.size()).toBe(2);
-      this.hash.put({
+      obj = {
         a: 10,
         b: 20
-      });
-      expect(this.hash.size()).toBe(4);
+      };
+      this.hash.put(obj);
+      expect(this.hash.size()).toBe(3);
       this.hash.put({
         x: 1e3,
         y: 0.4
       }, "value");
-      return expect(this.hash.size()).toBe(5);
+      expect(this.hash.size()).toBe(4);
+      this.hash.remove(obj);
+      return expect(this.hash.size()).toBe(3);
     });
     it("getKeys", function() {
       expect(this.hash.getKeys().length).toBe(this.hash.keys.length);

@@ -12,28 +12,37 @@ describe "Hash", () ->
                 return key1[0] + key1[1] is key2[0] + key2[1]
         )
 
-    it "put", () ->
-        @hash.put 2, "4"
-        @hash.put ["a", "b"], "3"
-        @hash.put {key1: "val1", key2: "val2"}
-
-        expect @hash.keys
-            .toEqual [1, 2, ["a", "b"], "key1", "key2"]
-        expect @hash.values
-            .toEqual ["2", "4", "3", "val1", "val2"]
-
-    it "get", () ->
-        arr = ["a", "b"]
-        @hash.put arr, "3"
-
+    it "get & put", () ->
+        # GET
         expect @hash.get(1)
             .toBe "2"
         expect @hash.get(["a", "b"])
-            .toBe null
+            .toBe undefined
+
+        # PUT
+        expect @hash.get(2)
+            .toBe "3"
+        # replace
+        @hash.put 2, "4"
+        expect @hash.get(2)
+            .toBe "4"
+
+        # array as key
+        arr = ["a", "b"]
+        @hash.put arr, "3"
         expect @hash.get(arr)
             .toBe "3"
+        expect @hash.get(["a", "b"])
+            .toBeUndefined()
 
-        # any key with the same sum of the first two elements is considered equal!
+        # object as key
+        objectKey = {key: "object"}
+        objectVal = {someObject: "that's me"}
+        @hash.put objectKey, objectVal
+        expect @hash.get(objectKey)
+            .toBe objectVal
+
+        # special equals-function: any key with the same sum of the first two elements is considered equal!
         @hashEq.put [1, 2], 3
         expect @hashEq.get [1, 2]
             .toBe 3
@@ -52,7 +61,7 @@ describe "Hash", () ->
 
         @hash.remove 1
         expect @hash.get(1)
-            .toBe null
+            .toBeUndefined()
 
         expect @hash.get(2)
             .toBe "3"
@@ -74,11 +83,11 @@ describe "Hash", () ->
         expect @hash.values.length
             .toBe 0
 
-    it "getAll", () ->
+    it "items", () ->
         arr = ["a", "b"]
         @hash.put arr, "3"
 
-        expect @hash.getAll()
+        expect @hash.items()
             .toEqual [
                 [1, "2"]
                 [2, "3"]
@@ -105,12 +114,16 @@ describe "Hash", () ->
         expect @hash.size()
             .toBe 2
 
-        @hash.put {a: 10, b: 20}
+        obj = {a: 10, b: 20}
+        @hash.put obj
         expect @hash.size()
-            .toBe 4
+            .toBe 3
         @hash.put {x: 1e3, y: 0.4}, "value"
         expect @hash.size()
-            .toBe 5
+            .toBe 4
+        @hash.remove(obj)
+        expect @hash.size()
+            .toBe 3
 
     it "getKeys", () ->
         expect @hash.getKeys().length

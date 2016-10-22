@@ -15,11 +15,11 @@ class JSUtils.Hash
     # CONSTRUCTOR
 
     # @param obj [Object] Optional. A JavaScript Object whose values to use to initialize the hash.
-    # @param defaultVal [mixed] Optional. This value will be returned by {JSUtils.Hash#get} if the keys was not found.
+    # @param defaultVal [mixed] Optional. Defaults to `undefined`. This value will be returned by {JSUtils.Hash#get} if the keys was not found.
     #   If this parameter is a function it will be called with the key that's currently looked up.
     # @param equality [Function] Optional. This parameter defines what keys are considered equal. Defaults to `===`.
     # @return [JSUtils.Hash] The new instance.
-    constructor: (obj, defaultVal = null, equality = (a, b) -> a is b) ->
+    constructor: (obj, defaultVal, equality = (a, b) -> a is b) ->
         @keys   = []
         @values = []
         @defaultVal = defaultVal

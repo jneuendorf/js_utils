@@ -144,7 +144,7 @@ class JSUtils.BinaryTree extends JSUtils.Tree
     # @param adjustLevels [Boolean] Optional. Whether to make sure the levels of all nodes are correct.
     # @return [JSUtils.BinaryTree] This instance.
     addChild: (node, adjustLevels = true) ->
-        if not isTree(node)
+        if not @constructor.isTree(node)
             node = new @constructor(node, @compareNodes)
         relation = @compareNodes(@, node)
         # node already exists
