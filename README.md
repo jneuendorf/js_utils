@@ -6,10 +6,20 @@
 The library contains the following modules:
 
 - async
+	- sequence
+		- execute synchronous and asynchronous functions after each other
+	- barrier
+		- execute synchronous and asynchronous functions simultaneously
 - hash
+	- maps that allow anything as key
 - overload
+	- function overloading
 - prototyping
+	- adding helpful methods to built-in classes
 - tree
+	- tree structure
+	- leaf class
+	- binary tree
 
 All modules are (hopefully) independent so far.
 
