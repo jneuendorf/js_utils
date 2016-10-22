@@ -1,12 +1,13 @@
 describe "overload", () ->
 
     ##################################################################################################################
-    it "setup", () ->
-        class window.A
+    beforeEach () ->
+        class @A
             a: () ->
                 return 1337
+        A = @A
 
-        class window.TestClass
+        class @TestClass
 
             method1: JSUtils.overload(
                 [Number, String]
@@ -22,7 +23,7 @@ describe "overload", () ->
                 (x, y) ->
                     return x + y
 
-                {a: A, b: String}
+                [A, String]
                 (a, b) ->
                     return a.a() + parseInt(b, 10)
             )
@@ -48,8 +49,8 @@ describe "overload", () ->
 
     ##################################################################################################################
     it "func results of overloading", () ->
-        testInstance = new TestClass()
-        a = new A()
+        testInstance = new @TestClass()
+        a = new @A()
 
         expect testInstance.method1(10, "20")
             .toBe 30
@@ -58,11 +59,8 @@ describe "overload", () ->
         expect testInstance.method1(a, "20")
             .toBe 1357
 
-        try
-            testInstance.method1(a, a)
-        catch e
-            expect e.message
-                .toBe "Arguments do not match any known argument list!"
+        expect () -> testInstance.method1(a, a)
+            .toThrow()
 
         expect testInstance.method1(true, "a")
             .toBe "truea"
@@ -85,16 +83,12 @@ describe "overload", () ->
 
         f = JSUtils.overload(
             [Super]
-            () ->
-                return true
+            () -> true
         )
 
         expect f(new Super())
             .toBe true
         expect f(new Sub())
             .toBe true
-        try
-            f("asdf")
-        catch e
-            expect e.message
-                .toBe "Arguments do not match any known argument list!"
+        expect () -> f("asdf")
+            .toThrow()

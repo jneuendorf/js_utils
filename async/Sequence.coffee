@@ -191,12 +191,15 @@ class JSUtils.Sequence
                     res = func.apply(scope or window, newParams)
                 catch error
                     res = null
-                    console.error "================================================================="
-                    console.error "JSUtils.Sequence::_invokeNextFunction: Given function (at index #{@idx}) threw an Error!"
-                    console.warn "Here is the data:", data
-                    console.warn "Here is the error:", error
-                    console.error "================================================================="
-                    @_errorCallback?(error, data, @idx)
+                    if @_errorCallback not instanceof Function
+                        console.error "================================================================="
+                        console.error "JSUtils.Sequence::_invokeNextFunction: Given function (at index #{@idx}) threw an Error!"
+                        console.warn "Here is the data:", data
+                        console.warn "Here is the error:", error
+                        console.error "================================================================="
+                    else
+                        @_errorCallback(error, data, @idx)
+                        
                     if @stopOnError
                         @interrupt()
 

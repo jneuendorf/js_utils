@@ -14,7 +14,7 @@
         Helper = (function() {
           function Helper(delay) {
             if (delay == null) {
-              delay = 1000;
+              delay = 100;
             }
             this.cbs = [];
             this.isDone = false;
@@ -30,7 +30,7 @@
                 }
                 return _this._done();
               };
-            })(this), this.deplay);
+            })(this), this.delay);
           };
 
           Helper.prototype._done = function() {
@@ -88,28 +88,28 @@
           {
             func: function() {
               var h;
-              h = new Helper(3000);
+              h = new Helper(300);
               h.go(result);
               return h;
             }
           }, {
             func: function() {
               var h;
-              h = new Helper(1000);
+              h = new Helper(100);
               h.go(result);
               return h;
             }
           }, [
             function() {
               var h;
-              h = new Helper(1500);
+              h = new Helper(150);
               h.go(result);
               return h;
             }
           ]
         ]);
         return this.sequence.done(function() {
-          expect(result).toEqual([3000, 1000, 1500]);
+          expect(result).toEqual([300, 100, 150]);
           return done();
         });
       });
@@ -216,7 +216,7 @@
           return done();
         });
       });
-      it("stopping (no more functions in sequence will be executed, callbacks will still fire)", function(done) {
+      it("stopping (no more functions in sequence will be executed, callbacks will fire)", function(done) {
         var Helper, h1, result;
         result = [];
         Helper = this.helperClass;
@@ -224,7 +224,7 @@
         this.sequence.start([
           {
             func: function() {
-              h1 = new Helper(3000);
+              h1 = new Helper(300);
               h1.go(result);
               h1.done((function(_this) {
                 return function() {
@@ -237,25 +237,25 @@
           }, {
             func: function() {
               var h;
-              h = new Helper(1000);
+              h = new Helper(100);
               h.go(result);
               return h;
             }
           }, [
             function() {
               var h;
-              h = new Helper(1500);
+              h = new Helper(150);
               h.go(result);
               return h;
             }
           ]
         ]);
         return this.sequence.done(function() {
-          expect(result).toEqual([3000]);
+          expect(result).toEqual([300]);
           return done();
         });
       });
-      it("interrupting (no more functions in sequence will be executed, callbacks will not fire)", function(done) {
+      it("interrupting (no more functions in sequence will be executed, callbacks will NOT fire)", function(done) {
         var Helper, h1, result;
         result = [];
         Helper = this.helperClass;
@@ -263,15 +263,15 @@
         this.sequence.start([
           {
             func: function() {
-              h1 = new Helper(3000);
+              h1 = new Helper(300);
               h1.go(result);
               h1.done((function(_this) {
                 return function() {
                   _this.sequence.interrupt();
                   return window.setTimeout(function() {
-                    expect(result).toEqual([3000]);
+                    expect(result).toEqual([300]);
                     return done();
-                  }, 2000);
+                  }, 200);
                 };
               })(this));
               return h1;
@@ -280,14 +280,14 @@
           }, {
             func: function() {
               var h;
-              h = new Helper(1000);
+              h = new Helper(100);
               h.go(result);
               return h;
             }
           }, [
             function() {
               var h;
-              h = new Helper(1500);
+              h = new Helper(150);
               h.go(result);
               return h;
             }
@@ -303,11 +303,12 @@
         Helper = this.helperClass;
         self = this;
         this.sequence.onError(function() {
-          var args, error;
-          error = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-          expect(result).toEqual([3000]);
+          var args, error, index, sequenceData;
+          error = arguments[0], sequenceData = arguments[1], index = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
+          expect(result).toEqual([300]);
           expect(this === self).toBe(true);
           expect(error.message).toBe("Whatever!");
+          expect(index).toBe(1);
           expect(args[0]).toBe(1);
           expect(args[1]).toBe(2);
           return done();
@@ -316,7 +317,7 @@
           {
             func: function() {
               var h;
-              h = new Helper(3000);
+              h = new Helper(300);
               h.go(result);
               return h;
             }
@@ -327,7 +328,7 @@
           }, [
             function() {
               var h;
-              h = new Helper(1500);
+              h = new Helper(150);
               h.go(result);
               return h;
             }
@@ -342,7 +343,7 @@
         this.sequence.start([
           {
             func: function() {
-              h = new Helper(3000);
+              h = new Helper(300);
               h.go();
               return h;
             },
@@ -367,7 +368,7 @@
           {
             func: function() {
               var h;
-              h = new Helper(3000);
+              h = new Helper(300);
               h.go();
               return {
                 done: h,
@@ -382,7 +383,7 @@
             func: function(b, a) {
               var h;
               result.push([b, a]);
-              h = new Helper(1000);
+              h = new Helper(100);
               h.go();
               return {
                 done: h,
@@ -393,7 +394,7 @@
             function(x, y, z) {
               var h;
               result.push([x, y, z]);
-              h = new Helper(1500);
+              h = new Helper(150);
               h.go();
               return h;
             }
@@ -824,8 +825,9 @@
   });
 
   describe("overload", function() {
-    it("setup", function() {
-      window.A = (function() {
+    beforeEach(function() {
+      var A;
+      this.A = (function() {
         function A() {}
 
         A.prototype.a = function() {
@@ -835,7 +837,8 @@
         return A;
 
       })();
-      return window.TestClass = (function() {
+      A = this.A;
+      return this.TestClass = (function() {
         var e, error1;
 
         function TestClass() {}
@@ -846,10 +849,7 @@
           return parseInt(a, 10) + b;
         }, [Boolean, String], [String, Boolean], function(x, y) {
           return x + y;
-        }, {
-          a: A,
-          b: String
-        }, function(a, b) {
+        }, [A, String], function(a, b) {
           return a.a() + parseInt(b, 10);
         });
 
@@ -871,18 +871,15 @@
       })();
     });
     it("func results of overloading", function() {
-      var a, e, error1, testInstance;
-      testInstance = new TestClass();
-      a = new A();
+      var a, testInstance;
+      testInstance = new this.TestClass();
+      a = new this.A();
       expect(testInstance.method1(10, "20")).toBe(30);
       expect(testInstance.method1("20", 20)).toBe(40);
       expect(testInstance.method1(a, "20")).toBe(1357);
-      try {
-        testInstance.method1(a, a);
-      } catch (error1) {
-        e = error1;
-        expect(e.message).toBe("Arguments do not match any known argument list!");
-      }
+      expect(function() {
+        return testInstance.method1(a, a);
+      }).toThrow();
       expect(testInstance.method1(true, "a")).toBe("truea");
       expect(testInstance.method1("a", true)).toBe("atrue");
       expect(testInstance.method2(1, "a")).toBe("1-a");
@@ -890,7 +887,7 @@
       return expect(testInstance.method3).toBeUndefined();
     });
     return it("supports subclass checking", function() {
-      var Sub, Super, e, error1, f;
+      var Sub, Super, f;
       Super = (function() {
         function Super() {}
 
@@ -912,12 +909,9 @@
       });
       expect(f(new Super())).toBe(true);
       expect(f(new Sub())).toBe(true);
-      try {
+      return expect(function() {
         return f("asdf");
-      } catch (error1) {
-        e = error1;
-        return expect(e.message).toBe("Arguments do not match any known argument list!");
-      }
+      }).toThrow();
     });
   });
 

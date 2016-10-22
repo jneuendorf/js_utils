@@ -75,7 +75,7 @@ JSUtils.overload = (args...) ->
         if (f = funcForArgs(arguments, argLists, funcs))?
             return f.apply(@, arguments)
 
-        throw new Error("Arguments do not match any known argument list!")
+        throw new Error("Arguments do not match any known argument list! Given arguments: #{JSON.stringify(arg for arg in arguments)}. Available signatures: #{JSON.stringify((arg.name for arg in argList) for argList in argLists)}")
 
 # Defines what is considered a subclass.
 # Set the body of `JSUtils.isSubclass` to `return sub == sup` to disable support for subclass checking

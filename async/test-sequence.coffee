@@ -8,7 +8,7 @@ describe "async", () ->
 
             # basic class that implements the doneable interface and uses async functions
             class Helper
-                constructor: (delay = 1000) ->
+                constructor: (delay = 100) ->
                     @cbs = []
                     @isDone = false
                     @delay = delay
@@ -18,7 +18,7 @@ describe "async", () ->
                             @isDone = true
                             result?.push @delay
                             @_done()
-                        @deplay
+                        @delay
                     )
                 _done: () ->
                     cb() for cb in @cbs
@@ -58,26 +58,26 @@ describe "async", () ->
             @sequence.start [
                 {
                     func: () ->
-                        h = new Helper(3000)
+                        h = new Helper(300)
                         h.go(result)
                         return h
                 }
                 {
                     func: () ->
-                        h = new Helper(1000)
+                        h = new Helper(100)
                         h.go(result)
                         return h
                 }
                 [
                     () ->
-                        h = new Helper(1500)
+                        h = new Helper(150)
                         h.go(result)
                         return h
                 ]
             ]
             @sequence.done () ->
                 expect result
-                    .toEqual [3000, 1000, 1500]
+                    .toEqual [300, 100, 150]
                 done()
 
         it "apply different contexts to sequence functions", (done) ->
@@ -178,7 +178,7 @@ describe "async", () ->
                     .toEqual ["func1", "func2", "func2.1", "func2.2 -> 2", "func3 -> 6"]
                 done()
 
-        it "stopping (no more functions in sequence will be executed, callbacks will still fire)", (done) ->
+        it "stopping (no more functions in sequence will be executed, callbacks will fire)", (done) ->
             result = []
             Helper = @helperClass
             h1 = null
@@ -186,7 +186,7 @@ describe "async", () ->
             @sequence.start [
                 {
                     func: () ->
-                        h1 = new Helper(3000)
+                        h1 = new Helper(300)
                         h1.go(result)
                         h1.done () =>
                             @sequence.stop()
@@ -195,23 +195,23 @@ describe "async", () ->
                 }
                 {
                     func: () ->
-                        h = new Helper(1000)
+                        h = new Helper(100)
                         h.go(result)
                         return h
                 }
                 [
                     () ->
-                        h = new Helper(1500)
+                        h = new Helper(150)
                         h.go(result)
                         return h
                 ]
             ]
             @sequence.done () ->
                 expect result
-                    .toEqual [3000]
+                    .toEqual [300]
                 done()
 
-        it "interrupting (no more functions in sequence will be executed, callbacks will not fire)", (done) ->
+        it "interrupting (no more functions in sequence will be executed, callbacks will NOT fire)", (done) ->
             result = []
             Helper = @helperClass
             h1 = null
@@ -219,29 +219,29 @@ describe "async", () ->
             @sequence.start [
                 {
                     func: () ->
-                        h1 = new Helper(3000)
+                        h1 = new Helper(300)
                         h1.go(result)
                         h1.done () =>
                             @sequence.interrupt()
                             window.setTimeout(
                                 () ->
                                     expect result
-                                        .toEqual [3000]
+                                        .toEqual [300]
                                     done()
-                                2000
+                                200
                             )
                         return h1
                     scope: @
                 }
                 {
                     func: () ->
-                        h = new Helper(1000)
+                        h = new Helper(100)
                         h.go(result)
                         return h
                 }
                 [
                     () ->
-                        h = new Helper(1500)
+                        h = new Helper(150)
                         h.go(result)
                         return h
                 ]
@@ -255,13 +255,16 @@ describe "async", () ->
             self = @
 
             @sequence.onError(
-                (error, args...) ->
+                (error, sequenceData, index, args...) ->
                     expect result
-                        .toEqual [3000]
+                        .toEqual [300]
                     expect @ is self
                         .toBe true
                     expect error.message
                         .toBe "Whatever!"
+                    expect index
+                        .toBe 1
+                    # check arguments that were passed to onError(func, scope, params...)
                     expect args[0]
                         .toBe 1
                     expect args[1]
@@ -274,7 +277,7 @@ describe "async", () ->
             @sequence.start [
                 {
                     func: () ->
-                        h = new Helper(3000)
+                        h = new Helper(300)
                         h.go(result)
                         return h
                 }
@@ -284,7 +287,7 @@ describe "async", () ->
                 }
                 [
                     () ->
-                        h = new Helper(1500)
+                        h = new Helper(150)
                         h.go(result)
                         return h
                 ]
@@ -298,7 +301,7 @@ describe "async", () ->
             @sequence.start [
                 {
                     func: () ->
-                        h = new Helper(3000)
+                        h = new Helper(300)
                         h.go()
                         return h
                     scope: @
@@ -321,7 +324,7 @@ describe "async", () ->
             @sequence.start [
                 {
                     func: () ->
-                        h = new Helper(3000)
+                        h = new Helper(300)
                         h.go()
                         return {
                             done: h
@@ -334,7 +337,7 @@ describe "async", () ->
                 {
                     func: (b, a) ->
                         result.push [b, a]
-                        h = new Helper(1000)
+                        h = new Helper(100)
                         h.go()
                         return {
                             done: h
@@ -344,7 +347,7 @@ describe "async", () ->
                 [
                     (x, y, z) ->
                         result.push [x, y, z]
-                        h = new Helper(1500)
+                        h = new Helper(150)
                         h.go()
                         return h
                 ]
@@ -399,5 +402,10 @@ describe "async", () ->
             sequence.done () ->
                 result.push sequence.progress()
                 expect result
-                    .toEqual [0, 1 / 3, 2 / 3, 1]
+                    .toEqual [
+                        0
+                        1 / 3
+                        2 / 3
+                        1
+                    ]
                 done()
