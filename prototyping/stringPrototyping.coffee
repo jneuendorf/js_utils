@@ -102,7 +102,19 @@ prototyping["String.prototype"] =
         return res
     isNumeric: () ->
         parsed = parseFloat(@)
-        return ("#{parsed}" is "#{@}" or "+#{parsed}" is "#{@}") and Math.isNum(parsed)
+        if not Math.isNum(parsed)
+            return false
+        # convert "this" to primitive string
+        str = "#{@}"
+        parsedStr = "#{parsed}"
+        if parsedStr is str or "+#{parsed}" is str or parsedStr is "0#{str}"
+            return true
+        # scientific notation
+        parts = @split(/e/gi)
+        if parts.length is 2
+            # parsed.toExponential().replace("+", "") is str
+            return parseInt(parts[0], 10) * Math.pow(10, parseInt(parts[1], 10)) is parsed
+        return false
     endsWith: (end) ->
         index = @lastIndexOf end
         if index >= 0

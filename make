@@ -71,5 +71,7 @@ done
 # echo $FILES_TO_CAT
 
 # --compile --stdio
+echo 'cat $FILES_TO_CAT | coffee -sc > js_utils.js'
 cat $FILES_TO_CAT | coffee -sc > js_utils.js
+echo 'uglifyjs js_utils.js -o js_utils.min.js -c drop_console=true -d DEBUG=false -m'
 uglifyjs js_utils.js -o js_utils.min.js -c drop_console=true -d DEBUG=false -m
