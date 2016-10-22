@@ -1,3 +1,5 @@
+# @nodoc
+# This function finds an object for a string like "obj.prop1.prop2" in the global namespace
 getObjectFromPath = (path) ->
     parts = path.split "."
     res = window

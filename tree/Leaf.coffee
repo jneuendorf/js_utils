@@ -3,6 +3,10 @@
 # E.g. there must be no children.
 class JSUtils.Leaf extends JSUtils.Tree
 
+    # Construct a new {JSUtils.Leaf} instance.
+    # Since a leaf is not recursive there are neither `JSUtils.Leaf.new.byChildRef` nor `JSUtils.Leaf.new.byParentRef` methods.
+    # @param node [mixed] A {JSUtils.Tree} instance or data object (like in the constructor)
+    # @return [JSUtils.Leaf] This instance.
     @new = (node) ->
         return new @(node)
 
@@ -12,6 +16,7 @@ class JSUtils.Leaf extends JSUtils.Tree
 
     # See {JSUtils.Tree#constructor} for details.
     # @param node [mixed] A tree node or data object.
+    # @return [JSUtils.Leaf] This new instance.
     constructor: (node) ->
         super(node)
         delete @children

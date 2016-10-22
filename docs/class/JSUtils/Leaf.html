@@ -55,11 +55,12 @@ E.g. there must be no children.</p>
     <span class='signature'>
       <a href='#new-static'>
         .
-(void)
+(JSUtils.Leaf)
 <b>new</b><span>(node)</span>
       </a>
     </span>
     <span class='desc'>
+      Construct a new <a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a> instance. 
     </span>
   </li>
 </ul>
@@ -305,11 +306,40 @@ E.g. there must be no children.</p>
   <div class='method_details'>
     <p class='signature' id='new-static'>
       .
-(void)
+(JSUtils.Leaf)
 <b>new</b><span>(node)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Construct a new <a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a> instance.
+Since a leaf is not recursive there are neither <code>JSUtils.Leaf.new.byChildRef</code> nor <code>JSUtils.Leaf.new.byParentRef</code> methods.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>node</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A <a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a> instance or data object (like in the constructor) </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
       <h2>Constructor Details</h2>
@@ -317,7 +347,7 @@ E.g. there must be no children.</p>
   <div class='method_details'>
     <p class='signature' id='constructor-dynamic'>
       #
-(void)
+(JSUtils.Leaf)
 <b>constructor</b><span>(node)</span>
       <br>
     </p>
@@ -336,6 +366,17 @@ E.g. there must be no children.</p>
       </span>
       &mdash;
       <span class='desc'>A tree node or data object. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Leaf.html'>JSUtils.Leaf</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This new instance. </span>
     </li>
   </ul>
 </div>

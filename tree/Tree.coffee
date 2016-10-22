@@ -12,7 +12,7 @@ class JSUtils.Tree
 
     # This method creates the default options used when calling {JSUtils.Tree.new}.
     # @private
-    # @param CLASS {JSUtils.Tree} The tree class (or a subclass).
+    # @param CLASS [JSUtils.Tree] The tree class (or a subclass).
     # @return [Object] The default instantiation options.
     @_newOptions: (CLASS) ->
         return {
@@ -26,7 +26,7 @@ class JSUtils.Tree
         }
 
     # @private
-    # @param node [Object]
+    # @param node [mixed] A {JSUtils.Tree} instance or data object (like in the constructor)
     # @param options [Object] Optional. Any given key will override the default. Here are the keys:
     #   `adjustLevels`: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to `false` if you do it later
     #   `afterInstantiate`: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
@@ -48,7 +48,7 @@ class JSUtils.Tree
         return new CLASS(node, options)
 
     # @private
-    # @param node [Object]
+    # @param node [mixed] A {JSUtils.Tree} instance or data object (like in the constructor)
     # @param options [Object] Optional. Any given key will override the default. Here are the keys:
     #   `adjustLevels`: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to `false` if you do it later
     #   `afterInstantiate`: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
@@ -77,7 +77,7 @@ class JSUtils.Tree
         return tree
 
     # @private
-    # @param node [Object]
+    # @param node [mixed] A {JSUtils.Tree} instance or data object (like in the constructor)
     # @param options [Object] Optional. Any given key will override the default. Here are the keys:
     #   `adjustLevels`: Boolean value that indicates whether the tree is supposed to do its aftermath. Only set this to `false` if you do it later
     #   `afterInstantiate`: Function to modify the node and/or the instance. Parameters are (1st) the node object and (2nd) the instance.
@@ -446,7 +446,7 @@ class JSUtils.Tree
     appendChild: () ->
         return @addChild.apply(@, arguments)
 
-    # Add mutlipe nodes as children of this node.
+    # Add multiple nodes as children of this node.
     # This can also move nodes within the tree or between trees (if a node was attached somewhere else before).
     # @param nodes [Array] An array containing tree nodes or data objects (just like using the constructor).
     # @param index [Number] Optional. The index where to insert the node. If no index is given the child will be appended.
