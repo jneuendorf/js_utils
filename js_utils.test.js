@@ -1764,9 +1764,6 @@
         });
         it("getSiblings", function() {
           var node;
-          this.tree.children[1].addChild({
-            name: "child2-child2"
-          });
           expect(this.tree.children[1].children[0].getSiblings()[0].name).toBe("child2-child2");
           expect((function() {
             var j, len, ref, results;
@@ -1836,7 +1833,7 @@
             return results;
           }).call(this)).toEqual(["child2-child", "child2", "root"]);
         });
-        return it("pathFromRoot", function() {
+        it("pathFromRoot", function() {
           var node;
           expect((function() {
             var j, len, ref, results;
@@ -1868,6 +1865,20 @@
             }
             return results;
           }).call(this)).toEqual(["root", "child2", "child2-child"]);
+        });
+        return it("closest", function() {
+          expect(this.tree.closest(function() {
+            return "something that doesn't matter because there is no parent anyway";
+          })).toEqual(null);
+          expect(this.tree.children[1].children[0].closest(function(node) {
+            return node.name === "root";
+          })).toEqual(this.tree);
+          expect(this.tree.children[1].children[0].closest(function(node) {
+            return node.name === "child2";
+          })).toEqual(this.tree.children[1]);
+          return expect(this.tree.children[1].children[0].closest(function(node) {
+            return node.name === "child3";
+          })).toEqual(null);
         });
       });
       return describe("converting a tree", function() {

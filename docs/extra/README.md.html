@@ -36,15 +36,43 @@
       <div id='filecontents'>
         <h1 id="jim-s-shrewd-utilities">Jim&#39;s shrewd utilities</h1>
 <h4 id="a-collection-of-javascript-utilities-written-in-coffeescript-">A collection of JavaScript utilities written in CoffeeScript.</h4><p>The library contains the following modules:</p><ul>
-<li>async</li>
-<li>hash</li>
-<li>overload</li>
-<li>prototyping</li>
-<li>tree</li>
-</ul><p>All modules are independent so far.</p><h3 id="usage">Usage</h3><p>See the <a href="http://jneuendorf.github.io/js_utils/">API documentation</a> (yet incomplete).</p><h3 id="building">Building</h3><p>See the <code>README.md</code> in the according module directory.</p><p>The files <code>js_utils.js</code> and <code>js_utils.min.js</code> can be created using the <code>make</code> shell script (using <code>./make</code>).</p><p>You can choose which modules to</p><ul>
+<li>async<ul>
+<li>sequence<ul>
+<li>execute synchronous and asynchronous functions after each other</li>
+</ul>
+</li>
+<li>barrier<ul>
+<li>execute synchronous and asynchronous functions simultaneously</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>hash<ul>
+<li>maps that allow anything as key</li>
+</ul>
+</li>
+<li>overload<ul>
+<li>function overloading</li>
+</ul>
+</li>
+<li>prototyping<ul>
+<li>adding helpful methods to built-in classes</li>
+</ul>
+</li>
+<li>tree<ul>
+<li>tree structure</li>
+<li>leaf class</li>
+<li>binary tree</li>
+</ul>
+</li>
+</ul><p>All modules are (hopefully) independent so far.</p><h3 id="usage">Usage</h3><p>See the <a href="http://jneuendorf.github.io/js_utils/">API documentation</a> (yet incomplete).</p><h3 id="building">Building</h3><p>See the <code>README.md</code> in the according module directory.</p><p>The files <code>js_utils.js</code> and <code>js_utils.min.js</code> can be created using the <code>make</code> shell script (using <code>./make</code>).</p><p>You can choose which modules to</p><ul>
 <li>include using <code>./make --with module1 ... moduleN</code> or</li>
 <li>exclude using <code>./make --without module1 ... moduleN</code>.</li>
-</ul><p>Both cannot be combinded.</p><h3 id="developing">Developing</h3><p>Each module directory contains a <code>files.txt</code> file that lists all CoffeeScript files in the order they will be concatenated and compiled.</p><p>Additionally, there is a <code>testfiles.txt</code> file that accordingly lists the test specs files in the order they will be concatenated and compiled.</p><p>Unit testing is done using <a href="https://jasmine.github.io/">Jasmine</a>.</p><p>The test file can be built using <code>./make test</code>.</p>
+</ul><p>Both cannot be combinded.</p><h3 id="developing">Developing</h3><p>Each module directory contains a <code>files.txt</code> file that lists all CoffeeScript files in the order they will be concatenated and compiled.
+Additionally, there is a <code>testfiles.txt</code> file that accordingly lists the test specs files in the order they will be concatenated and compiled.</p><p>Unit testing is done using <a href="https://jasmine.github.io/">Jasmine</a>.
+The test file can be built using <code>./make test</code>.</p><p>The API is generated using <a href="https://github.com/coffeedoc/codo">codo</a>.
+It can be regenerated with <code>./make docs</code>.
+This command uses the <code>.codoopts</code> file with can be made with <code>./make codoopts</code>.</p>
       </div>
     </div>
     <div id='footer'>

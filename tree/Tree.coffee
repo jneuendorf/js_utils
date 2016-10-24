@@ -407,6 +407,13 @@ class JSUtils.Tree
         res.reverse()
         return res
 
+    # Find the closest parent that matches `filter`.
+    # @param filter [Function] The function that decides what parent is matches.
+    # @return [JSUtils.Tree] The matched parent or `null`.
+    closest: (filter) ->
+        for ancestor in @pathToRoot().slice(1) when filter(ancestor)
+            return ancestor
+        return null
 
     ##################################################################################################
     # MODIFYING THE TREE

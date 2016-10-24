@@ -406,6 +406,18 @@ All properties of that <code>data</code> object that are made accesible on the n
   </li>
   <li>
     <span class='signature'>
+      <a href='#closest-dynamic'>
+        #
+(JSUtils.Tree)
+<b>closest</b><span>(filter)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      Find the closest parent that matches <code>filter</code>. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
       <a href='#addChild-dynamic'>
         #
 (JSUtils.Tree)
@@ -1653,6 +1665,43 @@ Additionally, all properties of the data object are made accesible on the node d
       )
       &mdash;
       <span class='desc'>This path from the root. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='closest-dynamic'>
+      #
+(JSUtils.Tree)
+<b>closest</b><span>(filter)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Find the closest parent that matches <code>filter</code>.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>filter</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function that decides what parent is matches. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Tree.html'>JSUtils.Tree</a></tt>
+      )
+      &mdash;
+      <span class='desc'>The matched parent or <code>null</code>. </span>
     </li>
   </ul>
 </div>

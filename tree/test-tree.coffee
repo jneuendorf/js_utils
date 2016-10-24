@@ -369,7 +369,7 @@ describe "Tree", () ->
                     .toBe false
 
             it "getSiblings", () ->
-                @tree.children[1].addChild {name: "child2-child2"}
+                # @tree.children[1].addChild {name: "child2-child2"}
                 expect @tree.children[1].children[0].getSiblings()[0].name
                     .toBe "child2-child2"
 
@@ -412,6 +412,16 @@ describe "Tree", () ->
                     .toEqual ["root", "child1"]
                 expect (node.name for node in @tree.children[1].children[0].pathFromRoot())
                     .toEqual ["root", "child2", "child2-child"]
+
+            it "closest", () ->
+                expect @tree.closest(() -> "something that doesn't matter because there is no parent anyway")
+                    .toEqual null
+                expect @tree.children[1].children[0].closest((node) -> return node.name is "root")
+                    .toEqual @tree
+                expect @tree.children[1].children[0].closest((node) -> return node.name is "child2")
+                    .toEqual @tree.children[1]
+                expect @tree.children[1].children[0].closest((node) -> return node.name is "child3")
+                    .toEqual null
 
         describe "converting a tree", () ->
             beforeEach () ->

@@ -305,7 +305,7 @@ o the lookup is <code>O(n)</code> since the keys are stored in an array.</p>
     <p class='signature' id='constructor-dynamic'>
       #
 (JSUtils.Hash)
-<b>constructor</b><span>(obj, defaultVal = null, equality = function(a, b) {
+<b>constructor</b><span>(obj, defaultVal, equality = function(a, b) {
   return a === b;
 })</span>
       <br>
@@ -331,7 +331,7 @@ o the lookup is <code>O(n)</code> since the keys are stored in an array.</p>
         )
       </span>
       &mdash;
-      <span class='desc'>Optional. This value will be returned by <a href='../../class/JSUtils/Hash.html#get-dynamic'>JSUtils.Hash#get</a> if the keys was not found. If this parameter is a function it will be called with the key that&#39;s currently looked up. </span>
+      <span class='desc'>Optional. Defaults to <code>undefined</code>. This value will be returned by <a href='../../class/JSUtils/Hash.html#get-dynamic'>JSUtils.Hash#get</a> if the keys was not found. If this parameter is a function it will be called with the key that&#39;s currently looked up. </span>
     </li>
     <li>
       <span class='name'>equality</span>
