@@ -3,7 +3,7 @@
 Object.defineProperties JSUtils, {
     Doneable: {
         get: () ->
-            return new App.Sequence()
+            return new App.Sequence([])
         set: () ->
             return false
     }
