@@ -51,6 +51,6 @@ Additionally, there is a `testfiles.txt` file that accordingly lists the test sp
 Unit testing is done using [Jasmine](https://jasmine.github.io/).
 The test file can be built using `./make test`.
 
-The API is generated using [codo](https://github.com/coffeedoc/codo).
+The API is generated using [codo](https://github.com/coffeedoc/codo) (install with `npm install codo`).
 It can be regenerated with `./make docs`.
 This command uses the `.codoopts` file with can be made with `./make codoopts`.
