@@ -6,14 +6,21 @@ validArgList = (definedArgList, currentArgList) ->
 
     for expected, i in definedArgList
         current = currentArgList[i]
-        if expected isnt current and not JSUtils.overload.isSubclass(current, expected)
-            return false
+        # treat undefined and null the equally => a defined list [undefined] will match a call f(null)
+        if not expected? and not current?
+            continue
+        if expected isnt current
+            try
+                if not JSUtils.overload.isSubclass(current, expected)
+                    return false
+            catch error
+                return false
     return true
 
 # @nodoc
 # find matching arglist and then find according function
 funcForArgs = (args, argLists, funcs) ->
-    argListToCheck = (arg.constructor for arg in args)
+    argListToCheck = ((arg?.constructor or null) for arg in args)
     for argList, i in argLists
         if validArgList(argList, argListToCheck)
             return funcs[i] or funcs[lastMatchedIdx]
@@ -66,16 +73,18 @@ JSUtils.overload = (args...) ->
             funcs.push args[j]
             # we know (j - i) many arg lists have been pushed => push that many -1 nulls
             for k in [0...(j - i - 1)]
-                funcs.push null
+                # TODO: fix this...pushing null should be sufficient but somehow the lastMatchedIdx is wrong so overload tries `null()`
+                funcs.push args[j]
             i = j + 1
         else
             throw new Error("No function given for argument lists: #{JSON.stringify(arg.name for arg in argList for argList in args.slice(i))}")
+    console.log funcs
 
     return () ->
         if (f = funcForArgs(arguments, argLists, funcs))?
             return f.apply(@, arguments)
 
-        throw new Error("Arguments do not match any known argument list! Given arguments: #{JSON.stringify(arg for arg in arguments)}. Available signatures: #{JSON.stringify((arg.name for arg in argList) for argList in argLists)}")
+        throw new Error("Arguments do not match any known argument list! Given arguments: #{JSON.stringify(arg for arg in arguments)}. Available signatures: #{JSON.stringify((arg?.name or null for arg in argList) for argList in argLists)}")
 
 # Defines what is considered a subclass.
 # Set the body of `JSUtils.isSubclass` to `return sub == sup` to disable support for subclass checking

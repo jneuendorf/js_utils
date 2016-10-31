@@ -370,8 +370,8 @@ describe "Tree", () ->
 
             it "getSiblings", () ->
                 # @tree.children[1].addChild {name: "child2-child2"}
-                expect @tree.children[1].children[0].getSiblings()[0].name
-                    .toBe "child2-child2"
+                expect @tree.children[1].children[0].getSiblings()
+                    .toEqual []
 
                 expect (node.name for node in @tree.children[1].getSiblings())
                     .toEqual ["child1", "child3"]

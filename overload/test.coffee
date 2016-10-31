@@ -10,6 +10,12 @@ describe "overload", () ->
         class @TestClass
 
             method1: JSUtils.overload(
+                []
+                [undefined, Object]
+                [Object, undefined]
+                () ->
+                    return null
+
                 [Number, String]
                 (a, b) ->
                     return a + parseInt(b, 10)
@@ -51,6 +57,13 @@ describe "overload", () ->
     it "func results of overloading", () ->
         testInstance = new @TestClass()
         a = new @A()
+
+        expect testInstance.method1()
+            .toBe null
+        expect testInstance.method1(null, 23)
+            .toBe null
+        expect testInstance.method1("adsf", undefined)
+            .toBe null
 
         expect testInstance.method1(10, "20")
             .toBe 30

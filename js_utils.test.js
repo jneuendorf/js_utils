@@ -843,7 +843,9 @@
 
         function TestClass() {}
 
-        TestClass.prototype.method1 = JSUtils.overload([Number, String], function(a, b) {
+        TestClass.prototype.method1 = JSUtils.overload([], [void 0, Object], [Object, void 0], function() {
+          return null;
+        }, [Number, String], function(a, b) {
           return a + parseInt(b, 10);
         }, [String, Number], function(a, b) {
           return parseInt(a, 10) + b;
@@ -874,6 +876,9 @@
       var a, testInstance;
       testInstance = new this.TestClass();
       a = new this.A();
+      expect(testInstance.method1()).toBe(null);
+      expect(testInstance.method1(null, 23)).toBe(null);
+      expect(testInstance.method1("adsf", void 0)).toBe(null);
       expect(testInstance.method1(10, "20")).toBe(30);
       expect(testInstance.method1("20", 20)).toBe(40);
       expect(testInstance.method1(a, "20")).toBe(1357);
@@ -1764,7 +1769,7 @@
         });
         it("getSiblings", function() {
           var node;
-          expect(this.tree.children[1].children[0].getSiblings()[0].name).toBe("child2-child2");
+          expect(this.tree.children[1].children[0].getSiblings()).toEqual([]);
           expect((function() {
             var j, len, ref, results;
             ref = this.tree.children[1].getSiblings();
