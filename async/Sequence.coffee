@@ -24,6 +24,18 @@
 #   ])
 class JSUtils.Sequence
 
+    # The parameter mode of a sequence is used internally and
+    # is used to decide how to process the return value of the previous function.
+    #   `CONTEXT` means the previous function returned an object with a key `context`.
+    #   `context` is an object of keyword arguments of an array of arguments for the next function.
+    #   The object can optionally contain a 'done' key. The according value must return a 'doneable'.
+    #   `IMPLICIT` means the return value of the previous function will be passed to the current function.
+    #   This is the case when a 'normal' value or a 'doneable' was returned and
+    #   the next function does NOT have `params` defined.
+    #   In case the previous function returned a 'doneable' the next function gets
+    #   whatever is passed to the `done()` callback of the 'doneable' plus the previous returned value.
+    #   `EXPLICIT` means the current function has `params` defined.
+    # @property [Object] The parameter modes (enum-like).
     @PARAM_MODES =
         CONTEXT: "CONTEXT"
         IMPLICIT: "IMPLICIT"
@@ -50,7 +62,7 @@ class JSUtils.Sequence
     ################################################################################################
     # CONSTRUCTOR
 
-    # @param data [Array of Object]
+    # @param data [Array<Objects>,Array<Arrays>]
     #   Each element of `data` is either an object like `{.func, .scope, .params}` or an array with the same values (see the example).
     #   Each element looks like:
     #   `func` (or the 1st array element) is the function being executed.
@@ -69,7 +81,6 @@ class JSUtils.Sequence
         @_errorCallback = null
         @_isDone = false
         @_isStopped = false
-
         # indicates what param mode was chosen in the previous function:
         # - defined params attribute        -> EXPLICIT
         # - context in return value         -> CONTEXT
@@ -223,7 +234,7 @@ class JSUtils.Sequence
     # This method creates a list or arguments for a function from an object or an array.
     # @private
     # @param func [Function] The function to read the signature from.
-    # @param context [Object|Array] Keyword arguments or arguments.
+    # @param context [Object,Array] Keyword arguments or arguments.
     # @return [Array] The arguments.
     _createParamListFromContext: (func, context) ->
         if context not instanceof Array
@@ -238,7 +249,6 @@ class JSUtils.Sequence
 
     # This method invokes the next function in the list.
     # @private
-    # @param previousReult [mixed] The result the previously executed function returned or `null`.
     # @param args... [mixed] These are the arguments passed to the callback itself.
     # @return [JSUtils.Sequence] This instance.
     _invokeNextFunction: (args...) ->
@@ -249,10 +259,10 @@ class JSUtils.Sequence
         # there is data (data = next function in the list) => do stuff
         if data?
             func = data.func or data[0]
-            scope = data.scope or data[1]
-            params = data.params or data[2]
-
             if func?
+                scope = data.scope or data[1]
+                params = data.params or data[2]
+
                 CLASS = @constructor
                 self = @
 
@@ -261,14 +271,14 @@ class JSUtils.Sequence
                     @_parameterMode = CLASS.PARAM_MODES.EXPLICIT
 
                 if @_parameterMode is CLASS.PARAM_MODES.CONTEXT
-                    newParams = @_createParamListFromContext(func, args[0])
-                else if @_parameterMode is CLASS.PARAM_MODES.EXPLICIT
-                    newParams = params
-                else if @_parameterMode is CLASS.PARAM_MODES.IMPLICIT
-                    newParams = args
+                    params = @_createParamListFromContext(func, args[0])
+                # else if @_parameterMode is CLASS.PARAM_MODES.EXPLICIT
+                #     params = params
+                else #if @_parameterMode is CLASS.PARAM_MODES.IMPLICIT
+                    params = args
 
                 try
-                    res = func.apply(scope or window, newParams)
+                    res = func.apply(scope or window, params)
                 catch error
                     res = null
                     if @_errorCallback not instanceof Function

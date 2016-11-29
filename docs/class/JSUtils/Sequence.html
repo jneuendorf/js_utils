@@ -70,18 +70,6 @@ TODO: add docu about how return values of function work (-&gt; param mode)</p>
 </div>
       <h2>Variables Summary</h2>
       <dl class='constants'>
-  <dt id='PARAM_MODES-variable'>
-    PARAM_MODES
-    =
-  </dt>
-  <dd>
-    <pre><code class='coffeescript'>{
-  CONTEXT: &quot;CONTEXT&quot;,
-  IMPLICIT: &quot;IMPLICIT&quot;,
-  EXPLICIT: &quot;EXPLICIT&quot;
-}</code></pre>
-    
-  </dd>
   <dt id='then-variable'>
     then
     =
@@ -391,7 +379,7 @@ Basically <code>window.setTimeout()</code> is used in order to delay a whole Seq
       <span class='name'>data</span>
       <span class='type'>
         (
-          <tt>Array of Object</tt>
+          <tt>Array&lt;Objects&gt;,Array&lt;Arrays&gt;</tt>
         )
       </span>
       &mdash;
@@ -997,7 +985,7 @@ It also takes care of wrapping functions in the object that&#39;s expected in <c
       <span class='name'>context</span>
       <span class='type'>
         (
-          <tt>Object|Array</tt>
+          <tt>Object,Array</tt>
         )
       </span>
       &mdash;
@@ -1031,16 +1019,6 @@ It also takes care of wrapping functions in the object that&#39;s expected in <c
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
-    <li>
-      <span class='name'>previousReult</span>
-      <span class='type'>
-        (
-          <tt>mixed</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The result the previously executed function returned or <code>null</code>. </span>
-    </li>
     <li>
       <span class='name'>args...</span>
       <span class='type'>

@@ -30,6 +30,22 @@ describe "async", () ->
 
             @helperClass = Helper
 
+        it "static method setTimeout behaves like a sequence", (done) ->
+            checkpoints = []
+            start = Date.now()
+            JSUtils.Sequence.setTimeout(
+                () ->
+                    checkpoints.push(1)
+                    # allow ms diff of 10 ms
+                    expect Math.round((Date.now() - start) / 10)
+                        .toBe 10
+                    done()
+                100
+            )
+            # check actual timeout
+            expect checkpoints
+                .toEqual []
+
         it "execute synchronous functions in correct order", (done) ->
             result = []
             @sequence.start [

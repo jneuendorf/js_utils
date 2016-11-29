@@ -57,6 +57,17 @@
         })();
         return this.helperClass = Helper;
       });
+      it("static method setTimeout behaves like a sequence", function(done) {
+        var checkpoints, start;
+        checkpoints = [];
+        start = Date.now();
+        JSUtils.Sequence.setTimeout(function() {
+          checkpoints.push(1);
+          expect(Math.round((Date.now() - start) / 10)).toBe(10);
+          return done();
+        }, 100);
+        return expect(checkpoints).toEqual([]);
+      });
       it("execute synchronous functions in correct order", function(done) {
         var result;
         result = [];
