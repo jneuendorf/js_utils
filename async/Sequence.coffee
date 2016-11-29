@@ -270,9 +270,7 @@ class JSUtils.Sequence
                 catch error
                     res = null
                     if @_errorCallback not instanceof Function
-                        console.error "JSUtils.Sequence::_invokeNextFunction: Given function (at index #{@idx}) threw an Error!"
-                        console.warn "Here is the data:", data
-                        # console.warn "Here is the error:", error
+                        console.error "JSUtils.Sequence::_invokeNextFunction: Function at index #{@idx} caused an error!", data
                         throw error
                     else
                         @_errorCallback.call(@, error, data, @idx)
