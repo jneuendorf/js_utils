@@ -44,7 +44,7 @@ Each asynchronous function MUST return an object that implements a <code>done()<
 This is due to jQuery&#39;s done().
 This <code>done()</code> method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
 If parameters are to be passed to the callback, take care of it yourself (closuring).</p><p>About the parameter mode:
-The <code>_parameterMode</code> of a sequence is used internally and
+The <code>parameterMode</code> of a sequence is used internally and
 is used to decide how to process the return value of the previous function. <code>CONTEXT</code> means the previous function returned an object with a key <code>context</code>. <code>context</code> is an object of keyword arguments of an array of arguments for the next function. The object can optionally contain a &#39;done&#39; key. The according value must return a &#39;doneable&#39;. The next item will be executed when this &#39;doneable&#39; is <code>done()</code>. <code>IMPLICIT</code> means the return value of the previous function will be passed to the current function. This is the case when a &#39;normal&#39; value or a &#39;doneable&#39; was returned and the next function does NOT have <code>params</code> defined. In case the previous function returned a &#39;doneable&#39; the next function gets whatever is passed to the <code>done()</code> callback of the &#39;doneable&#39; plus the previous returned value. <code>EXPLICIT</code> means the current function has <code>params</code> defined.</p>
   <div class='examples'>
     <h3>Examples:</h3>
@@ -107,18 +107,6 @@ See the class documentation for more details.</p>
 </ul>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
-  <li>
-    <span class='signature'>
-      <a href='#getParamMode-dynamic'>
-        #
-(String)
-<b>getParamMode</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method is a getter for <code>_parameterMode</code>. 
-    </span>
-  </li>
   <li>
     <span class='signature'>
       <a href='#addData-dynamic'>
@@ -433,31 +421,6 @@ Basically <code>window.setTimeout()</code> is used in order to delay a whole Seq
 </div>
       <h2>Instance Method Details</h2>
       <div class='methods'>
-  <div class='method_details'>
-    <p class='signature' id='getParamMode-dynamic'>
-      #
-(String)
-<b>getParamMode</b><span>()</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method is a getter for <code>_parameterMode</code>.
-For what the parameter mode is see the general documentation of this class.</p>
-</div>
-<div class='tags'>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt>String</tt>
-      )
-      &mdash;
-      <span class='desc'>Either of <code>JSUtils.Sequence.PARAM_MODES</code>. </span>
-    </li>
-  </ul>
-</div>
-  </div>
   <div class='method_details'>
     <p class='signature' id='addData-dynamic'>
       #

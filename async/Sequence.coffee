@@ -7,7 +7,7 @@
 # If parameters are to be passed to the callback, take care of it yourself (closuring).
 #
 # About the parameter mode:
-# The `_parameterMode` of a sequence is used internally and
+# The `parameterMode` of a sequence is used internally and
 # is used to decide how to process the return value of the previous function.
 #   `CONTEXT` means the previous function returned an object with a key `context`.
 #   `context` is an object of keyword arguments of an array of arguments for the next function.
@@ -91,16 +91,10 @@ class JSUtils.Sequence
         # OR
         # - nothing (= take prev result))   -> IMPLICIT
         # NOTE: default is explicit because first function in sequence has no predecessor
-        @_parameterMode = @constructor.PARAM_MODES.EXPLICIT
+        @parameterMode = @constructor.PARAM_MODES.EXPLICIT
 
         if start is true
             @start()
-
-    # This method is a getter for `_parameterMode`.
-    # For what the parameter mode is see the general documentation of this class.
-    # @return [String] Either of `JSUtils.Sequence.PARAM_MODES`.
-    getParamMode: () ->
-        return @_parameterMode
 
     # This methods adds more data to the already existing.
     # This is useful when using `start=false` in the constructor.
@@ -256,13 +250,13 @@ class JSUtils.Sequence
 
                 # valid params are given explicitly => override param mode
                 if params instanceof Array and params.length > 0
-                    @_parameterMode = CLASS.PARAM_MODES.EXPLICIT
+                    @parameterMode = CLASS.PARAM_MODES.EXPLICIT
 
-                if @_parameterMode is CLASS.PARAM_MODES.CONTEXT
+                if @parameterMode is CLASS.PARAM_MODES.CONTEXT
                     params = @_createParamListFromContext(func, args[0])
-                # else if @_parameterMode is CLASS.PARAM_MODES.EXPLICIT
+                # else if @parameterMode is CLASS.PARAM_MODES.EXPLICIT
                 #     params = params
-                else if @_parameterMode is CLASS.PARAM_MODES.IMPLICIT
+                else if @parameterMode is CLASS.PARAM_MODES.IMPLICIT
                     params = args
 
                 try
@@ -284,9 +278,9 @@ class JSUtils.Sequence
                     if res.done? and res.context?
                         res.done.done () ->
                             self.idx++
-                            self._parameterMode = CLASS.PARAM_MODES.CONTEXT
+                            self.parameterMode = CLASS.PARAM_MODES.CONTEXT
                             # skip previous result because it should not be of interest (use context if needed)
-                            # context property is retrieved in above mode check (if @_parameterMode is CLASS.PARAM_MODES.CONTEXT)
+                            # context property is retrieved in above mode check (if @parameterMode is CLASS.PARAM_MODES.CONTEXT)
                             self._invokeNextFunction(res.context)
                     # return value 'doneable'
                     # i.e. 'res' may be a sequence use context if res' param mode is CONTEXT
@@ -294,22 +288,22 @@ class JSUtils.Sequence
                         res.done () ->
                             self.idx++
                             # use callback arguments because res should not be of much interest (if it is use CONTEXT)
-                            if res.getParamMode?() isnt CLASS.PARAM_MODES.CONTEXT
-                                self._parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                            if res.parameterMode isnt CLASS.PARAM_MODES.CONTEXT
+                                self.parameterMode = CLASS.PARAM_MODES.IMPLICIT
                                 return self._invokeNextFunction(arguments..., res)
                             # else: auto unpack
-                            self._parameterMode = CLASS.PARAM_MODES.CONTEXT
+                            self.parameterMode = CLASS.PARAM_MODES.CONTEXT
                             self._invokeNextFunction(res.lastResult)
                     # SYNC
                     # only context => synchronous function => nothing to wait for
                     else if res.context
                         @idx++
-                        @_parameterMode = CLASS.PARAM_MODES.CONTEXT
+                        @parameterMode = CLASS.PARAM_MODES.CONTEXT
                         @_invokeNextFunction(res.context)
                     # no done() and no context => synchronous function => nothing to wait for
                     else
                         @idx++
-                        @_parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                        @parameterMode = CLASS.PARAM_MODES.IMPLICIT
                         @_invokeNextFunction(res)
         # no data => we're done doing stuff
         else
