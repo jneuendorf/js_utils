@@ -8,23 +8,17 @@
 # TODO: add docu about how return values of function work (-> param mode)
 #
 # @example Sample structure
-#   seq = new Sequence([
+#   seq = new JSUtils.Sequence([
 #       {
 #           func: () ->
 #               return true
 #           scope: someObject
 #           params: [1,2,3]
 #       }
-#       {
-#           func: () ->
-#               return new JSUtils.Sequence(...)
-#           scope: someObject
-#           params: (prevRes, presFunc, prevParams, idx) ->
-#               return [...]
-#       }
 #       [
-#           () -> return true,
-#           someObject,
+#           (bool) ->
+#               return true
+#           someObject
 #           [1,2,3]
 #       ]
 #   ])
@@ -43,14 +37,10 @@ class JSUtils.Sequence
     # @param params [Array] Optional. Arguments for the `func` parameter.
     # @return [JSUtils.Sequence] A sequence (so `done()` can be called on it).
     @setTimeout: (func, delay, scope, params) ->
-        seq = new @([
-            func: func
-            scope: scope
-            params: params
-        ], false)
+        seq = new @([{func, scope, params}], false)
         window.setTimeout(
             () ->
-                seq.start()
+                return seq.start()
             delay
         )
         # return empty sequence in order to attach a done() callback to it which will be triggered when seq.start() finishes
@@ -224,9 +214,8 @@ class JSUtils.Sequence
     _setData: (data) ->
         if data instanceof Array
             for item, i in data when item instanceof Function
-                data[i] = {
-                    func: item
-                }
+                # use array instead of object as wrapper for performance reasons
+                data[i] = [item]
             @data = data
             return @
         throw new Error("JSUtils.Sequence::_setData: Data has to be an array.")
@@ -278,29 +267,14 @@ class JSUtils.Sequence
                 else if @_parameterMode is CLASS.PARAM_MODES.IMPLICIT
                     newParams = args
 
-                # config function given as params
-                if params instanceof Function
-                    d = @data[@idx - 1]
-                    newParams = params(
-                        args
-                        {
-                            func: d?.func or d?[0]
-                            scope: d?.scope or d?[1] or null
-                            params: d?.params?.slice(0) or d?[2]?.slice(0) or []
-                        }
-                        @idx
-                    )
-
                 try
                     res = func.apply(scope or window, newParams)
                 catch error
                     res = null
                     if @_errorCallback not instanceof Function
-                        console.error "================================================================="
                         console.error "JSUtils.Sequence::_invokeNextFunction: Given function (at index #{@idx}) threw an Error!"
                         console.warn "Here is the data:", data
                         console.warn "Here is the error:", error
-                        console.error "================================================================="
                     else
                         @_errorCallback(error, data, @idx)
 

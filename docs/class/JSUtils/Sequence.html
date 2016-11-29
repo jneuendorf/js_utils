@@ -50,23 +50,17 @@ TODO: add docu about how return values of function work (-&gt; param mode)</p>
     <h4>
       Sample structure
     </h4>
-    <pre><code class='coffeescript'>seq = new Sequence([
+    <pre><code class='coffeescript'>seq = new JSUtils.Sequence([
     {
         func: () -&gt;
             return true
         scope: someObject
         params: [1,2,3]
     }
-    {
-        func: () -&gt;
-            return new JSUtils.Sequence(...)
-        scope: someObject
-        params: (prevRes, presFunc, prevParams, idx) -&gt;
-            return [...]
-    }
     [
-        () -&gt; return true,
-        someObject,
+        (bool) -&gt;
+            return true
+        someObject
         [1,2,3]
     ]
 ])</code></pre>
