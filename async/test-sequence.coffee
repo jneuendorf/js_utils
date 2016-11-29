@@ -39,8 +39,20 @@ describe "async", () ->
                     # allow ms diff of 10 ms
                     expect Math.round((Date.now() - start) / 10)
                         .toBe 10
-                    done()
                 100
+            )
+            JSUtils.Sequence.setTimeout(
+                (args...) ->
+                    expect args
+                        .toEqual [1, 2]
+                    expect @
+                        .toEqual {scope: true}
+                    expect checkpoints
+                        .toEqual [1]
+                    done()
+                300
+                {scope: true}
+                [1, 2]
             )
             # check actual timeout
             expect checkpoints
@@ -266,29 +278,24 @@ describe "async", () ->
                 result.push "should not be in result!"
 
         it "stopping & interrupting on error", (done) ->
+            self = @
             result = []
             Helper = @helperClass
-            self = @
+            errorFunc = () ->
+                throw new Error("Whatever!")
 
-            @sequence.onError(
-                (error, sequenceData, index, args...) ->
-                    expect result
-                        .toEqual [300]
-                    expect @ is self
-                        .toBe true
-                    expect error.message
-                        .toBe "Whatever!"
-                    expect index
-                        .toBe 1
-                    # check arguments that were passed to onError(func, scope, params...)
-                    expect args[0]
-                        .toBe 1
-                    expect args[1]
-                        .toBe 2
-                    done()
-                @
-                1, 2
-            )
+            @sequence.onError (error, sequenceData, index) ->
+                expect result
+                    .toEqual [300]
+                expect @
+                    .toBe self.sequence
+                expect error.message
+                    .toBe "Whatever!"
+                expect sequenceData.func
+                    .toBe errorFunc
+                expect index
+                    .toBe 1
+                done()
 
             @sequence.start [
                 {
@@ -298,8 +305,7 @@ describe "async", () ->
                         return h
                 }
                 {
-                    func: () ->
-                        throw new Error("Whatever!")
+                    func: errorFunc
                 }
                 [
                     () ->

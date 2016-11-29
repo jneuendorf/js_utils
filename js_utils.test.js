@@ -63,9 +63,20 @@
         start = Date.now();
         JSUtils.Sequence.setTimeout(function() {
           checkpoints.push(1);
-          expect(Math.round((Date.now() - start) / 10)).toBe(10);
-          return done();
+          return expect(Math.round((Date.now() - start) / 10)).toBe(10);
         }, 100);
+        JSUtils.Sequence.setTimeout(function() {
+          var args;
+          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+          expect(args).toEqual([1, 2]);
+          expect(this).toEqual({
+            scope: true
+          });
+          expect(checkpoints).toEqual([1]);
+          return done();
+        }, 300, {
+          scope: true
+        }, [1, 2]);
         return expect(checkpoints).toEqual([]);
       });
       it("execute synchronous functions in correct order", function(done) {
@@ -309,21 +320,21 @@
         });
       });
       it("stopping & interrupting on error", function(done) {
-        var Helper, result, self;
+        var Helper, errorFunc, result, self;
+        self = this;
         result = [];
         Helper = this.helperClass;
-        self = this;
-        this.sequence.onError(function() {
-          var args, error, index, sequenceData;
-          error = arguments[0], sequenceData = arguments[1], index = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
+        errorFunc = function() {
+          throw new Error("Whatever!");
+        };
+        this.sequence.onError(function(error, sequenceData, index) {
           expect(result).toEqual([300]);
-          expect(this === self).toBe(true);
+          expect(this).toBe(self.sequence);
           expect(error.message).toBe("Whatever!");
+          expect(sequenceData.func).toBe(errorFunc);
           expect(index).toBe(1);
-          expect(args[0]).toBe(1);
-          expect(args[1]).toBe(2);
           return done();
-        }, this, 1, 2);
+        });
         return this.sequence.start([
           {
             func: function() {
@@ -333,9 +344,7 @@
               return h;
             }
           }, {
-            func: function() {
-              throw new Error("Whatever!");
-            }
+            func: errorFunc
           }, [
             function() {
               var h;
