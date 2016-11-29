@@ -434,6 +434,7 @@
         var result, sequence;
         result = [];
         sequence = this.sequence;
+        expect(sequence.progress()).toBe(1);
         sequence.start([
           {
             func: function() {
@@ -455,7 +456,7 @@
           return done();
         });
       });
-      return it("addData", function() {
+      it("addData", function() {
         var checkpoints;
         this.sequence.start();
         expect(this.sequence.progress()).toBe(1);
@@ -507,6 +508,20 @@
         ]);
         expect(this.sequence._isStopped).toBe(false);
         return expect(this.sequence._isDone).toBe(true);
+      });
+      return it("can take plain functions as data", function() {
+        var checkpoints;
+        checkpoints = [];
+        this.sequence.start([
+          function() {
+            checkpoints.push(1);
+            return 1;
+          }, function() {
+            checkpoints.push(2);
+            return 2;
+          }
+        ]);
+        return expect(checkpoints).toEqual([1, 2]);
       });
     });
     return describe("Barrier", function() {

@@ -211,8 +211,15 @@ class JSUtils.Sequence
         @onEnd(endFunc, context, args...)
         return @
 
+    # This method is used from other methods to update the data of the sequence.
+    # It also takes care of wrapping functions in the object that's expected in `_invokeNextFunction()`.
+    # @todo This reiterates items that have been added in case this method is called from addData().
     _setData: (data) ->
         if data instanceof Array
+            for item, i in data when item instanceof Function
+                data[i] = {
+                    func: item
+                }
             @data = data
             return @
         throw new Error("JSUtils.Sequence::_setData: Data has to be an array.")

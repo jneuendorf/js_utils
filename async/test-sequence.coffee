@@ -385,6 +385,9 @@ describe "async", () ->
         it "progress", (done) ->
             result = []
             sequence = @sequence
+            # an empty sequence is done
+            expect sequence.progress()
+                .toBe 1
             sequence.start [
                 {
                     func: () ->
@@ -468,3 +471,16 @@ describe "async", () ->
                 .toBe false
             expect @sequence._isDone
                 .toBe true
+
+        it "can take plain functions as data", () ->
+            checkpoints = []
+            @sequence.start([
+                () ->
+                    checkpoints.push(1)
+                    return 1
+                () ->
+                    checkpoints.push(2)
+                    return 2
+            ])
+            expect checkpoints
+                .toEqual [1, 2]
