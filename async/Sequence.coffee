@@ -90,6 +90,21 @@ class JSUtils.Sequence
         if start is true
             @start()
 
+    # This methods adds more data to the already existing.
+    # This is useful when using `start=false` in the constructor.
+    # If the sequence was already done or stopped before it will be resumed unless the `resume` parameter is false
+    # @param data [Array] The data to add.
+    # @return [JSUtils.Sequence] This instance.
+    # @todo This requires `resume()` to be implemented correctly.
+    addData: (data, resume = true) ->
+        if data instanceof Array
+            @_isDone = false
+            @data = @data.concat(data)
+            if resume
+                @resume()
+            return @
+        throw new Error("JSUtils.Sequence::addData: Data has to be an array.")
+
     # This method starts the Sequence in case it has been created with `false` as constructor parameter.
     # @param newData [Array] Optional. If an array is given it will replace the possibly previously set data.
     # @return [JSUtils.Sequence] This instance.
@@ -199,7 +214,7 @@ class JSUtils.Sequence
                         console.error "================================================================="
                     else
                         @_errorCallback(error, data, @idx)
-                        
+
                     if @stopOnError
                         @interrupt()
 
@@ -308,7 +323,9 @@ class JSUtils.Sequence
     # This method returns the progress of the sequence in [0,1].
     # @return [Number] progress
     progress: () ->
-        return @idx / @data.length
+        if @data.length > 0
+            return @idx / @data.length
+        return 1
 
     # This method is a shortcut for calling `onStart()` (see {JSUtils.Sequence#onStart}) and `onEnd()` (see {JSUtils.Sequence#onEnd}).
     # @param startFunc [Function] The callback to be executed before the sequence starts.

@@ -430,7 +430,7 @@
           ]
         ]);
       });
-      return it("progress", function(done) {
+      it("progress", function(done) {
         var result, sequence;
         result = [];
         sequence = this.sequence;
@@ -454,6 +454,59 @@
           expect(result).toEqual([0, 1 / 3, 2 / 3, 1]);
           return done();
         });
+      });
+      return it("addData", function() {
+        var checkpoints;
+        this.sequence.start();
+        expect(this.sequence.progress()).toBe(1);
+        checkpoints = [];
+        this.sequence.addData([
+          {
+            func: function() {
+              checkpoints.push(1);
+              return 1;
+            }
+          }
+        ]);
+        expect(checkpoints).toEqual([1]);
+        this.sequence.addData([
+          {
+            func: (function(_this) {
+              return function() {
+                checkpoints.push(2);
+                _this.sequence.interrupt();
+                return 2;
+              };
+            })(this)
+          }, {
+            func: function() {
+              checkpoints.push(3);
+              return 3;
+            }
+          }
+        ], false);
+        expect(checkpoints).toEqual([1]);
+        expect(this.sequence._isDone).toBe(false);
+        this.sequence.addData([
+          {
+            func: function() {
+              checkpoints.push(4);
+              return 4;
+            }
+          }
+        ]);
+        expect(checkpoints).toEqual([1, 2]);
+        expect(this.sequence._isStopped).toBe(true);
+        this.sequence.addData([
+          {
+            func: function() {
+              checkpoints.push(5);
+              return 5;
+            }
+          }
+        ]);
+        expect(this.sequence._isStopped).toBe(false);
+        return expect(this.sequence._isDone).toBe(true);
       });
     });
     return describe("Barrier", function() {

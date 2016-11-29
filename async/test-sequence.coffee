@@ -409,3 +409,62 @@ describe "async", () ->
                         1
                     ]
                 done()
+
+        it "addData", () ->
+            @sequence.start()
+            expect @sequence.progress()
+                .toBe 1
+            checkpoints = []
+            # auto resume when done
+            @sequence.addData([
+                {
+                    func: () ->
+                        checkpoints.push(1)
+                        return 1
+                }
+            ])
+            expect checkpoints
+                .toEqual [1]
+            # don't resume when resume = false
+            @sequence.addData([
+                {
+                    func: () =>
+                        checkpoints.push(2)
+                        @sequence.interrupt()
+                        return 2
+                }
+                {
+                    func: () ->
+                        checkpoints.push(3)
+                        return 3
+                }
+            ], false)
+            expect checkpoints
+                .toEqual [1]
+            expect @sequence._isDone
+                .toBe false
+            # add more data, resume -> it will stop at checkpoint == 2
+            @sequence.addData([
+                {
+                    func: () ->
+                        checkpoints.push(4)
+                        return 4
+                }
+            ])
+            expect checkpoints
+                .toEqual [1, 2]
+            expect @sequence._isStopped
+                .toBe true
+            # should resume also when stopped
+            # add more data, resume -> it should be done and not stopped
+            @sequence.addData([
+                {
+                    func: () ->
+                        checkpoints.push(5)
+                        return 5
+                }
+            ])
+            expect @sequence._isStopped
+                .toBe false
+            expect @sequence._isDone
+                .toBe true

@@ -32,6 +32,7 @@ elif [[ "$1" == "test" ]]; then
         done
     done
     cat $FILES_TO_CAT | coffee -sc > js_utils.test.js
+    echo 'updated js_utils.test.js'
     exit 0
 elif [[ "$1" == "docs" ]]; then
     # options are in .codoopts file
