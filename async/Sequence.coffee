@@ -69,15 +69,15 @@ class JSUtils.Sequence
     # @param stopOnError [Boolean] Optional. Whether an error within a sequence item will cause the sequence to stop executing any more items.
     # @return [JSUtils.Sequence] A new instance of `JSUtils.Sequence`
     constructor: (data, start = true, stopOnError = true) ->
-        @data = data
+        @_setData(data)
         @idx = 0
         @stopOnError = stopOnError
         @_doneCallbacks = []
         @_startCallback = null
-        @_endCallback   = null
+        @_endCallback = null
         @_errorCallback = null
-        @_isDone        = false
-        @_isStopped     = false
+        @_isDone = false
+        @_isStopped = false
 
         # indicates what param mode was chosen in the previous function:
         # - defined params attribute        -> EXPLICIT
@@ -97,20 +97,18 @@ class JSUtils.Sequence
     # @return [JSUtils.Sequence] This instance.
     # @todo This requires `resume()` to be implemented correctly.
     addData: (data, resume = true) ->
-        if data instanceof Array
-            @_isDone = false
-            @data = @data.concat(data)
-            if resume
-                @resume()
-            return @
-        throw new Error("JSUtils.Sequence::addData: Data has to be an array.")
+        @_setData(@data.concat(data))
+        @_isDone = false
+        if resume
+            @resume()
+        return @
 
     # This method starts the Sequence in case it has been created with `false` as constructor parameter.
     # @param newData [Array] Optional. If an array is given it will replace the possibly previously set data.
     # @return [JSUtils.Sequence] This instance.
     start: (newData) ->
-        if newData instanceof Array
-            @data = newData
+        if newData?
+            @_setData(newData)
         @_startCallback?()
         @_invokeNextFunction()
         return @
@@ -139,6 +137,85 @@ class JSUtils.Sequence
         # TODO: pass correct params here (prev res....)
         @_invokeNextFunction()
         return @
+
+    # Set the callback that is executed before the sequence starts.
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
+    onStart: (callback, context, args...) ->
+        if typeof callback is "function"
+            @_startCallback = () ->
+                return callback.apply(context, args)
+        return @
+
+    # Set the callback that is executed after the sequence is done (but before the done callbacks are triggered).
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
+    onEnd: (callback, context, args...) ->
+        if typeof callback is "function"
+            @_endCallback = () ->
+                return callback.apply(context, args)
+        return @
+
+    # Callback that gets called in case an error occurs while a sequence item is being executed.
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
+    onError: (callback, context, args...) ->
+        if typeof callback is "function"
+            @_errorCallback = (error, data, index) ->
+                return callback.apply(context, [error, data, index].concat(args))
+        return @
+
+    # This method adds a callback that will be executed after all sequence items are done (but after the `endCallback`).
+    # If the sequence is already done the callback will be executed right away.
+    # In addition of the optional `args` that are passed to the callback the result of the previous sequence item will be passed as well.
+    # So the previous return value is accessible by the last argument of the callback's arguments.
+    # @param callback [Function] The callback.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
+    done: (callback, context, args...) ->
+        if typeof callback is "function"
+            self = @
+            # not done => push to queue
+            if not @_isDone
+                @_doneCallbacks.push () ->
+                    return callback.apply(context, args.concat([self.lastResult]))
+            # done => execute immediately
+            else
+                callback.apply(context, args.concat([self.lastResult]))
+        return @
+
+    then: @::done
+
+    # This method returns the progress of the sequence in [0,1].
+    # @return [Number] progress
+    progress: () ->
+        if @data.length > 0
+            return @idx / @data.length
+        return 1
+
+    # This method is a shortcut for calling `onStart()` (see {JSUtils.Sequence#onStart}) and `onEnd()` (see {JSUtils.Sequence#onEnd}).
+    # @param startFunc [Function] The callback to be executed before the sequence starts.
+    # @param endFunc [Function] The callback to be executed after the sequence is done.
+    # @param context [Object] Optional. The context for the callback.
+    # @param args... [mixed] Optional. The arguments for the callback.
+    # @return [JSUtils.Sequence] This instance.
+    while: (startFunc, endFunc, context, args...) ->
+        @onStart(startFunc, context, args...)
+        @onEnd(endFunc, context, args...)
+        return @
+
+    _setData: (data) ->
+        if data instanceof Array
+            @data = data
+            return @
+        throw new Error("JSUtils.Sequence::_setData: Data has to be an array.")
 
     # This method creates a list or arguments for a function from an object or an array.
     # @private
@@ -263,77 +340,4 @@ class JSUtils.Sequence
     _execDoneCallbacks: () ->
         @_isDone = true
         cb() for cb in @_doneCallbacks
-        return @
-
-    # Set the callback that is executed before the sequence starts.
-    # @param callback [Function] The callback.
-    # @param context [Object] Optional. The context for the callback.
-    # @param args... [mixed] Optional. The arguments for the callback.
-    # @return [JSUtils.Sequence] This instance.
-    onStart: (callback, context, args...) ->
-        if typeof callback is "function"
-            @_startCallback = () ->
-                return callback.apply(context, args)
-        return @
-
-    # Set the callback that is executed after the sequence is done (but before the done callbacks are triggered).
-    # @param callback [Function] The callback.
-    # @param context [Object] Optional. The context for the callback.
-    # @param args... [mixed] Optional. The arguments for the callback.
-    # @return [JSUtils.Sequence] This instance.
-    onEnd: (callback, context, args...) ->
-        if typeof callback is "function"
-            @_endCallback = () ->
-                return callback.apply(context, args)
-        return @
-
-    # Callback that gets called in case an error occurs while a sequence item is being executed.
-    # @param callback [Function] The callback.
-    # @param context [Object] Optional. The context for the callback.
-    # @param args... [mixed] Optional. The arguments for the callback.
-    # @return [JSUtils.Sequence] This instance.
-    onError: (callback, context, args...) ->
-        if typeof callback is "function"
-            @_errorCallback = (error, data, index) ->
-                return callback.apply(context, [error, data, index].concat(args))
-        return @
-
-    # This method adds a callback that will be executed after all sequence items are done (but after the `endCallback`).
-    # If the sequence is already done the callback will be executed right away.
-    # In addition of the optional `args` that are passed to the callback the result of the previous sequence item will be passed as well.
-    # So the previous return value is accessible by the last argument of the callback's arguments.
-    # @param callback [Function] The callback.
-    # @param context [Object] Optional. The context for the callback.
-    # @param args... [mixed] Optional. The arguments for the callback.
-    # @return [JSUtils.Sequence] This instance.
-    done: (callback, context, args...) ->
-        if typeof callback is "function"
-            self = @
-            # not done => push to queue
-            if not @_isDone
-                @_doneCallbacks.push () ->
-                    return callback.apply(context, args.concat([self.lastResult]))
-            # done => execute immediately
-            else
-                callback.apply(context, args.concat([self.lastResult]))
-        return @
-
-    then: @::done
-
-    # This method returns the progress of the sequence in [0,1].
-    # @return [Number] progress
-    progress: () ->
-        if @data.length > 0
-            return @idx / @data.length
-        return 1
-
-    # This method is a shortcut for calling `onStart()` (see {JSUtils.Sequence#onStart}) and `onEnd()` (see {JSUtils.Sequence#onEnd}).
-    # @param startFunc [Function] The callback to be executed before the sequence starts.
-    # @param endFunc [Function] The callback to be executed after the sequence is done.
-    # @param context [Object] Optional. The context for the callback.
-    # @param args... [mixed] Optional. The arguments for the callback.
-    # @return [JSUtils.Sequence] This instance.
-    while: (startFunc, endFunc, context, args...) ->
-        @onStart(startFunc, context, args...)
-        @onEnd(endFunc, context, args...)
         return @
