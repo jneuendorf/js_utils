@@ -374,7 +374,7 @@ describe "async", () ->
                 }
                 {
                     func: (a, b) ->
-                        expect(a is 1 and b is 1).toBe(true)
+                        expect(a is 1 and b is 2).toBe(true)
                         done()
                 }
             ])

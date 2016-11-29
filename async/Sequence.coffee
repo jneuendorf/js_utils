@@ -91,6 +91,12 @@ class JSUtils.Sequence
         if start is true
             @start()
 
+    # This method is a getter for `_parameterMode`.
+    # For what the parameter mode is see the general documentation of this class.
+    # @return [String] Either of `JSUtils.Sequence.PARAM_MODES`.
+    getParamMode: () ->
+        return @_parameterMode
+
     # This methods adds more data to the already existing.
     # This is useful when using `start=false` in the constructor.
     # If the sequence was already done or stopped before it will be resumed unless the `resume` parameter is false
@@ -265,8 +271,6 @@ class JSUtils.Sequence
                 if params instanceof Array and params.length > 0
                     @_parameterMode = CLASS.PARAM_MODES.EXPLICIT
 
-                # console.log "sequence param mode = ", @_parameterMode
-
                 if @_parameterMode is CLASS.PARAM_MODES.CONTEXT
                     newParams = @_createParamListFromContext(func, args[0])
                 else if @_parameterMode is CLASS.PARAM_MODES.EXPLICIT
@@ -304,10 +308,6 @@ class JSUtils.Sequence
                         @interrupt()
 
                 if res?
-                    # if res.return? and res.context? and @idx < @data.length - 1
-                    #     console.warn "Using the key 'return' in the context object is ignored because it only has an effect when attached to the context returned by the last function of the sequence. Here is the function that returned that context:", func
-
-
                     # ASYNC
                     # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
                     if res.done? and res.context?
@@ -317,15 +317,18 @@ class JSUtils.Sequence
                             # skip previous result because it should not be of interest (use context if needed)
                             # context property is retrieved in above mode check (if @_parameterMode is CLASS.PARAM_MODES.CONTEXT)
                             self._invokeNextFunction(res.context)
-                    # return value is of type ''
+                    # return value 'doneable'
+                    # i.e. 'res' may be a sequence use context if res' param mode is CONTEXT
                     else if res.done?
-                        # the good thing is the done we're adding right here will be called after all previous done methods.
                         res.done () ->
                             self.idx++
-                            # if res instanceof JSUtils.Sequence or res instanceof JSUtils.Barrier
-                            self._parameterMode = CLASS.PARAM_MODES.IMPLICIT
-                            # use callback arguments because it should not be of interest (use context if needed)
-                            self._invokeNextFunction(arguments..., res)
+                            # use callback arguments because res should not be of much interest (if it is use CONTEXT)
+                            if res.getParamMode?() isnt CLASS.PARAM_MODES.CONTEXT
+                                self._parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                                return self._invokeNextFunction(arguments..., res)
+                            # else: auto unpack
+                            self._parameterMode = CLASS.PARAM_MODES.CONTEXT
+                            self._invokeNextFunction(res.lastResult)
                     # SYNC
                     # only context => synchronous function => nothing to wait for
                     else if res.context
@@ -340,8 +343,6 @@ class JSUtils.Sequence
         # no data => we're done doing stuff
         else
             @lastResult = args[0]
-            # if @_parameterMode is @constructor.PARAM_MODES.CONTEXT
-            #     @lastResult = @lastResult.context
             @_endCallback?()
             @_execDoneCallbacks()
         return @

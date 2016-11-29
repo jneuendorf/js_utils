@@ -43,7 +43,8 @@ The cool thing is that the function can be both: synchronous or asynchronous.
 Each asynchronous function MUST return an object that implements a <code>done()</code> method in order to be waited on.
 This is due to jQuery&#39;s done().
 This <code>done()</code> method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
-If parameters are to be passed to the callback, take care of it yourself (closuring).</p>
+If parameters are to be passed to the callback, take care of it yourself (closuring).
+TODO: add docu about how return values of function work (-&gt; param mode)</p>
   <div class='examples'>
     <h3>Examples:</h3>
     <h4>
@@ -115,6 +116,30 @@ If parameters are to be passed to the callback, take care of it yourself (closur
       <ul class='summary'>
   <li>
     <span class='signature'>
+      <a href='#getParamMode-dynamic'>
+        #
+(String)
+<b>getParamMode</b><span>()</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This method is a getter for <code>_parameterMode</code>. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#addData-dynamic'>
+        #
+(JSUtils.Sequence)
+<b>addData</b><span>(data, resume = true)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This methods adds more data to the already existing. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
       <a href='#start-dynamic'>
         #
 (JSUtils.Sequence)
@@ -159,45 +184,6 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     </span>
     <span class='desc'>
       This method resumes the sequence. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#_createParamListFromContext-dynamic'>
-        #
-(Array)
-<b>_createParamListFromContext</b><span>(func, context)</span>
-      </a>
-    </span>
-    <span class='note private title'>Private</span>
-    <span class='desc'>
-      This method creates a list or arguments for a function from an object or an array. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#_invokeNextFunction-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>_invokeNextFunction</b><span>(args...)</span>
-      </a>
-    </span>
-    <span class='note private title'>Private</span>
-    <span class='desc'>
-      This method invokes the next function in the list. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#_execDoneCallbacks-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>_execDoneCallbacks</b><span>()</span>
-      </a>
-    </span>
-    <span class='note private title'>Private</span>
-    <span class='desc'>
-      This method is called when the Sequence has executed all of its functions. 
     </span>
   </li>
   <li>
@@ -270,6 +256,57 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     </span>
     <span class='desc'>
       This method is a shortcut for calling <code>onStart()</code> (see <a href='../../class/JSUtils/Sequence.html#onStart-dynamic'>JSUtils.Sequence#onStart</a>) and <code>onEnd()</code> (see <a href='../../class/JSUtils/Sequence.html#onEnd-dynamic'>JSUtils.Sequence#onEnd</a>). 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#_setData-dynamic'>
+        #
+(void)
+<b>_setData</b><span>(data)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This method is used from other methods to update the data of the sequence. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#_createParamListFromContext-dynamic'>
+        #
+(Array)
+<b>_createParamListFromContext</b><span>(func, context)</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+      This method creates a list or arguments for a function from an object or an array. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#_invokeNextFunction-dynamic'>
+        #
+(JSUtils.Sequence)
+<b>_invokeNextFunction</b><span>(args...)</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+      This method invokes the next function in the list. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#_execDoneCallbacks-dynamic'>
+        #
+(JSUtils.Sequence)
+<b>_execDoneCallbacks</b><span>()</span>
+      </a>
+    </span>
+    <span class='note private title'>Private</span>
+    <span class='desc'>
+      This method is called when the Sequence has executed all of its functions. 
     </span>
   </li>
 </ul>
@@ -404,6 +441,74 @@ Basically <code>window.setTimeout()</code> is used in order to delay a whole Seq
       <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
+    <p class='signature' id='getParamMode-dynamic'>
+      #
+(String)
+<b>getParamMode</b><span>()</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method is a getter for <code>_parameterMode</code>.
+For what the parameter mode is see the general documentation of this class.</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>String</tt>
+      )
+      &mdash;
+      <span class='desc'>Either of <code>JSUtils.Sequence.PARAM_MODES</code>. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='addData-dynamic'>
+      #
+(JSUtils.Sequence)
+<b>addData</b><span>(data, resume = true)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <div class='note todo'>
+    <strong>TODO:</strong>
+    This requires <code>resume()</code> to be implemented correctly. 
+  </div>
+  <p>This methods adds more data to the already existing.
+This is useful when using <code>start=false</code> in the constructor.
+If the sequence was already done or stopped before it will be resumed unless the <code>resume</code> parameter is false</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>data</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The data to add. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
     <p class='signature' id='start-dynamic'>
       #
 (JSUtils.Sequence)
@@ -515,129 +620,6 @@ Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
     this probably won&#39;t work... 
   </div>
   <p>This method resumes the sequence.</p>
-</div>
-<div class='tags'>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_createParamListFromContext-dynamic'>
-      #
-(Array)
-<b>_createParamListFromContext</b><span>(func, context)</span>
-      <span class='note private'>Private</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method creates a list or arguments for a function from an object or an array.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>func</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The function to read the signature from. </span>
-    </li>
-    <li>
-      <span class='name'>context</span>
-      <span class='type'>
-        (
-          <tt>Object|Array</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Keyword arguments or arguments. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt>Array</tt>
-      )
-      &mdash;
-      <span class='desc'>The arguments. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_invokeNextFunction-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>_invokeNextFunction</b><span>(args...)</span>
-      <span class='note private'>Private</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method invokes the next function in the list.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>previousReult</span>
-      <span class='type'>
-        (
-          <tt>mixed</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The result the previously executed function returned or <code>null</code>. </span>
-    </li>
-    <li>
-      <span class='name'>args...</span>
-      <span class='type'>
-        (
-          <tt>mixed</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>These are the arguments passed to the callback itself. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_execDoneCallbacks-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>_execDoneCallbacks</b><span>()</span>
-      <span class='note private'>Private</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method is called when the Sequence has executed all of its functions.
-It will then start executing all callbacks that previously have been added via <code>done()</code> (in the order they were added).
-No callback receives any parameters.</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -962,6 +944,147 @@ So the previous return value is accessible by the last argument of the callback&
       <span class='desc'>Optional. The arguments for the callback. </span>
     </li>
   </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='_setData-dynamic'>
+      #
+(void)
+<b>_setData</b><span>(data)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <div class='note todo'>
+    <strong>TODO:</strong>
+    This reiterates items that have been added in case this method is called from addData(). 
+  </div>
+  <p>This method is used from other methods to update the data of the sequence.
+It also takes care of wrapping functions in the object that&#39;s expected in <code>_invokeNextFunction()</code>.</p>
+</div>
+<div class='tags'>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='_createParamListFromContext-dynamic'>
+      #
+(Array)
+<b>_createParamListFromContext</b><span>(func, context)</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method creates a list or arguments for a function from an object or an array.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>func</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The function to read the signature from. </span>
+    </li>
+    <li>
+      <span class='name'>context</span>
+      <span class='type'>
+        (
+          <tt>Object|Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Keyword arguments or arguments. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The arguments. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='_invokeNextFunction-dynamic'>
+      #
+(JSUtils.Sequence)
+<b>_invokeNextFunction</b><span>(args...)</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method invokes the next function in the list.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>previousReult</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>The result the previously executed function returned or <code>null</code>. </span>
+    </li>
+    <li>
+      <span class='name'>args...</span>
+      <span class='type'>
+        (
+          <tt>mixed</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>These are the arguments passed to the callback itself. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
+      )
+      &mdash;
+      <span class='desc'>This instance. </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='_execDoneCallbacks-dynamic'>
+      #
+(JSUtils.Sequence)
+<b>_execDoneCallbacks</b><span>()</span>
+      <span class='note private'>Private</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method is called when the Sequence has executed all of its functions.
+It will then start executing all callbacks that previously have been added via <code>done()</code> (in the order they were added).
+No callback receives any parameters.</p>
+</div>
+<div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>

@@ -424,7 +424,7 @@
             }
           }, {
             func: function(a, b) {
-              expect(a === 1 && b === 1).toBe(true);
+              expect(a === 1 && b === 2).toBe(true);
               return done();
             }
           }
