@@ -5,37 +5,41 @@
 # This is due to jQuery's done().
 # This `done()` method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
 # If parameters are to be passed to the callback, take care of it yourself (closuring).
-# TODO: add docu about how return values of function work (-> param mode)
+#
+# About the parameter mode:
+# The `_parameterMode` of a sequence is used internally and
+# is used to decide how to process the return value of the previous function.
+#   `CONTEXT` means the previous function returned an object with a key `context`.
+#   `context` is an object of keyword arguments of an array of arguments for the next function.
+#   The object can optionally contain a 'done' key. The according value must return a 'doneable'.
+#   The next item will be executed when this 'doneable' is `done()`.
+#   `IMPLICIT` means the return value of the previous function will be passed to the current function.
+#   This is the case when a 'normal' value or a 'doneable' was returned and
+#   the next function does NOT have `params` defined.
+#   In case the previous function returned a 'doneable' the next function gets
+#   whatever is passed to the `done()` callback of the 'doneable' plus the previous returned value.
+#   `EXPLICIT` means the current function has `params` defined.
 #
 # @example Sample structure
 #   seq = new JSUtils.Sequence([
 #       {
+#           # parameter mode == EXPLICIT
 #           func: () ->
 #               return true
 #           scope: someObject
 #           params: [1,2,3]
 #       }
 #       [
+#           # parameter mode == IMPLICIT
 #           (bool) ->
 #               return true
 #           someObject
-#           [1,2,3]
 #       ]
 #   ])
 class JSUtils.Sequence
 
-    # The parameter mode of a sequence is used internally and
-    # is used to decide how to process the return value of the previous function.
-    #   `CONTEXT` means the previous function returned an object with a key `context`.
-    #   `context` is an object of keyword arguments of an array of arguments for the next function.
-    #   The object can optionally contain a 'done' key. The according value must return a 'doneable'.
-    #   `IMPLICIT` means the return value of the previous function will be passed to the current function.
-    #   This is the case when a 'normal' value or a 'doneable' was returned and
-    #   the next function does NOT have `params` defined.
-    #   In case the previous function returned a 'doneable' the next function gets
-    #   whatever is passed to the `done()` callback of the 'doneable' plus the previous returned value.
-    #   `EXPLICIT` means the current function has `params` defined.
-    # @property [Object] The parameter modes (enum-like).
+    # The parameter modes (enum-like).
+    # See the class documentation for more details.
     @PARAM_MODES =
         CONTEXT: "CONTEXT"
         IMPLICIT: "IMPLICIT"
@@ -198,8 +202,6 @@ class JSUtils.Sequence
             else
                 callback.apply(context, args.concat([self.lastResult]))
         return @
-
-    then: @::done
 
     # This method returns the progress of the sequence in [0,1].
     # @return [Number] progress
