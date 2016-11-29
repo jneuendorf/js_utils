@@ -5,6 +5,7 @@
 # This is due to jQuery's done().
 # This `done()` method takes one callback function as parameter (not like jQuery which can take multiple and arrays)!
 # If parameters are to be passed to the callback, take care of it yourself (closuring).
+# TODO: add docu about how return values of function work (-> param mode)
 #
 # @example Sample structure
 #   seq = new Sequence([
@@ -267,7 +268,7 @@ class JSUtils.Sequence
                 # console.log "sequence param mode = ", @_parameterMode
 
                 if @_parameterMode is CLASS.PARAM_MODES.CONTEXT
-                    newParams = @_createParamListFromContext(func, args[0].context)
+                    newParams = @_createParamListFromContext(func, args[0])
                 else if @_parameterMode is CLASS.PARAM_MODES.EXPLICIT
                     newParams = params
                 else if @_parameterMode is CLASS.PARAM_MODES.IMPLICIT
@@ -302,39 +303,45 @@ class JSUtils.Sequence
                     if @stopOnError
                         @interrupt()
 
-                # ASYNC
-                # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
-                if res?.done? and res?.context?
-                    res.done.done () ->
-                        self.idx++
-                        self._parameterMode = CLASS.PARAM_MODES.CONTEXT
-                        # skip previous result because it should not be of interest (use context if needed)
-                        # context property is retrieved in above mode check (if @_parameterMode is CLASS.PARAM_MODES.CONTEXT)
-                        self._invokeNextFunction(res)
-                # return value is of type ''
-                else if res?.done?
-                    # the good thing is the done we're adding right here will be called after all previous done methods.
-                    res.done () ->
-                        self.idx++
-                        self._parameterMode = CLASS.PARAM_MODES.IMPLICIT
-                        # use callback arguments because it should not be of interest (use context if needed)
-                        self._invokeNextFunction(arguments..., res)
-                # SYNC
-                # only context => synchronous function => nothing to wait for
-                else if res?.context
-                    @idx++
-                    @_parameterMode = CLASS.PARAM_MODES.CONTEXT
-                    @_invokeNextFunction(res)
-                # no done() and no context => synchronous function => nothing to wait for
-                else
-                    @idx++
-                    @_parameterMode = CLASS.PARAM_MODES.IMPLICIT
-                    @_invokeNextFunction(res)
+                if res?
+                    # if res.return? and res.context? and @idx < @data.length - 1
+                    #     console.warn "Using the key 'return' in the context object is ignored because it only has an effect when attached to the context returned by the last function of the sequence. Here is the function that returned that context:", func
+
+
+                    # ASYNC
+                    # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
+                    if res.done? and res.context?
+                        res.done.done () ->
+                            self.idx++
+                            self._parameterMode = CLASS.PARAM_MODES.CONTEXT
+                            # skip previous result because it should not be of interest (use context if needed)
+                            # context property is retrieved in above mode check (if @_parameterMode is CLASS.PARAM_MODES.CONTEXT)
+                            self._invokeNextFunction(res.context)
+                    # return value is of type ''
+                    else if res.done?
+                        # the good thing is the done we're adding right here will be called after all previous done methods.
+                        res.done () ->
+                            self.idx++
+                            # if res instanceof JSUtils.Sequence or res instanceof JSUtils.Barrier
+                            self._parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                            # use callback arguments because it should not be of interest (use context if needed)
+                            self._invokeNextFunction(arguments..., res)
+                    # SYNC
+                    # only context => synchronous function => nothing to wait for
+                    else if res.context
+                        @idx++
+                        @_parameterMode = CLASS.PARAM_MODES.CONTEXT
+                        @_invokeNextFunction(res.context)
+                    # no done() and no context => synchronous function => nothing to wait for
+                    else
+                        @idx++
+                        @_parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                        @_invokeNextFunction(res)
         # no data => we're done doing stuff
         else
             @lastResult = args[0]
-            if @_parameterMode is @constructor.PARAM_MODES.CONTEXT
-                @lastResult = @lastResult.context
+            # if @_parameterMode is @constructor.PARAM_MODES.CONTEXT
+            #     @lastResult = @lastResult.context
             @_endCallback?()
             @_execDoneCallbacks()
         return @

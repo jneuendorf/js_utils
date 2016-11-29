@@ -317,7 +317,7 @@ describe "async", () ->
                     .toEqual [true]
                 done()
 
-        it "use context to pass multiple parameters for next function in sequence", (done) ->
+        it "use context to pass multiple parameters to next function in sequence", (done) ->
             result = []
             Helper = @helperClass
 
@@ -356,6 +356,28 @@ describe "async", () ->
                 expect result
                     .toEqual [[2, 1], ["a", "b", "c"]]
                 done()
+
+        it "use context to pass multiple parameters to next function in outer sequence", (done) ->
+            @sequence.start([
+                {
+                    func: () ->
+                        return new JSUtils.Sequence([
+                            {
+                                func: () ->
+                                    return {
+                                        context:
+                                            a: 1
+                                            b: 2
+                                    }
+                            }
+                      ])
+                }
+                {
+                    func: (a, b) ->
+                        expect(a is 1 and b is 1).toBe(true)
+                        done()
+                }
+            ])
 
         it "while", (done) ->
             result = []

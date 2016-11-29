@@ -360,7 +360,7 @@
           return done();
         });
       });
-      it("use context to pass multiple parameters for next function in sequence", function(done) {
+      it("use context to pass multiple parameters to next function in sequence", function(done) {
         var Helper, result;
         result = [];
         Helper = this.helperClass;
@@ -404,6 +404,31 @@
           expect(result).toEqual([[2, 1], ["a", "b", "c"]]);
           return done();
         });
+      });
+      it("use context to pass multiple parameters to next function in outer sequence", function(done) {
+        return this.sequence.start([
+          {
+            func: function() {
+              return new JSUtils.Sequence([
+                {
+                  func: function() {
+                    return {
+                      context: {
+                        a: 1,
+                        b: 2
+                      }
+                    };
+                  }
+                }
+              ]);
+            }
+          }, {
+            func: function(a, b) {
+              expect(a === 1 && b === 1).toBe(true);
+              return done();
+            }
+          }
+        ]);
       });
       it("while", function(done) {
         var result;
