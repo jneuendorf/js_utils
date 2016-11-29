@@ -42,6 +42,8 @@ You can choose which modules to
 
 Both cannot be combinded.
 
+If you need all modules bundled in the library (and don't want the dev state code) you can download the 2 files from the [releases](https://github.com/jneuendorf/js_utils/releases).
+
 
 ### Developing
 
