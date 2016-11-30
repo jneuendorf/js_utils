@@ -40,7 +40,7 @@ class JSUtils.Sequence extends JSUtils.AsyncBase
 
     # The parameter modes (enum-like).
     # See the class documentation for more details.
-    @PARAM_MODES =
+    @PARAM_MODES:
         CONTEXT: "CONTEXT"
         IMPLICIT: "IMPLICIT"
         EXPLICIT: "EXPLICIT"
