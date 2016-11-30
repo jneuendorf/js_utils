@@ -34,6 +34,12 @@
           <td>Defined in:</td>
           <td>async&#47;Sequence.coffee</td>
         </tr>
+        <tr>
+          <td>Inherits:</td>
+          <td>
+            <a href='../../class/JSUtils/AsyncBase.html'>JSUtils.AsyncBase</a>
+          </td>
+        </tr>
       </table>
       <h2>Overview</h2>
       <div class='docstring'>
@@ -124,35 +130,11 @@ See the class documentation for more details.</p>
       <a href='#start-dynamic'>
         #
 (JSUtils.Sequence)
-<b>start</b><span>(newData)</span>
+<b>start</b><span>(data)</span>
       </a>
     </span>
     <span class='desc'>
       This method starts the Sequence in case it has been created with <code>false</code> as constructor parameter. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#stop-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>stop</b><span>(execCallbacks = true)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method stops the sequence from executing any more functions. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#interrupt-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>interrupt</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method stops the sequence from executing any more functions. 
     </span>
   </li>
   <li>
@@ -169,54 +151,6 @@ See the class documentation for more details.</p>
   </li>
   <li>
     <span class='signature'>
-      <a href='#onStart-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>onStart</b><span>(callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      Set the callback that is executed before the sequence starts. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#onEnd-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>onEnd</b><span>(callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      Set the callback that is executed after the sequence is done (but before the done callbacks are triggered). 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#onError-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>onError</b><span>(callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      Callback that gets called in case an error occurs while a sequence item is being executed. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#done-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>done</b><span>(callback)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method adds a callback that will be executed after all sequence items are done (but after the <code>endCallback</code>). 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
       <a href='#progress-dynamic'>
         #
 (Number)
@@ -229,26 +163,14 @@ See the class documentation for more details.</p>
   </li>
   <li>
     <span class='signature'>
-      <a href='#while-dynamic'>
+      <a href='#result-dynamic'>
         #
-(JSUtils.Sequence)
-<b>while</b><span>(startFunc, endFunc)</span>
+(mixed)
+<b>result</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      This method is a shortcut for calling <code>onStart()</code> (see <a href='../../class/JSUtils/Sequence.html#onStart-dynamic'>JSUtils.Sequence#onStart</a>) and <code>onEnd()</code> (see <a href='../../class/JSUtils/Sequence.html#onEnd-dynamic'>JSUtils.Sequence#onEnd</a>). 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#_setData-dynamic'>
-        #
-(void)
-<b>_setData</b><span>(data)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method is used from other methods to update the data of the sequence. 
+      Returns the result when this sequence (available only if done). 
     </span>
   </li>
   <li>
@@ -277,20 +199,29 @@ See the class documentation for more details.</p>
       This method invokes the next function in the list. 
     </span>
   </li>
-  <li>
-    <span class='signature'>
-      <a href='#_execDoneCallbacks-dynamic'>
-        #
-(JSUtils.Sequence)
-<b>_execDoneCallbacks</b><span>()</span>
-      </a>
-    </span>
-    <span class='note private title'>Private</span>
-    <span class='desc'>
-      This method is called when the Sequence has executed all of its functions. 
-    </span>
-  </li>
 </ul>
+      <h2>
+        <small>Inherited Method Summary</small>
+        <h3 class='inherited'>
+          Methods inherited from
+          <a href='../../class/JSUtils/AsyncBase.html'>JSUtils.AsyncBase</a>
+        </h3>
+        <p class='inherited'>
+          <a href='../../class/JSUtils/AsyncBase.html#start-dynamic'>#start</a>
+          <a href='../../class/JSUtils/AsyncBase.html#stop-dynamic'>#stop</a>
+          <a href='../../class/JSUtils/AsyncBase.html#interrupt-dynamic'>#interrupt</a>
+          <a href='../../class/JSUtils/AsyncBase.html#resume-dynamic'>#resume</a>
+          <a href='../../class/JSUtils/AsyncBase.html#result-dynamic'>#result</a>
+          <a href='../../class/JSUtils/AsyncBase.html#progress-dynamic'>#progress</a>
+          <a href='../../class/JSUtils/AsyncBase.html#done-dynamic'>#done</a>
+          <a href='../../class/JSUtils/AsyncBase.html#onStart-dynamic'>#onStart</a>
+          <a href='../../class/JSUtils/AsyncBase.html#onEnd-dynamic'>#onEnd</a>
+          <a href='../../class/JSUtils/AsyncBase.html#onError-dynamic'>#onError</a>
+          <a href='../../class/JSUtils/AsyncBase.html#while-dynamic'>#while</a>
+          <a href='../../class/JSUtils/AsyncBase.html#_setData-dynamic'>#_setData</a>
+          <a href='../../class/JSUtils/AsyncBase.html#_execDoneCallbacks-dynamic'>#_execDoneCallbacks</a>
+        </p>
+      </h2>
       <h2>Class Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
@@ -468,7 +399,7 @@ If the sequence was already done or stopped before it will be resumed unless the
     <p class='signature' id='start-dynamic'>
       #
 (JSUtils.Sequence)
-<b>start</b><span>(newData)</span>
+<b>start</b><span>(data)</span>
       <br>
     </p>
     <div class='docstring'>
@@ -478,7 +409,7 @@ If the sequence was already done or stopped before it will be resumed unless the
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
-      <span class='name'>newData</span>
+      <span class='name'>data</span>
       <span class='type'>
         (
           <tt>Array</tt>
@@ -488,68 +419,6 @@ If the sequence was already done or stopped before it will be resumed unless the
       <span class='desc'>Optional. If an array is given it will replace the possibly previously set data. </span>
     </li>
   </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='stop-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>stop</b><span>(execCallbacks = true)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method stops the sequence from executing any more functions.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>execCallbacks</span>
-      <span class='type'>
-        (
-          <tt>Boolean</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Optional. Whether to execute previously added callbacks. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='interrupt-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>interrupt</b><span>()</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method stops the sequence from executing any more functions.
-Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
-</div>
-<div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
@@ -592,157 +461,6 @@ Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='onStart-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>onStart</b><span>(callback)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>Set the callback that is executed before the sequence starts.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>callback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='onEnd-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>onEnd</b><span>(callback)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>Set the callback that is executed after the sequence is done (but before the done callbacks are triggered).</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>callback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='onError-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>onError</b><span>(callback)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>Callback that gets called in case an error occurs while a sequence item is being executed.
-The callback receives the error, the item&#39;s data and the item&#39;s index in the sequence.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>callback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='done-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>done</b><span>(callback)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method adds a callback that will be executed after all sequence items are done (but after the <code>endCallback</code>).
-If the sequence is already done the callback will be executed right away.
-The result of the previous sequence item will be passed to the callback.</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>callback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
     <p class='signature' id='progress-dynamic'>
       #
 (Number)
@@ -767,68 +485,27 @@ The result of the previous sequence item will be passed to the callback.</p>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='while-dynamic'>
+    <p class='signature' id='result-dynamic'>
       #
-(JSUtils.Sequence)
-<b>while</b><span>(startFunc, endFunc)</span>
+(mixed)
+<b>result</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>This method is a shortcut for calling <code>onStart()</code> (see <a href='../../class/JSUtils/Sequence.html#onStart-dynamic'>JSUtils.Sequence#onStart</a>) and <code>onEnd()</code> (see <a href='../../class/JSUtils/Sequence.html#onEnd-dynamic'>JSUtils.Sequence#onEnd</a>).</p>
+  <p>Returns the result when this sequence (available only if done).</p>
 </div>
 <div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>startFunc</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback to be executed before the sequence starts. </span>
-    </li>
-    <li>
-      <span class='name'>endFunc</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback to be executed after the sequence is done. </span>
-    </li>
-  </ul>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>
       <span class='type'></span>
       (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
+        <tt>mixed</tt>
       )
       &mdash;
-      <span class='desc'>This instance. </span>
+      <span class='desc'>What ever the last function has returned (if it was an object with <code>context</code> this <code>context</code> is the result). </span>
     </li>
   </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_setData-dynamic'>
-      #
-(void)
-<b>_setData</b><span>(data)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <div class='note todo'>
-    <strong>TODO:</strong>
-    This reiterates items that have been added in case this method is called from addData(). 
-  </div>
-  <p>This method is used from other methods to update the data of the sequence.
-It also takes care of wrapping functions in the object that&#39;s expected in <code>_invokeNextFunction()</code>.</p>
-</div>
-<div class='tags'>
 </div>
   </div>
   <div class='method_details'>
@@ -904,33 +581,6 @@ It also takes care of wrapping functions in the object that&#39;s expected in <c
       <span class='desc'>These are the arguments passed to the callback itself. </span>
     </li>
   </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Sequence.html'>JSUtils.Sequence</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_execDoneCallbacks-dynamic'>
-      #
-(JSUtils.Sequence)
-<b>_execDoneCallbacks</b><span>()</span>
-      <span class='note private'>Private</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method is called when the Sequence has executed all of its functions.
-It will then start executing all callbacks that previously have been added via <code>done()</code> (in the order they were added).
-No callback receives any parameters.</p>
-</div>
-<div class='tags'>
   <h3>Returns:</h3>
   <ul class='return'>
     <li>

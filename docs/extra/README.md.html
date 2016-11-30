@@ -68,7 +68,7 @@
 </ul><p>All modules are (hopefully) independent so far.</p><h3 id="usage">Usage</h3><p>See the <a href="http://jneuendorf.github.io/js_utils/">API documentation</a> (yet incomplete).</p><h3 id="building">Building</h3><p>See the <code>README.md</code> in the according module directory.</p><p>The files <code>js_utils.js</code> and <code>js_utils.min.js</code> can be created using the <code>make</code> shell script (using <code>./make</code>).</p><p>You can choose which modules to</p><ul>
 <li>include using <code>./make --with module1 ... moduleN</code> or</li>
 <li>exclude using <code>./make --without module1 ... moduleN</code>.</li>
-</ul><p>Both cannot be combinded.</p><h3 id="developing">Developing</h3><p>Each module directory contains a <code>files.txt</code> file that lists all CoffeeScript files in the order they will be concatenated and compiled.
+</ul><p>Both cannot be combinded.</p><p>If you need all modules bundled in the library (and don&#39;t want the dev state code) you can download the 2 files from the <a href="https://github.com/jneuendorf/js_utils/releases">releases</a>.</p><h3 id="developing">Developing</h3><p>Each module directory contains a <code>files.txt</code> file that lists all CoffeeScript files in the order they will be concatenated and compiled.
 Additionally, there is a <code>testfiles.txt</code> file that accordingly lists the test specs files in the order they will be concatenated and compiled.</p><p>Unit testing is done using <a href="https://jasmine.github.io/">Jasmine</a>.
 The test file can be built using <code>./make test</code>.</p><p>The API is generated using <a href="https://github.com/coffeedoc/codo">codo</a> (install with <code>npm install codo</code>).
 It can be regenerated with <code>./make docs</code>.

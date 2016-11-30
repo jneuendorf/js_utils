@@ -23,7 +23,7 @@
 #           [1,2,3]
 #       ]
 #   ])
-class JSUtils.Barrier
+class JSUtils.Barrier extends JSUtils.AsyncBase
 
     # This method can be used to define multiple "threads" doing the same thing with different data (which is based on the array).
     # That means the callback is called on every element of the given array.
@@ -61,28 +61,20 @@ class JSUtils.Barrier
     # @param start [Boolean] Optional. Whether to start the barrier immediately.
     # @return [JSUtils.Barrier] An instance of `JSUtils.Barrier`
     constructor: (data, start = true) ->
-        @data               = data
-        @remainingThreads   = data.length
-        @funcResults        = []
-        @_doneCallbacks     = []
-        @_startCallback     = null
-        @_endCallback       = null
-        @_endAllCallback    = null
-        @_isDone = false
-        @_isStopped = false
+        super(data)
+        @remainingThreads = data.length
+        @funcResults = []
         @_sequences = []
-
         if start is true
             @start()
 
     # This method starts the Barrier in case it has been created with `false` as constructor parameter.
-    # @param newData [Array] Optional. If an array is given it will replace the possibly previously set data.
+    # @param data [Array] Optional. If an array is given it will replace the possibly previously set data.
     # @return [JSUtils.Barrier] This instance.
-    start: (newData) ->
-        if newData instanceof Array
-            @data = newData
-            @remainingThreads = newData.length
-        @_startCallback?()
+    start: (data) ->
+        super(data)
+        # 'this.data' instead of 'data' because if no data is given no error occurs
+        @remainingThreads = @data.length
         if @remainingThreads > 0
             for d, idx in @data when d?
                 @_invokeNextFunction(d, idx)
@@ -94,27 +86,19 @@ class JSUtils.Barrier
     # @param execCallbacks [Boolean] Optional. Whether to execute previously added callbacks.
     # @return [JSUtils.Barrier] This instance.
     stop: (execCallbacks = true) ->
-        @_isStopped = true
         sequence.stop(execCallbacks) for sequence in @_sequences
-        if execCallbacks
-            @_endCallback?()
-            @_execDoneCallbacks()
+        super(execCallbacks)
         return @
 
-    # This method stops more "thread" from being started.
-    # Differently than `stop()` callbacks won't be executed.
-    # @return [JSUtils.Barrier] This instance.
-    interrupt: () ->
-        return @stop(false)
+    # This method returns the progress (how many async function have already reached the Barrier) in [0,1].
+    # @return progress [Number]
+    progress: () ->
+        return super() or 1 - @remainingThreads / @data.length
 
-    # This method resumes the barrier meaning more "thread" can be started.
-    # @return [JSUtils.Barrier] This instance.
-    # @todo this probably won't work...
-    resume: () ->
-        @_isStopped = false
-        # TODO: pass correct params here (prev res....)
-        @_invokeNextFunction()
-        return @
+    # Returns the result when this barrier (available only if done).
+    # @return [Array] A list of results (one for each "thread").
+    result: () ->
+        return @funcResults
 
     # This method invokes the next function in the list.
     # @private
@@ -130,24 +114,22 @@ class JSUtils.Barrier
         # create wrapper that notifies the barrier that the function is done
         @_sequences.push new JSUtils.Sequence([
             {
-                func: () ->
+                func: () =>
                     try
                         return func.apply(scope, params)
                     catch error
-                        console.error "================================================================="
-                        console.error "App.Barrier::_invokeNextFunction: Given function (at index #{idx}) threw an Error!"
-                        console.warn "Here is the data:", data
-                        console.warn "Here is the error:", error
-                        console.error "================================================================="
-                        return error
+                        if @_errorCallback not instanceof Function
+                            console.error "JSUtils.Barrier::_invokeNextFunction: Function (at index #{idx}) caused an error!", data
+                            throw error
+                        else
+                            @_errorCallback.call(@, error, data, idx)
             }
             {
-                func: (prevResOrResponse) ->
+                func: (result) =>
                     # save previous result (or 1st callback param if prev func was async)
-                    @funcResults[idx] = prevResOrResponse
+                    @funcResults[idx] = result
                     @_funcDone()
                     return @
-                scope: @
             }
         ])
         return @
@@ -161,56 +143,4 @@ class JSUtils.Barrier
             @_endCallback?()
             @_execDoneCallbacks()
             @_endAllCallback?()
-        return @
-
-    # This method adds a callback that will be executed after all functions have returned (including the `endCallback`).
-    # If the barrier is done already the callback will be executed right away.
-    # In addition of the optional `args` that are passed to the callback the results of the barrier will be passed as well.
-    # So the callback gets `arg1, ... , argN, resultOfThread1, ... , resultOfThreadM` (if there would be M threads).
-    # @param callback [Function] The callback invoked with the following parameters.
-    # @param context [Object] Optional. This object serves as context (`this`) for the callback.
-    # @param args... [Mixed...] Optional. Arguments to be passed to the callback function.
-    # @return [JSUtils.Barrier] This instance.
-    done: (callback, context, args...) ->
-        if typeof callback is "function"
-            # not done => push to queue
-            if not @_isDone
-                @_doneCallbacks.push () =>
-                    return callback.apply(context, args.concat([@funcResults]))
-            # done => execute immediately
-            else
-                callback.apply(context, args.concat([@funcResults]))
-        return @
-
-    then: @::done
-
-    # This method returns the progress (how many async function have already reached the Barrier) in [0,1].
-    # @return progress [Number]
-    progress: () ->
-        return 1 - @remainingThreads / @data.length
-
-    # This method is called when the Sequence has executed all of its functions.
-    # It will then start executing all callbacks that previously have been added via `done()` (in the order they were added).
-    # No callback receives any parameters.
-    # @private
-    # @return [JSUtils.Barrier] This instance.
-    _execDoneCallbacks: () ->
-        cb() for cb in @_doneCallbacks
-        return @
-
-    # This method sets the start and end callback that are executed before the Barrier starts and after it's done (but before the done callbacks are being executed).
-    # @private
-    # @param startCallback [Function] The callback being executed before the barrier starts.
-    # @param endCallback [Function] The callback being executed after the barrier starts.
-    # @param context [Object] Optional. The `this` context for both callbacks.
-    # @return [JSUtils.Barrier] This instance.
-    while: (startCallback, endCallback, context) ->
-        if context?
-            @_startCallback = () ->
-                return context.startCallback()
-            @_endCallback = () ->
-                return context.endCallback()
-        else
-            @_startCallback = startCallback
-            @_endCallback   = endCallback
         return @

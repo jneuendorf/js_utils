@@ -6,6 +6,7 @@
 --extension  coffee
 --output     ./docs
 ./_init/init.coffee
+./async/AsyncBase.coffee
 ./async/Sequence.coffee
 ./async/Barrier.coffee
 ./async/Doneable.coffee

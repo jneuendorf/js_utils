@@ -34,6 +34,12 @@
           <td>Defined in:</td>
           <td>async&#47;Barrier.coffee</td>
         </tr>
+        <tr>
+          <td>Inherits:</td>
+          <td>
+            <a href='../../class/JSUtils/AsyncBase.html'>JSUtils.AsyncBase</a>
+          </td>
+        </tr>
       </table>
       <h2>Overview</h2>
       <div class='docstring'>
@@ -69,17 +75,6 @@ If parameters are to be passed to the callback, take care of it yourself (closur
 </div>
 <div class='tags'>
 </div>
-      <h2>Variables Summary</h2>
-      <dl class='constants'>
-  <dt id='then-variable'>
-    then
-    =
-  </dt>
-  <dd>
-    <pre><code class='coffeescript'></code></pre>
-    
-  </dd>
-</dl>
       <h2>Class Method Summary</h2>
       <ul class='summary'>
   <li>
@@ -102,7 +97,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
       <a href='#start-dynamic'>
         #
 (JSUtils.Barrier)
-<b>start</b><span>(newData)</span>
+<b>start</b><span>(data)</span>
       </a>
     </span>
     <span class='desc'>
@@ -123,26 +118,26 @@ If parameters are to be passed to the callback, take care of it yourself (closur
   </li>
   <li>
     <span class='signature'>
-      <a href='#interrupt-dynamic'>
+      <a href='#progress-dynamic'>
         #
-(JSUtils.Barrier)
-<b>interrupt</b><span>()</span>
+(?)
+<b>progress</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      This method stops more &quot;thread&quot; from being started. 
+      This method returns the progress (how many async function have already reached the Barrier) in [0,1]. 
     </span>
   </li>
   <li>
     <span class='signature'>
-      <a href='#resume-dynamic'>
+      <a href='#result-dynamic'>
         #
-(JSUtils.Barrier)
-<b>resume</b><span>()</span>
+(Array)
+<b>result</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
-      This method resumes the barrier meaning more &quot;thread&quot; can be started. 
+      Returns the result when this barrier (available only if done). 
     </span>
   </li>
   <li>
@@ -171,57 +166,29 @@ If parameters are to be passed to the callback, take care of it yourself (closur
       This method is called when a sequence has completed (-&gt; when a &quot;thread&quot; is done). 
     </span>
   </li>
-  <li>
-    <span class='signature'>
-      <a href='#done-dynamic'>
-        #
-(JSUtils.Barrier)
-<b>done</b><span>(callback, context, args...)</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method adds a callback that will be executed after all functions have returned (including the <code>endCallback</code>). 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#progress-dynamic'>
-        #
-(?)
-<b>progress</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-      This method returns the progress (how many async function have already reached the Barrier) in [0,1]. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#_execDoneCallbacks-dynamic'>
-        #
-(JSUtils.Barrier)
-<b>_execDoneCallbacks</b><span>()</span>
-      </a>
-    </span>
-    <span class='note private title'>Private</span>
-    <span class='desc'>
-      This method is called when the Sequence has executed all of its functions. 
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#while-dynamic'>
-        #
-(JSUtils.Barrier)
-<b>while</b><span>(startCallback, endCallback, context)</span>
-      </a>
-    </span>
-    <span class='note private title'>Private</span>
-    <span class='desc'>
-      This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed). 
-    </span>
-  </li>
 </ul>
+      <h2>
+        <small>Inherited Method Summary</small>
+        <h3 class='inherited'>
+          Methods inherited from
+          <a href='../../class/JSUtils/AsyncBase.html'>JSUtils.AsyncBase</a>
+        </h3>
+        <p class='inherited'>
+          <a href='../../class/JSUtils/AsyncBase.html#start-dynamic'>#start</a>
+          <a href='../../class/JSUtils/AsyncBase.html#stop-dynamic'>#stop</a>
+          <a href='../../class/JSUtils/AsyncBase.html#interrupt-dynamic'>#interrupt</a>
+          <a href='../../class/JSUtils/AsyncBase.html#resume-dynamic'>#resume</a>
+          <a href='../../class/JSUtils/AsyncBase.html#result-dynamic'>#result</a>
+          <a href='../../class/JSUtils/AsyncBase.html#progress-dynamic'>#progress</a>
+          <a href='../../class/JSUtils/AsyncBase.html#done-dynamic'>#done</a>
+          <a href='../../class/JSUtils/AsyncBase.html#onStart-dynamic'>#onStart</a>
+          <a href='../../class/JSUtils/AsyncBase.html#onEnd-dynamic'>#onEnd</a>
+          <a href='../../class/JSUtils/AsyncBase.html#onError-dynamic'>#onError</a>
+          <a href='../../class/JSUtils/AsyncBase.html#while-dynamic'>#while</a>
+          <a href='../../class/JSUtils/AsyncBase.html#_setData-dynamic'>#_setData</a>
+          <a href='../../class/JSUtils/AsyncBase.html#_execDoneCallbacks-dynamic'>#_execDoneCallbacks</a>
+        </p>
+      </h2>
       <h2>Class Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
@@ -234,7 +201,7 @@ If parameters are to be passed to the callback, take care of it yourself (closur
     <div class='docstring'>
   <p>This method can be used to define multiple &quot;threads&quot; doing the same thing with different data (which is based on the array).
 That means the callback is called on every element of the given array.
-Its result is accessible in the callback to <code>done()</code> (see <a href='../../class/JSUtils/Barrier.html#done-dynamic'>JSUtils.Barrier#done</a>).</p>
+Its result is accessible in the callback to <code>done()</code> (see {JSUtils.Barrier#done}).</p>
   <div class='examples'>
     <h3>Examples:</h3>
     <h4>
@@ -348,7 +315,7 @@ barrier = JSUtils.Barrier
     <p class='signature' id='start-dynamic'>
       #
 (JSUtils.Barrier)
-<b>start</b><span>(newData)</span>
+<b>start</b><span>(data)</span>
       <br>
     </p>
     <div class='docstring'>
@@ -358,7 +325,7 @@ barrier = JSUtils.Barrier
   <h3>Parameters:</h3>
   <ul class='param'>
     <li>
-      <span class='name'>newData</span>
+      <span class='name'>data</span>
       <span class='type'>
         (
           <tt>Array</tt>
@@ -419,15 +386,14 @@ barrier = JSUtils.Barrier
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='interrupt-dynamic'>
+    <p class='signature' id='progress-dynamic'>
       #
-(JSUtils.Barrier)
-<b>interrupt</b><span>()</span>
+(?)
+<b>progress</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>This method stops more &quot;thread&quot; from being started.
-Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
+  <p>This method returns the progress (how many async function have already reached the Barrier) in [0,1].</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -435,27 +401,23 @@ Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
     <li>
       <span class='type'></span>
       (
-        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
+        <tt>?</tt>
       )
       &mdash;
-      <span class='desc'>This instance. </span>
+      <span class='desc'>progress [Number] </span>
     </li>
   </ul>
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='resume-dynamic'>
+    <p class='signature' id='result-dynamic'>
       #
-(JSUtils.Barrier)
-<b>resume</b><span>()</span>
+(Array)
+<b>result</b><span>()</span>
       <br>
     </p>
     <div class='docstring'>
-  <div class='note todo'>
-    <strong>TODO:</strong>
-    this probably won&#39;t work... 
-  </div>
-  <p>This method resumes the barrier meaning more &quot;thread&quot; can be started.</p>
+  <p>Returns the result when this barrier (available only if done).</p>
 </div>
 <div class='tags'>
   <h3>Returns:</h3>
@@ -463,10 +425,10 @@ Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
     <li>
       <span class='type'></span>
       (
-        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
+        <tt>Array</tt>
       )
       &mdash;
-      <span class='desc'>This instance. </span>
+      <span class='desc'>A list of results (one for each &quot;thread&quot;). </span>
     </li>
   </ul>
 </div>
@@ -521,175 +483,6 @@ Differently than <code>stop()</code> callbacks won&#39;t be executed.</p>
   <p>This method is called when a sequence has completed (-&gt; when a &quot;thread&quot; is done).</p>
 </div>
 <div class='tags'>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='done-dynamic'>
-      #
-(JSUtils.Barrier)
-<b>done</b><span>(callback, context, args...)</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method adds a callback that will be executed after all functions have returned (including the <code>endCallback</code>).
-If the barrier is done already the callback will be executed right away.
-In addition of the optional <code>args</code> that are passed to the callback the results of the barrier will be passed as well.
-So the callback gets <code>arg1, ... , argN, resultOfThread1, ... , resultOfThreadM</code> (if there would be M threads).</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>callback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback invoked with the following parameters. </span>
-    </li>
-    <li>
-      <span class='name'>context</span>
-      <span class='type'>
-        (
-          <tt>Object</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Optional. This object serves as context (<code>this</code>) for the callback. </span>
-    </li>
-    <li>
-      <span class='name'>args...</span>
-      <span class='type'>
-        (
-          <tt>Mixed...</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Optional. Arguments to be passed to the callback function. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='progress-dynamic'>
-      #
-(?)
-<b>progress</b><span>()</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method returns the progress (how many async function have already reached the Barrier) in [0,1].</p>
-</div>
-<div class='tags'>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt>?</tt>
-      )
-      &mdash;
-      <span class='desc'>progress [Number] </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='_execDoneCallbacks-dynamic'>
-      #
-(JSUtils.Barrier)
-<b>_execDoneCallbacks</b><span>()</span>
-      <span class='note private'>Private</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method is called when the Sequence has executed all of its functions.
-It will then start executing all callbacks that previously have been added via <code>done()</code> (in the order they were added).
-No callback receives any parameters.</p>
-</div>
-<div class='tags'>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
-</div>
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='while-dynamic'>
-      #
-(JSUtils.Barrier)
-<b>while</b><span>(startCallback, endCallback, context)</span>
-      <span class='note private'>Private</span>
-      <br>
-    </p>
-    <div class='docstring'>
-  <p>This method sets the start and end callback that are executed before the Barrier starts and after it&#39;s done (but before the done callbacks are being executed).</p>
-</div>
-<div class='tags'>
-  <h3>Parameters:</h3>
-  <ul class='param'>
-    <li>
-      <span class='name'>startCallback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback being executed before the barrier starts. </span>
-    </li>
-    <li>
-      <span class='name'>endCallback</span>
-      <span class='type'>
-        (
-          <tt>Function</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>The callback being executed after the barrier starts. </span>
-    </li>
-    <li>
-      <span class='name'>context</span>
-      <span class='type'>
-        (
-          <tt>Object</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Optional. The <code>this</code> context for both callbacks. </span>
-    </li>
-  </ul>
-  <h3>Returns:</h3>
-  <ul class='return'>
-    <li>
-      <span class='type'></span>
-      (
-        <tt><a href='../../class/JSUtils/Barrier.html'>JSUtils.Barrier</a></tt>
-      )
-      &mdash;
-      <span class='desc'>This instance. </span>
-    </li>
-  </ul>
 </div>
   </div>
 </div>

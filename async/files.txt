@@ -1,1 +1,1 @@
-Sequence.coffee Barrier.coffee Doneable.coffee
+AsyncBase.coffee Sequence.coffee Barrier.coffee Doneable.coffee

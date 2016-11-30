@@ -60,6 +60,10 @@ $files
 -
 LICENSE" > .codoopts
     exit 0
+elif [[ "$1" == "all" ]]; then
+    ./make
+    ./make test
+    ./make docs
 fi
 
 for module in ${MODULES[@]}; do
