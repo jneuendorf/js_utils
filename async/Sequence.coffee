@@ -143,7 +143,7 @@ class JSUtils.Sequence extends JSUtils.AsyncBase
             for argName in paramList
                 temp.push context[argName]
                 if DEBUG and not context[argName]?
-                    console.warn "JSUtils.Sequence::_createParamListFromContext: Tryed to create argument '#{argName}' but context does not contain such a key. Maybe there is something wrong (the function arguments don't match the context). Given function:", func, "Given context:", context
+                    console.warn "JSUtils.Sequence::_createParamListFromContext: Tried to create argument '#{argName}' but context does not contain such a key. Maybe there is something wrong (the function arguments don't match the context). Given function:", func, "Given context:", context
             return temp
         return context
 
