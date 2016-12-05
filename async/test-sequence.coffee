@@ -330,13 +330,17 @@ describe "async", () ->
                 }
                 {
                     func: (prevH) ->
-                        result.push prevH is h
-                        return 2
+                        result.push(prevH is h)
+                        return null
+                }
+                {
+                    func: (nully) ->
+                        result.push(nully is null)
                 }
             ]
             @sequence.done () ->
                 expect result
-                    .toEqual [true]
+                    .toEqual [true, true]
                 done()
 
         it "use context to pass multiple parameters to next function in sequence", (done) ->

@@ -537,7 +537,9 @@ The result will be passed to the callback.</p>
     </p>
     <div class='docstring'>
   <p>Callback that gets called in case an error occurs while execution.
-The callback receives the error, the item&#39;s data and the item&#39;s index in the sequence.</p>
+The callback receives the error, the item&#39;s data and the item&#39;s index in the sequence.
+If the callback returns <code>false</code> the execution will be stopped.
+Otherwise it will continue unless stopOnError is <code>true</code>.</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>

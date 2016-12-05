@@ -90,6 +90,8 @@ class JSUtils.AsyncBase
 
     # Callback that gets called in case an error occurs while execution.
     # The callback receives the error, the item's data and the item's index in the sequence.
+    # If the callback returns `false` the execution will be stopped.
+    # Otherwise it will continue unless stopOnError is `true`.
     # @param callback [Function] The callback.
     # @return [JSUtils.AsyncBase] This instance.
     onError: (callback) ->

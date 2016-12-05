@@ -183,44 +183,44 @@ class JSUtils.Sequence extends JSUtils.AsyncBase
                         console.error "JSUtils.Sequence::_invokeNextFunction: Function at index #{@idx} caused an error!", data
                         throw error
                     else
-                        @_errorCallback.call(@, error, data, @idx)
+                        if @_errorCallback(error, data, @idx) isnt false
+                            if @stopOnError
+                                @interrupt()
+                        else if DEBUG
+                            console.info "JSUtils.Sequence::_invokeNextFunction: Execution was stopped because onError callback returned false. The error was '#{error.message}'"
 
-                    if @stopOnError
-                        @interrupt()
-
-                if res?
-                    # ASYNC
-                    # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
-                    if res.done? and res.context?
-                        res.done.done () ->
-                            self.idx++
-                            self.parameterMode = CLASS.PARAM_MODES.CONTEXT
-                            # skip previous result because it should not be of interest (use context if needed)
-                            # context property is retrieved in above mode check (if @parameterMode is CLASS.PARAM_MODES.CONTEXT)
-                            self._invokeNextFunction(res.context)
-                    # return value 'doneable'
-                    # i.e. 'res' may be a sequence use context if res' param mode is CONTEXT
-                    else if res.done?
-                        res.done () ->
-                            self.idx++
-                            # use callback arguments because res should not be of much interest (if it is use CONTEXT)
-                            if res.parameterMode isnt CLASS.PARAM_MODES.CONTEXT
-                                self.parameterMode = CLASS.PARAM_MODES.IMPLICIT
-                                return self._invokeNextFunction(arguments..., res)
-                            # else: auto unpack
-                            self.parameterMode = CLASS.PARAM_MODES.CONTEXT
-                            self._invokeNextFunction(res.lastResult)
-                    # SYNC
-                    # only context => synchronous function => nothing to wait for
-                    else if res.context
-                        @idx++
-                        @parameterMode = CLASS.PARAM_MODES.CONTEXT
-                        @_invokeNextFunction(res.context)
-                    # no done() and no context => synchronous function => nothing to wait for
-                    else
-                        @idx++
-                        @parameterMode = CLASS.PARAM_MODES.IMPLICIT
-                        @_invokeNextFunction(res)
+                # ASYNC
+                # return value is of type 'CONTEXT': {done: $.post(...), context: {a: 10, b: 20}}
+                if res?.done? and res?.context?
+                    res.done.done () ->
+                        self.idx++
+                        self.parameterMode = CLASS.PARAM_MODES.CONTEXT
+                        # skip previous result because it should not be of interest (use context if needed)
+                        # context property is retrieved in above mode check (if @parameterMode is CLASS.PARAM_MODES.CONTEXT)
+                        self._invokeNextFunction(res.context)
+                # return value 'doneable'
+                # i.e. 'res' may be a sequence use context if res' param mode is CONTEXT
+                else if res?.done?
+                    res.done () ->
+                        self.idx++
+                        # use callback arguments because res should not be of much interest (if it is use CONTEXT)
+                        if res.parameterMode isnt CLASS.PARAM_MODES.CONTEXT
+                            self.parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                            return self._invokeNextFunction(arguments..., res)
+                        # else: res' parameterMode is CONTEXT => it was a sequence => auto unpack
+                        self.parameterMode = CLASS.PARAM_MODES.CONTEXT
+                        self._invokeNextFunction(res.result())
+                # SYNC
+                # only context => synchronous function => nothing to wait for
+                else if res?.context
+                    @idx++
+                    @parameterMode = CLASS.PARAM_MODES.CONTEXT
+                    @_invokeNextFunction(res.context)
+                # no done() and no context => synchronous function => nothing to wait for
+                else
+                    @idx++
+                    @parameterMode = CLASS.PARAM_MODES.IMPLICIT
+                    @_invokeNextFunction(res)
         # no data => we're done doing stuff
         else
             @lastResult = args[0]

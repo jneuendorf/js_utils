@@ -371,12 +371,16 @@
           }, {
             func: function(prevH) {
               result.push(prevH === h);
-              return 2;
+              return null;
+            }
+          }, {
+            func: function(nully) {
+              return result.push(nully === null);
             }
           }
         ]);
         return this.sequence.done(function() {
-          expect(result).toEqual([true]);
+          expect(result).toEqual([true, true]);
           return done();
         });
       });
