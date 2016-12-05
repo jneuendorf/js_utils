@@ -135,16 +135,23 @@ class JSUtils.Sequence extends JSUtils.AsyncBase
     # @param context [Object,Array] Keyword arguments or arguments.
     # @return [Array] The arguments.
     _createParamListFromContext: (func, context) ->
-        if context not instanceof Array
+        # explit check for plain object (thus in case some custom instance it won't be considered)
+        if typeof context is 'object' and context.constructor is Object
             paramList = func.toString()
                 .split(/[()]/g)[1]
                 .split(/\s*,\s*/g)
-            temp = []
-            for argName in paramList
-                temp.push context[argName]
-                if DEBUG and not context[argName]?
-                    console.warn "JSUtils.Sequence::_createParamListFromContext: Tried to create argument '#{argName}' but context does not contain such a key. Maybe there is something wrong (the function arguments don't match the context). Given function:", func, "Given context:", context
-            return temp
+            params = []
+            passContext = false
+            for paramName in paramList
+                params.push context[paramName]
+                if DEBUG and not context[paramName]?
+                    passContext = true
+            if passContext
+                console.warn "JSUtils.Sequence::_createParamListFromContext: Context does not contain enough data for supply all parameters. Falling back to passing the context as it is."
+                console.info "func:", func, "context:", context
+                return context
+            return params
+        # arrays and anything other than plain objects are returned untouched
         return context
 
     # This method invokes the next function in the list.
