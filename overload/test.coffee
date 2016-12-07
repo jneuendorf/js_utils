@@ -8,7 +8,6 @@ describe "overload", () ->
         A = @A
 
         class @TestClass
-
             method1: JSUtils.overload(
                 []
                 [undefined, Object]
@@ -44,20 +43,37 @@ describe "overload", () ->
 
             )
 
-            try
-                @::method3 = JSUtils.overload(
-                    [String, A]
-                    [A, Boolean]
-                )
-            catch e
-                expect e.message
-                    .toBe "No function given for argument lists: [[\"String\",\"A\"],[\"A\",\"Boolean\"]]"
+    ##################################################################################################################
+    it "invalid overload definitions", () ->
+        expect(() -> JSUtils.overload()).toThrow()
+        expect(() =>
+            JSUtils.overload(
+                [String, @A]
+                [@A, Boolean]
+            )
+        ).toThrow()
+        expect(() =>
+            JSUtils.overload(
+                [String, @A]
+                "What is this?"
+                [@A, Boolean]
+                () ->
+                    return "handled"
+            )
+        ).toThrow()
+        expect(() ->
+            JSUtils.overload(
+                () ->
+                    return "handler only?"
+            )
+        ).toThrow()
 
     ##################################################################################################################
     it "func results of overloading", () ->
         testInstance = new @TestClass()
         a = new @A()
 
+        start = performance.now()
         expect testInstance.method1()
             .toBe null
         expect testInstance.method1(null, 23)
@@ -79,6 +95,7 @@ describe "overload", () ->
             .toBe "truea"
         expect testInstance.method1("a", true)
             .toBe "atrue"
+        console.log "testing took", (performance.now() - start), "ms for 9 calls with 8 signatures each"
 
         expect testInstance.method2(1, "a")
             .toBe "1-a"

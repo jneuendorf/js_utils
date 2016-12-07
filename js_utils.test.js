@@ -932,8 +932,6 @@
       })();
       A = this.A;
       return this.TestClass = (function() {
-        var e, error1;
-
         function TestClass() {}
 
         TestClass.prototype.method1 = JSUtils.overload([], [void 0, Object], [Object, void 0], function() {
@@ -954,21 +952,37 @@
           return n + "-" + str1 + "+" + str2;
         });
 
-        try {
-          TestClass.prototype.method3 = JSUtils.overload([String, A], [A, Boolean]);
-        } catch (error1) {
-          e = error1;
-          expect(e.message).toBe("No function given for argument lists: [[\"String\",\"A\"],[\"A\",\"Boolean\"]]");
-        }
-
         return TestClass;
 
       })();
     });
+    it("invalid overload definitions", function() {
+      expect(function() {
+        return JSUtils.overload();
+      }).toThrow();
+      expect((function(_this) {
+        return function() {
+          return JSUtils.overload([String, _this.A], [_this.A, Boolean]);
+        };
+      })(this)).toThrow();
+      expect((function(_this) {
+        return function() {
+          return JSUtils.overload([String, _this.A], "What is this?", [_this.A, Boolean], function() {
+            return "handled";
+          });
+        };
+      })(this)).toThrow();
+      return expect(function() {
+        return JSUtils.overload(function() {
+          return "handler only?";
+        });
+      }).toThrow();
+    });
     it("func results of overloading", function() {
-      var a, testInstance;
+      var a, start, testInstance;
       testInstance = new this.TestClass();
       a = new this.A();
+      start = performance.now();
       expect(testInstance.method1()).toBe(null);
       expect(testInstance.method1(null, 23)).toBe(null);
       expect(testInstance.method1("adsf", void 0)).toBe(null);
@@ -980,6 +994,7 @@
       }).toThrow();
       expect(testInstance.method1(true, "a")).toBe("truea");
       expect(testInstance.method1("a", true)).toBe("atrue");
+      console.log("testing took", performance.now() - start, "ms for 9 calls with 8 signatures each");
       expect(testInstance.method2(1, "a")).toBe("1-a");
       expect(testInstance.method2(1, "a", "b")).toBe("1-a+b");
       return expect(testInstance.method3).toBeUndefined();
