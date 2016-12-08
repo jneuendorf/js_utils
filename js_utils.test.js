@@ -978,6 +978,50 @@
         });
       }).toThrow();
     });
+    it("constructorMatcher", function() {
+      var a, f;
+      f = JSUtils.overload(JSUtils.overload.signature([void 0], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Boolean], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Object], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Array], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Number], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([String], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([this.A], JSUtils.overload.matchers.constructorMatcher), function(cls) {
+        return cls;
+      });
+      expect(f(void 0)).toBe(void 0);
+      expect(f(null)).toBe(null);
+      expect(f(false)).toBe(false);
+      expect(f({})).toEqual({});
+      expect(f([])).toEqual([]);
+      expect(f(1)).toBe(1);
+      expect(f("string")).toBe("string");
+      a = new this.A();
+      expect(f(a)).toBe(a);
+      return expect(function() {
+        return f(new this.TestClass());
+      }).toThrow();
+    });
+    it("nullTypeMatcher", function() {
+      var f;
+      f = JSUtils.overload(JSUtils.overload.signature([null], JSUtils.overload.matchers.nullTypeMatcher), function(nullOrUndefined) {
+        return nullOrUndefined;
+      });
+      expect(f(null)).toBe(null);
+      expect(f(void 0)).toBe(void 0);
+      expect(function() {
+        return f(false);
+      }).toThrow();
+      expect(function() {
+        return f({});
+      }).toThrow();
+      expect(function() {
+        return f([]);
+      }).toThrow();
+      expect(function() {
+        return f(1);
+      }).toThrow();
+      expect(function() {
+        return f("a");
+      }).toThrow();
+      return expect(function() {
+        return f(new this.A());
+      }).toThrow();
+    });
     it("func results of overloading", function() {
       var a, start, testInstance;
       testInstance = new this.TestClass();
@@ -999,7 +1043,7 @@
       expect(testInstance.method2(1, "a", "b")).toBe("1-a+b");
       return expect(testInstance.method3).toBeUndefined();
     });
-    return it("supports subclass checking", function() {
+    it("supports subclass checking", function() {
       var Sub, Super, f;
       Super = (function() {
         function Super() {}
@@ -1024,6 +1068,16 @@
       expect(f(new Sub())).toBe(true);
       return expect(function() {
         return f("asdf");
+      }).toThrow();
+    });
+    return it("signatures created by signature() function", function() {
+      var f;
+      f = JSUtils.overload(JSUtils.overload.signature([Number, Object], JSUtils.overload.matchers.constructorMatcher), function() {
+        return true;
+      });
+      expect(f(1, {})).toBe(true);
+      return expect(function() {
+        return f(1, 2);
       }).toThrow();
     });
   });

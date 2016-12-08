@@ -3,11 +3,6 @@ class Matcher
 
     constructor: (@name, @matcher, @argPreprocessor) ->
 
-    # preprocess: (arg) ->
-    #     # if @argPreprocessor instanceof Function
-    #     #     return (@argPreprocessor(arg) for arg in args)
-    #     # return args
-    #     return @argPreprocessor?(arg) or arg
     preprocess: (arg, args) ->
         return @argPreprocessor?(arg, args) or [arg]
 
@@ -27,7 +22,13 @@ class OverloadHelpers
             if arg instanceof Function
                 # there is at least 1 signature
                 if i > firstSignatureIndex
-                    signatures = (args[j] for j in [firstSignatureIndex...i])
+                    # signatures = (args[j] for j in [firstSignatureIndex...i])
+                    signatures = []
+                    for j in [firstSignatureIndex...i]
+                        signature = args[j]
+                        # assign all matchers if signature was not created by the `signature()` function
+                        signature.matchers ?= matchers
+                        signatures.push(signature)
                     handler = arg
                     blocks.push({
                         signatures
@@ -50,13 +51,11 @@ class OverloadHelpers
     # each preprocessor must return an array (because the original arg might be expanded to a list)
     @argPreprocessors:
         # instance |-> constructor
-        # toClass: (args) ->
-        #     return (arg?.constructor for arg in args)
         toClass: (arg, args) ->
             return [arg?.constructor]
 
     @findHandler: (args, blocks, matchers) ->
-        # save tuples: [givenArg, processedArg(s)]
+        # save tuples: [givenArg, processedArg(s)] -> thus originals and processed are associated (hash like)
         processedArgTuples = []
         for matcher in matchers
             processedArgTuples.push do (matcher) ->
@@ -67,23 +66,10 @@ class OverloadHelpers
                     res.push(tuple)
                     res.numProcessedArgs += tuple[1].length
                 return res
-            # processedArgTuples.push [
-            #     matcher
-            #     # ([arg, matcher.preprocess(arg)] for arg in args)
-            #     do (matcher) ->
-            #         res = []
-            #         res.numProcessedArgs = 0
-            #         for arg in args
-            #             tuple = [arg, matcher.preprocess(arg, args)]
-            #             res.push(tuple)
-            #             res.numProcessedArgs += tuple[1].length
-            #         return res
-            # ]
 
         numArgs = args.length
         for block in blocks
             for signature in block.signatures
-                # console.log "checking signature", signature
                 # special case: empty list
                 if numArgs is 0 and signature.length is 0
                     return block.handler
@@ -92,12 +78,9 @@ class OverloadHelpers
                 # non-empty arg list
                 for arg, argIdx in args
                     foundMatchForArg = false
-                    for matcher, matcherIdx in matchers when not foundMatchForArg
-                        # console.log "using matcher", matcher.name
+                    for matcher, matcherIdx in signature.matchers when not foundMatchForArg
                         for [accordingArg, processedArgs] in processedArgTuples[matcherIdx] when accordingArg is arg
                             for processedArg, processedArgIdx in processedArgs
-                                # console.log "checking processed arg", processedArg, "to match", signature[argIdx]
-                                # if matcher.test(processedArg, signature[processedArgIdx]) is true
                                 if matcher.test(processedArg, signature[argIdx]) is true
                                     foundMatchForArg = true
                                     break
@@ -107,7 +90,6 @@ class OverloadHelpers
                             break
                     # no `matcher` returned true for `arg`
                     if not foundMatchForArg
-                        # console.log "no match found for arg", arg
                         signatureMatches = false
                         break
                 if signatureMatches
@@ -115,34 +97,25 @@ class OverloadHelpers
         return null
 
 matchers = [
+    # no constructor means `undefined` (for e.g. null) => nothing will match [null] because null !== undefined
     new Matcher(
         "constructorMatcher"
         (argClass, signatureItem) ->
             return argClass is signatureItem
-        # (argClasses, signatureItems) ->
-        #     for argClass, i in argClasses
-        #         if argClass isnt signatureItems[i]
-        #             return false
-        #     return true
-        # (args) ->
-        #     if args.length is 0
-        #         return [JSUtils._NO_ARG]
-        #     return OverloadHelpers.argPreprocessors.toClass(args)
         OverloadHelpers.argPreprocessors.toClass
     )
     new Matcher(
         "isintanceMatcher"
         (argClass, signatureItem) ->
             return JSUtils.overload.isSubclass(argClass, signatureItem)
-        # (argClasses, signatureItems) ->
-        #     for argClass, i in argClasses
-        #         if not JSUtils.overload.isSubclass(argClass, signatureItems[i])
-        #             return false
-        #     return true
         OverloadHelpers.argPreprocessors.toClass
     )
     # anyTypeMatcher
-    # nullTypeMatcher
+    new Matcher(
+        "nullTypeMatcher"
+        (arg, signatureItem) ->
+            return not arg? and not signatureItem?
+    )
     # arrayTypeMatcher
     # splatMatcher
 ]
@@ -153,16 +126,10 @@ matchers = [
 # TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters
 JSUtils.overload = (args...) ->
     {blocks, fallback} = OverloadHelpers.parseArguments(args)
-    # console.log "blocks", blocks
-
     return () ->
         handler = OverloadHelpers.findHandler(arguments, blocks, matchers)
         if handler?
             return handler.apply(@, arguments)
-
-        # console.info "no handler found..."
-        # console.error "Given arguments:", JSON.stringify(arguments)
-        # console.error "Defined blocks:", JSON.stringify(blocks)
         throw new Error("Arguments do not match any known signature.")
 
 # CONSTANTS
@@ -175,14 +142,14 @@ for matcher in matchers
 
 
 # This function can be used to create signatures that will be checked only by the given matchers
-JSUtils.overload.signature = (signature, matchers) ->
+JSUtils.overload.signature = (signature, givenMatchers...) ->
     if signature instanceof Array
-        signature.matchers = matchers
-        return signature
+        givenMatchers = (matcher for matcher in givenMatchers when matcher in matchers)
+        if givenMatchers.length > 0
+            signature.matchers = givenMatchers
+            return signature
+        throw new Error("Matchers must be matcher instances.")
     throw new Error("Signature must be an array.")
-
-
-
 
 
 
@@ -290,7 +257,6 @@ JSUtils.overload.signature = (signature, matchers) ->
 isSubclass = (sub, sup) ->
     if sub?.prototype? and sup?
         return sub.prototype instanceof sup
-    # return true
     return false
 
 # @nodoc

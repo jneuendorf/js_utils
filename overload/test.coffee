@@ -43,6 +43,7 @@ describe "overload", () ->
 
             )
 
+
     ##################################################################################################################
     it "invalid overload definitions", () ->
         expect(() -> JSUtils.overload()).toThrow()
@@ -67,6 +68,66 @@ describe "overload", () ->
                     return "handler only?"
             )
         ).toThrow()
+
+    ##################################################################################################################
+    it "constructorMatcher", () ->
+        f = JSUtils.overload(
+            JSUtils.overload.signature([undefined], JSUtils.overload.matchers.constructorMatcher)
+            JSUtils.overload.signature([Boolean], JSUtils.overload.matchers.constructorMatcher)
+            JSUtils.overload.signature([Object], JSUtils.overload.matchers.constructorMatcher)
+            JSUtils.overload.signature([Array], JSUtils.overload.matchers.constructorMatcher)
+            JSUtils.overload.signature([Number], JSUtils.overload.matchers.constructorMatcher)
+            JSUtils.overload.signature([String], JSUtils.overload.matchers.constructorMatcher)
+            JSUtils.overload.signature([@A], JSUtils.overload.matchers.constructorMatcher)
+            (cls) ->
+                return cls
+        )
+
+        expect f(undefined)
+            .toBe undefined
+        expect f(null)
+            .toBe null
+        expect f(false)
+            .toBe false
+        expect f({})
+            .toEqual {}
+        expect f([])
+            .toEqual []
+        expect f(1)
+            .toBe 1
+        expect f("string")
+            .toBe "string"
+        a = new @A()
+        expect f(a)
+            .toBe a
+
+        expect () -> f(new @TestClass())
+            .toThrow()
+
+    ##################################################################################################################
+    it "nullTypeMatcher", () ->
+        f = JSUtils.overload(
+            JSUtils.overload.signature([null], JSUtils.overload.matchers.nullTypeMatcher)
+            (nullOrUndefined) ->
+                return nullOrUndefined
+        )
+
+        expect f(null)
+            .toBe null
+        expect f(undefined)
+            .toBe undefined
+        expect () -> f(false)
+            .toThrow()
+        expect () -> f({})
+            .toThrow()
+        expect () -> f([])
+            .toThrow()
+        expect () -> f(1)
+            .toThrow()
+        expect () -> f("a")
+            .toThrow()
+        expect () -> f(new @A())
+            .toThrow()
 
     ##################################################################################################################
     it "func results of overloading", () ->
@@ -105,7 +166,6 @@ describe "overload", () ->
         expect testInstance.method3
             .toBeUndefined()
 
-
     ##################################################################################################################
     it "supports subclass checking", () ->
         class Super
@@ -121,4 +181,20 @@ describe "overload", () ->
         expect f(new Sub())
             .toBe true
         expect () -> f("asdf")
+            .toThrow()
+
+    ##################################################################################################################
+    it "signatures created by signature() function", () ->
+        f = JSUtils.overload(
+            JSUtils.overload.signature(
+                [Number, Object],
+                JSUtils.overload.matchers.constructorMatcher
+            )
+            () -> true
+        )
+
+        expect f(1, {})
+            .toBe true
+        # subclass checking should not work
+        expect () -> f(1, 2)
             .toThrow()
