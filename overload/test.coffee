@@ -79,8 +79,8 @@ describe "overload", () ->
             JSUtils.overload.signature([Number], JSUtils.overload.matchers.constructorMatcher)
             JSUtils.overload.signature([String], JSUtils.overload.matchers.constructorMatcher)
             JSUtils.overload.signature([@A], JSUtils.overload.matchers.constructorMatcher)
-            (cls) ->
-                return cls
+            (arg) ->
+                return arg
         )
 
         expect f(undefined)
@@ -102,6 +102,37 @@ describe "overload", () ->
             .toBe a
 
         expect () -> f(new @TestClass())
+            .toThrow()
+
+    ##################################################################################################################
+    it "isintanceMatcher", () ->
+        f = JSUtils.overload(
+            JSUtils.overload.signature([undefined], JSUtils.overload.matchers.isintanceMatcher)
+            JSUtils.overload.signature([Object], JSUtils.overload.matchers.isintanceMatcher)
+            JSUtils.overload.signature([@A], JSUtils.overload.matchers.isintanceMatcher)
+            (arg) ->
+                return arg
+        )
+
+        expect f(false)
+            .toBe false
+        expect f({})
+            .toEqual {}
+        expect f([])
+            .toEqual []
+        expect f(1)
+            .toBe 1
+        expect f("string")
+            .toBe "string"
+        a = new @A()
+        expect f(a)
+            .toBe a
+
+        expect () -> f(new @TestClass())
+            .toThrow()
+        expect () -> f(undefined)
+            .toThrow()
+        expect () -> f(null)
             .toThrow()
 
     ##################################################################################################################

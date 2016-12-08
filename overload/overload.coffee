@@ -97,7 +97,7 @@ class OverloadHelpers
         return null
 
 matchers = [
-    # no constructor means `undefined` (for e.g. null) => nothing will match [null] because null !== undefined
+    # no constructor means `undefined` (for e.g. null) => nothing will match [null] because null !== undefined (=== null.constructor)
     new Matcher(
         "constructorMatcher"
         (argClass, signatureItem) ->
@@ -107,7 +107,7 @@ matchers = [
     new Matcher(
         "isintanceMatcher"
         (argClass, signatureItem) ->
-            return JSUtils.overload.isSubclass(argClass, signatureItem)
+            return JSUtils.overload.isSubclass(argClass, signatureItem) or argClass is signatureItem is Object
         OverloadHelpers.argPreprocessors.toClass
     )
     # anyTypeMatcher

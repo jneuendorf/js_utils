@@ -980,8 +980,8 @@
     });
     it("constructorMatcher", function() {
       var a, f;
-      f = JSUtils.overload(JSUtils.overload.signature([void 0], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Boolean], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Object], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Array], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Number], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([String], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([this.A], JSUtils.overload.matchers.constructorMatcher), function(cls) {
-        return cls;
+      f = JSUtils.overload(JSUtils.overload.signature([void 0], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Boolean], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Object], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Array], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([Number], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([String], JSUtils.overload.matchers.constructorMatcher), JSUtils.overload.signature([this.A], JSUtils.overload.matchers.constructorMatcher), function(arg) {
+        return arg;
       });
       expect(f(void 0)).toBe(void 0);
       expect(f(null)).toBe(null);
@@ -994,6 +994,28 @@
       expect(f(a)).toBe(a);
       return expect(function() {
         return f(new this.TestClass());
+      }).toThrow();
+    });
+    it("isintanceMatcher", function() {
+      var a, f;
+      f = JSUtils.overload(JSUtils.overload.signature([void 0], JSUtils.overload.matchers.isintanceMatcher), JSUtils.overload.signature([Object], JSUtils.overload.matchers.isintanceMatcher), JSUtils.overload.signature([this.A], JSUtils.overload.matchers.isintanceMatcher), function(arg) {
+        return arg;
+      });
+      expect(f(false)).toBe(false);
+      expect(f({})).toEqual({});
+      expect(f([])).toEqual([]);
+      expect(f(1)).toBe(1);
+      expect(f("string")).toBe("string");
+      a = new this.A();
+      expect(f(a)).toBe(a);
+      expect(function() {
+        return f(new this.TestClass());
+      }).toThrow();
+      expect(function() {
+        return f(void 0);
+      }).toThrow();
+      return expect(function() {
+        return f(null);
       }).toThrow();
     });
     it("nullTypeMatcher", function() {
