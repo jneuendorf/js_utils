@@ -6,8 +6,8 @@ class Matcher
     preprocess: (arg, args) ->
         return @argPreprocessor?(arg, args) or [arg]
 
-    test: (args, signatureItems) ->
-        return @matcher(args, signatureItems)
+    test: (arg, signatureItem) ->
+        return @matcher.call(JSUtils.overload.matchers, arg, signatureItem)
 
 
 class OverloadHelpers
@@ -35,6 +35,7 @@ class OverloadHelpers
                         handler
                     })
                     firstSignatureIndex = i + 1
+                # no signature in block
                 else
                     # last func => then interpret as fallback function
                     if i is args.length - 1
@@ -78,8 +79,8 @@ class OverloadHelpers
                 # non-empty arg list
                 for arg, argIdx in args
                     foundMatchForArg = false
-                    for matcher, matcherIdx in signature.matchers when not foundMatchForArg
-                        for [accordingArg, processedArgs] in processedArgTuples[matcherIdx] when accordingArg is arg
+                    for matcher in signature.matchers when not foundMatchForArg
+                        for [accordingArg, processedArgs] in processedArgTuples[matchers.indexOf(matcher)] when accordingArg is arg
                             for processedArg, processedArgIdx in processedArgs
                                 if matcher.test(processedArg, signature[argIdx]) is true
                                     foundMatchForArg = true
@@ -98,25 +99,38 @@ class OverloadHelpers
 
 matchers = [
     # no constructor means `undefined` (for e.g. null) => nothing will match [null] because null !== undefined (=== null.constructor)
-    new Matcher(
-        "constructorMatcher"
-        (argClass, signatureItem) ->
-            return argClass is signatureItem
-        OverloadHelpers.argPreprocessors.toClass
-    )
+    # new Matcher(
+    #     "constructorMatcher"
+    #     (argClass, signatureItem) ->
+    #         return argClass is signatureItem
+    #     OverloadHelpers.argPreprocessors.toClass
+    # )
     new Matcher(
         "isintanceMatcher"
         (argClass, signatureItem) ->
-            return JSUtils.overload.isSubclass(argClass, signatureItem) or argClass is signatureItem is Object
+            return JSUtils.overload.isSubclass(argClass, signatureItem) or argClass is signatureItem
         OverloadHelpers.argPreprocessors.toClass
     )
-    # anyTypeMatcher
     new Matcher(
         "nullTypeMatcher"
         (arg, signatureItem) ->
             return not arg? and not signatureItem?
     )
-    # arrayTypeMatcher
+    new Matcher(
+        "arrayTypeMatcher"
+        (arr, signatureItem) ->
+            if arr not instanceof Array or signatureItem not instanceof Array or signatureItem.length isnt 1
+                return false
+            type = signatureItem[0]
+            for elem in arr when not @isintanceMatcher.test(elem?.constructor, type)
+                return false
+            return true
+    )
+    new Matcher(
+        "anyTypeMatcher"
+        (arg, signatureItem) ->
+            return signatureItem is JSUtils.overload.ANY
+    )
     # splatMatcher
 ]
 
