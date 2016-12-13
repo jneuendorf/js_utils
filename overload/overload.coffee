@@ -1,10 +1,14 @@
 # A matcher determines whether a given argument(s) matches the according item(s) of a signature.
 class Matcher
 
-    constructor: (@name, @matcher, @argPreprocessor) ->
+    # signaturePreprocessor must return a list of tuples associating the original signature item with the processed items
+    constructor: (@name, @matcher, @argPreprocessor, @signaturePreprocessor) ->
 
     preprocess: (arg, args) ->
         return @argPreprocessor?(arg, args) or [arg]
+
+    preprocessSignature: (signature) ->
+        return @signaturePreprocessor?(signature) or signature
 
     test: (arg, signatureItem) ->
         return @matcher.call(JSUtils.overload.matchers, arg, signatureItem)
@@ -28,6 +32,8 @@ class OverloadHelpers
                         signature = args[j]
                         # assign all matchers if signature was not created by the `signature()` function
                         signature.matchers ?= matchers
+                        # create empty cache that stores a preprocessed version of the signature for each matcher
+                        signature.preprocessed = {}
                         signatures.push(signature)
                     handler = arg
                     blocks.push({
@@ -70,6 +76,7 @@ class OverloadHelpers
 
         numArgs = args.length
         for block in blocks
+            # FOR SPLAT: matcher must be iterated first!?
             for signature in block.signatures
                 # special case: empty list
                 if numArgs is 0 and signature.length is 0
@@ -80,16 +87,25 @@ class OverloadHelpers
                 for arg, argIdx in args
                     foundMatchForArg = false
                     for matcher in signature.matchers when not foundMatchForArg
+                        # fill cache
+                        if matcher.signaturePreprocessor? and not signature.preprocessed[matcher.name]?
+                            signature.preprocessed[matcher.name] = matcher.signaturePreprocessor(signature)
+                        #
+                        if signature.preprocessed[matcher.name]?
+                            preprocessedSignatureTuples = signature.preprocessed[matcher.name]
+                        else
+                            preprocessedSignatureTuples = null
+
                         for [accordingArg, processedArgs] in processedArgTuples[matchers.indexOf(matcher)] when accordingArg is arg
                             for processedArg, processedArgIdx in processedArgs
-                                if matcher.test(processedArg, signature[argIdx]) is true
+                                if matcher.test(processedArg, preprocessedSignatureTuples[argIdx][1] or signature[argIdx]) is true
                                     foundMatchForArg = true
                                     break
                             if foundMatchForArg
                                 break
                         if foundMatchForArg
                             break
-                    # no `matcher` returned true for `arg`
+                    # no `matcher` returned true for `arg` => assumption is now false
                     if not foundMatchForArg
                         signatureMatches = false
                         break
@@ -131,73 +147,15 @@ matchers = [
         (arg, signatureItem) ->
             return signatureItem is JSUtils.overload.ANY
     )
-    # splatMatcher
+    new Matcher(
+        "splatMatcher"
+        (arg, signatureItem) ->
+            # return signatureItem is JSUtils.overload.ANY
+        null
+        (signature) ->
+    )
 ]
 
-
-
-
-# TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters
-JSUtils.overload = (args...) ->
-    {blocks, fallback} = OverloadHelpers.parseArguments(args)
-    return () ->
-        handler = OverloadHelpers.findHandler(arguments, blocks, matchers)
-        if handler?
-            return handler.apply(@, arguments)
-        throw new Error("Arguments do not match any known signature.")
-
-# CONSTANTS
-JSUtils.overload.FALLBACK = ["FALLBACK"]
-JSUtils.overload.ANY = ["ANY"]
-
-JSUtils.overload.matchers = {}
-for matcher in matchers
-    JSUtils.overload.matchers[matcher.name] = matcher
-
-
-# This function can be used to create signatures that will be checked only by the given matchers
-JSUtils.overload.signature = (signature, givenMatchers...) ->
-    if signature instanceof Array
-        givenMatchers = (matcher for matcher in givenMatchers when matcher in matchers)
-        if givenMatchers.length > 0
-            signature.matchers = givenMatchers
-            return signature
-        throw new Error("Matchers must be matcher instances.")
-    throw new Error("Signature must be an array.")
-
-
-
-
-
-
-# @nodoc
-# non-recursive version
-# validArgList = (definedArgList, currentArgList) ->
-#     if definedArgList.length isnt currentArgList.length
-#         return false
-#
-#     for expected, i in definedArgList
-#         current = currentArgList[i]
-#         # treat undefined and null the equally => a defined list [undefined] will match a call f(null)
-#         if not expected? and not current?
-#             continue
-#         if expected isnt current
-#             try
-#                 if not JSUtils.overload.isSubclass(current, expected)
-#                     return false
-#             catch error
-#                 return false
-#     return true
-
-# @nodoc
-# find matching arglist and then find according function
-# funcForArgs = (args, argLists, funcs) ->
-#     argListToCheck = ((arg?.constructor or null) for arg in args)
-#     for argList, i in argLists
-#         if validArgList(argList, argListToCheck)
-#             return funcs[i] or funcs[lastMatchedIdx]
-#         lastMatchedIdx = i
-#     return null
 
 
 # Overload functions be defining a set of signatures for a function so that function gets executed if the current call's arguments match one of the signatures.
@@ -227,36 +185,33 @@ JSUtils.overload.signature = (signature, givenMatchers...) ->
 #       (x, y) ->           # |
 #           return x + y    # /
 #   )
-# JSUtils.overload = (args...) ->
-#     argLists = []
-#     funcs = []
-#     i = 0
-#     len = args.length
-#     while i < len
-#         # get all argument lists (before function is defined)
-#         j = i
-#         while (argList = args[j]) not instanceof Function and j < len
-#             argLists.push argList
-#             j++
-#
-#         # if not: last element reached and last element is not a function <=> wrong mapping given
-#         if j < len
-#             # add function
-#             funcs.push args[j]
-#             # we know (j - i) many arg lists have been pushed => push that many -1 nulls
-#             for k in [0...(j - i - 1)]
-#                 # TODO: fix this...pushing null should be sufficient but somehow the lastMatchedIdx is wrong so overload tries `null()`
-#                 funcs.push args[j]
-#             i = j + 1
-#         else
-#             throw new Error("No function given for argument lists: #{JSON.stringify(arg.name for arg in argList for argList in args.slice(i))}")
-#     console.log funcs
-#
-#     return () ->
-#         if (f = funcForArgs(arguments, argLists, funcs))?
-#             return f.apply(@, arguments)
-#
-#         throw new Error("Arguments do not match any known argument list! Given arguments: #{JSON.stringify(arg for arg in arguments)}. Available signatures: #{JSON.stringify((arg?.name or null for arg in argList) for argList in argLists)}")
+# TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters
+JSUtils.overload = (args...) ->
+    {blocks, fallback} = OverloadHelpers.parseArguments(args)
+    return () ->
+        handler = OverloadHelpers.findHandler(arguments, blocks, matchers)
+        if handler?
+            return handler.apply(@, arguments)
+        throw new Error("Arguments do not match any known signature.")
+
+# CONSTANTS
+JSUtils.overload.FALLBACK = ["FALLBACK"]
+JSUtils.overload.ANY = ["ANY"]
+
+JSUtils.overload.matchers = {}
+for matcher in matchers
+    JSUtils.overload.matchers[matcher.name] = matcher
+
+
+# This function can be used to create signatures that will be checked only by the given matchers
+JSUtils.overload.signature = (signature, givenMatchers...) ->
+    if signature instanceof Array
+        givenMatchers = (matcher for matcher in givenMatchers when matcher in matchers)
+        if givenMatchers.length > 0
+            signature.matchers = givenMatchers
+            return signature
+        throw new Error("Matchers must be matcher instances.")
+    throw new Error("Signature must be an array.")
 
 # TODO: way to keep things simple and fast (only constructorMatcher will be used)
 # JSUtils.overloadSimple()
