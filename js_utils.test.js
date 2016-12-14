@@ -976,14 +976,6 @@
         });
       }).toThrow();
     });
-    it("signatures created by signature() function", function() {
-      var f;
-      f = JSUtils.overload(JSUtils.overload.signature([Number, Object], JSUtils.overload.matchers.isintanceMatcher), function() {
-        return true;
-      });
-      expect(f(1, {})).toBe(true);
-      return expect(f(1, 2)).toBe(true);
-    });
     return describe("matchers (single block)", function() {
       it("isintanceMatcher", function() {
         var a, f;
