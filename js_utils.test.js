@@ -976,7 +976,7 @@
         });
       }).toThrow();
     });
-    return describe("matchers (single block)", function() {
+    describe("matchers (single block)", function() {
       it("isintanceMatcher", function() {
         var a, f;
         f = JSUtils.overload(JSUtils.overload.signature([void 0], JSUtils.overload.matchers.isintanceMatcher), JSUtils.overload.signature([Object], JSUtils.overload.matchers.isintanceMatcher), JSUtils.overload.signature([this.A], JSUtils.overload.matchers.isintanceMatcher), function(arg) {
@@ -1085,6 +1085,23 @@
         expect(f(void 0)).toBe(void 0);
         return expect(f(null)).toBe(null);
       });
+    });
+    return it("fallback handler", function() {
+      var a, f;
+      f = JSUtils.overload(JSUtils.overload.signature([String], JSUtils.overload.matchers.isintanceMatcher), function(arg) {
+        return arg;
+      }, function() {
+        return "fallback";
+      });
+      expect(f("string")).toBe("string");
+      expect(f(false)).toBe("fallback");
+      expect(f({})).toBe("fallback");
+      expect(f([])).toBe("fallback");
+      expect(f(1)).toBe("fallback");
+      a = new this.A();
+      expect(f(a)).toBe("fallback");
+      expect(f(void 0)).toBe("fallback");
+      return expect(f(null)).toBe("fallback");
     });
   });
 

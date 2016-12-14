@@ -35,6 +35,41 @@
           <td>overload</td>
         </tr>
       </table>
+      <h2>Variables Summary</h2>
+      <dl class='constants'>
+  <dt id='JSUtils.overload.ANY-variable'>
+    JSUtils.overload.ANY
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>[&quot;ANY&quot;]</code></pre>
+    <div class='docstring'>
+  <p>this constant is an array for reference identify and contains the string for debugging purposes</p>
+</div>
+<div class='tags'>
+</div>
+  </dd>
+  <dt id='JSUtils.overload.matchers-variable'>
+    JSUtils.overload.matchers
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>{
+  all: matchers,
+  isintanceMatcher: matchers[0],
+  nullTypeMatcher: matchers[1],
+  arrayTypeMatcher: matchers[2],
+  anyTypeMatcher: matchers[3]
+}</code></pre>
+    <div class='docstring'>
+  <p>This object contains all available matchers.
+Currently custom matchers can not be added.
+These are the available matchers and match if the argument: (1) <code>isintanceMatcher</code>: is an instance of or equals the signature item (2) <code>nullTypeMatcher</code>: is <code>null</code> or <code>undefined</code> and the signature item is <code>null</code> or <code>undefined</code> (useful if <code>null</code> should be matched by <code>undefined</code> and vice versa...the isintanceMatcher won&#39;t match those cases) (3) <code>arrayTypeMatcher</code>: is an array only containing elements that all get matched by the first element in the signature item. E.g. <code>[1,2,3]</code> is matched by <code>[Number]</code>. (4) <code>anyTypeMatcher</code>: is anything. Useful because <code>null</code> is not matched by <code>Object</code> (using the <code>isintanceMatcher</code>) and vice versa (using the <code>nullTypeMatcher</code>).</p>
+</div>
+<div class='tags'>
+</div>
+  </dd>
+</dl>
       <h2>Method Summary</h2>
       <ul class='summary'>
   <li>
@@ -42,11 +77,23 @@
       <a href='#JSUtils-'>
         ~
 (Function)
-<b>JSUtils.overload</b><span>(signatures1toN, functionToExecute1)</span>
+<b>JSUtils.overload</b><span>(signatures1toN..., functionToExecute1)</span>
       </a>
     </span>
     <span class='desc'>
-      Overload functions be defining a set of signatures for a function so that function gets executed if the current call&#39;s arguments match one of the signatures. 
+      Overload functions by defining a set of signatures for a function that is executed if the current call&#39;s arguments match one of the signatures belonging to that function. 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#signature-'>
+        ~
+(Array)
+<b>signature</b><span>(signature, givenMatchers...)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This function can be used to create signatures that will be checked only by the given matchers. 
     </span>
   </li>
   <li>
@@ -68,18 +115,20 @@
     <p class='signature' id='JSUtils-'>
       ~
 (Function)
-<b>JSUtils.overload</b><span>(signatures1toN, functionToExecute1)</span>
+<b>JSUtils.overload</b><span>(signatures1toN..., functionToExecute1)</span>
       <br>
     </p>
     <div class='docstring'>
-  <p>Overload functions be defining a set of signatures for a function so that function gets executed if the current call&#39;s arguments match one of the signatures.</p>
+  <p>Overload functions by defining a set of signatures for a function that is executed if the current call&#39;s arguments match one of the signatures belonging to that function.
+Such a function is called <code>handler</code>.
+The last block may contain only a handler which is used in case no signature matched the arguments.</p><p>TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters</p>
   <div class='examples'>
     <h3>Examples:</h3>
     <h4>
       Simple overload example
     </h4>
     <pre><code class='coffeescript'>f = JSUtils.overload(
-    [Number, String]                # \
+    [Number, String]                # \  (signature)
     (a, b) -&gt;                       # |&gt; block
         return a + parseInt(b, 10)  # &#47;
 
@@ -90,7 +139,7 @@
     [Boolean, String]   # \
     [String, Boolean]   # |
     [String, Number]    # |&gt;  block
-    (x, y) -&gt;           # |
+    (x, y) -&gt;           # |   (handler)
         return x + y    # &#47;
 )</code></pre>
   </div>
@@ -126,7 +175,7 @@
       <p class='signature'>
         ~
 (Function)
-<b>JSUtils.overload</b><span>(signatures1toN, functionToExecute1)</span>
+<b>JSUtils.overload</b><span>(signatures1toN..., functionToExecute1)</span>
       </p>
       <div class='docstring'>
   <p>Defines one function for N different signatures.
@@ -173,6 +222,53 @@ So let&#39;s call such a block a list of signatures belonging to one function: A
 </div>
   </div>
   <div class='method_details'>
+    <p class='signature' id='signature-'>
+      ~
+(Array)
+<b>signature</b><span>(signature, givenMatchers...)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This function can be used to create signatures that will be checked only by the given matchers.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>signature</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>A list of items (most commonly classes). </span>
+    </li>
+    <li>
+      <span class='name'>matchers...</span>
+      <span class='type'>
+        (
+          <tt>Matchers</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>These matchers will be used when trying to match a signature. Can also be <code>...JSUtils.overload.matchers.all</code>. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Array</tt>
+      )
+      &mdash;
+      <span class='desc'>The signature (which is used when the overloaded function is called). </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
     <p class='signature' id='isSubclass-'>
       ~
 (Boolean)
@@ -181,7 +277,8 @@ So let&#39;s call such a block a list of signatures belonging to one function: A
     </p>
     <div class='docstring'>
   <p>Defines what is considered a subclass.
-Set the body of <code>JSUtils.isSubclass</code> to <code>return sub == sup</code> to disable support for subclass checking</p>
+Set the body of <code>JSUtils.isSubclass</code> to <code>return sub == sup</code> to disable support for subclass checking.
+<code>null/undefined</code> is not considered a subclass of <code>null/undefined</code>.</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>

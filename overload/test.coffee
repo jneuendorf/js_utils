@@ -69,57 +69,7 @@ describe "overload", () ->
             )
         ).toThrow()
 
-    # ##################################################################################################################
-    # it "signatures created by signature() function", () ->
-    #     f = JSUtils.overload(
-    #         JSUtils.overload.signature(
-    #             [Number, Object],
-    #             JSUtils.overload.matchers.isintanceMatcher
-    #         )
-    #         () -> true
-    #     )
-    #
-    #     expect f(1, {})
-    #         .toBe true
-    #     expect f(1, 2)
-    #         .toBe true
-
     describe "matchers (single block)", () ->
-
-        ##################################################################################################################
-        # it "constructorMatcher", () ->
-        #     f = JSUtils.overload(
-        #         JSUtils.overload.signature([undefined], JSUtils.overload.matchers.constructorMatcher)
-        #         JSUtils.overload.signature([Boolean], JSUtils.overload.matchers.constructorMatcher)
-        #         JSUtils.overload.signature([Object], JSUtils.overload.matchers.constructorMatcher)
-        #         JSUtils.overload.signature([Array], JSUtils.overload.matchers.constructorMatcher)
-        #         JSUtils.overload.signature([Number], JSUtils.overload.matchers.constructorMatcher)
-        #         JSUtils.overload.signature([String], JSUtils.overload.matchers.constructorMatcher)
-        #         JSUtils.overload.signature([@A], JSUtils.overload.matchers.constructorMatcher)
-        #         (arg) ->
-        #             return arg
-        #     )
-        #
-        #     expect f(undefined)
-        #         .toBe undefined
-        #     expect f(null)
-        #         .toBe null
-        #     expect f(false)
-        #         .toBe false
-        #     expect f({})
-        #         .toEqual {}
-        #     expect f([])
-        #         .toEqual []
-        #     expect f(1)
-        #         .toBe 1
-        #     expect f("string")
-        #         .toBe "string"
-        #     a = new @A()
-        #     expect f(a)
-        #         .toBe a
-        #
-        #     expect () -> f(new @TestClass())
-        #         .toThrow()
 
         ##################################################################################################################
         it "isintanceMatcher", () ->
@@ -249,3 +199,32 @@ describe "overload", () ->
                 .toBe undefined
             expect f(null)
                 .toBe null
+
+    ##################################################################################################################
+    it "fallback handler", () ->
+        f = JSUtils.overload(
+            JSUtils.overload.signature([String], JSUtils.overload.matchers.isintanceMatcher)
+            (arg) ->
+                return arg
+            () ->
+                return "fallback"
+        )
+
+        expect f("string")
+            .toBe "string"
+
+        expect f(false)
+            .toBe "fallback"
+        expect f({})
+            .toBe "fallback"
+        expect f([])
+            .toBe "fallback"
+        expect f(1)
+            .toBe "fallback"
+        a = new @A()
+        expect f(a)
+            .toBe "fallback"
+        expect f(undefined)
+            .toBe "fallback"
+        expect f(null)
+            .toBe "fallback"

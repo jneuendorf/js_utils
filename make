@@ -49,6 +49,7 @@ elif [[ "$1" == "codoopts" ]]; then
             files+=$'\n'
         done
     done
+    # --undocumented
     echo "--name       \"js_utils\"
 --readme     README.md
 --title      \"js_utils\"

@@ -1,15 +1,20 @@
 # A matcher determines whether a given argument(s) matches the according item(s) of a signature.
+# @nodoc
 class Matcher
+    # The matcher must return a boolean value
+    # that indicates whether a (potentially) preprocessed argument matches the according signature item
     constructor: (@name, @matcher, @argPreprocessor) ->
 
+    # The preprocessor must return a list of preprocessed arguments
     preprocess: (arg, args) ->
         return @argPreprocessor?(arg, args) or [arg]
 
     test: (arg, signatureItem) ->
         return @matcher.call(JSUtils.overload.matchers, arg, signatureItem)
 
-
+# @nodoc
 class OverloadHelpers
+    # parse the arguments into blocks - each containing signatures and a handler
     @parseArguments: (args) ->
         blocks = []
         firstSignatureIndex = 0
@@ -20,12 +25,10 @@ class OverloadHelpers
             if arg instanceof Function
                 # there is at least 1 signature
                 if i > firstSignatureIndex
-                    # signatures = (args[j] for j in [firstSignatureIndex...i])
                     signatures = []
                     for j in [firstSignatureIndex...i]
                         signature = args[j]
                         # assign isintanceMatcher if signature was not created by the `signature()` function for performance reasons
-                        # if all matchers (or any combination of them) are needed use the `signature()` function
                         signature.matchers ?= [JSUtils.overload.matchers.isintanceMatcher]
                         signatures.push(signature)
                     handler = arg
@@ -97,11 +100,13 @@ class OverloadHelpers
         return null
 
 
-# Overload functions be defining a set of signatures for a function so that function gets executed if the current call's arguments match one of the signatures.
+# Overload functions by defining a set of signatures for a function that is executed if the current call's arguments match one of the signatures belonging to that function.
+# Such a function is called `handler`.
+# The last block may contain only a handler which is used in case no signature matched the arguments.
 # @param arguments... [Blocks] For what a block can be see the example and the overload section.
 # @return [Function] The overloaded function.
 #
-# @overload JSUtils.overload(signatures1toN, functionToExecute1)
+# @overload JSUtils.overload(signatures1toN..., functionToExecute1)
 #   Defines one function for N different signatures.
 #   So let's call such a block a list of signatures belonging to one function: Any number of blocks can be passed to JSUtils.overload().
 #   @param signatures1toN... [Array of Array of class] Signatures. Any number of arrays (of classes).
@@ -130,14 +135,16 @@ JSUtils.overload = (args...) ->
     return () ->
         # TODO: find union of actually used matchers a pass potential subset of all matchers
         handler = OverloadHelpers.findHandler(arguments, blocks, JSUtils.overload.matchers.all)
+        handler ?= fallback
         if handler?
             return handler.apply(@, arguments)
         throw new Error("Arguments do not match any known signature.")
 
-# CONSTANTS
+
 # this constant is an array for reference identify and contains the string for debugging purposes
 JSUtils.overload.ANY = ["ANY"]
 
+# @nodoc
 matchers = [
     new Matcher(
         "isintanceMatcher"
@@ -166,26 +173,40 @@ matchers = [
             return signatureItem is JSUtils.overload.ANY
     )
 ]
+# This object contains all available matchers.
+# Currently custom matchers can not be added.
+# These are the available matchers and match if the argument:
+#   (1) `isintanceMatcher`: is an instance of or equals the signature item
+#   (2) `nullTypeMatcher`: is `null` or `undefined` and the signature item is `null` or `undefined` (useful if `null` should be matched by `undefined` and vice versa...the isintanceMatcher won't match those cases)
+#   (3) `arrayTypeMatcher`: is an array only containing elements that all get matched by the first element in the signature item. E.g. `[1,2,3]` is matched by `[Number]`.
+#   (4) `anyTypeMatcher`: is anything. Useful because `null` is not matched by `Object` (using the `isintanceMatcher`) and vice versa (using the `nullTypeMatcher`).
 JSUtils.overload.matchers =
     all: matchers
-for matcher in matchers
-    JSUtils.overload.matchers[matcher.name] = matcher
+    isintanceMatcher: matchers[0]
+    nullTypeMatcher: matchers[1]
+    arrayTypeMatcher: matchers[2]
+    anyTypeMatcher: matchers[3]
 
 
-# This function can be used to create signatures that will be checked only by the given matchers
-JSUtils.overload.signature = (signature, givenMatchers...) ->
+# This function can be used to create signatures that will be checked only by the given matchers.
+# @param signature [Array] A list of items (most commonly classes).
+# @param matchers... [Matchers] These matchers will be used when trying to match a signature. Can also be `...JSUtils.overload.matchers.all`.
+# @return [Array] The signature (which is used when the overloaded function is called).
+signature = (signature, givenMatchers...) ->
     if signature instanceof Array
-        givenMatchers = (matcher for matcher in givenMatchers when matcher in matchers)
+        givenMatchers = (matcher for matcher in givenMatchers when matcher in JSUtils.overload.matchers.all)
         if givenMatchers.length > 0
             signature.matchers = givenMatchers
             return signature
         throw new Error("Matchers must be matcher instances.")
     throw new Error("Signature must be an array.")
 
+# @nodoc
+JSUtils.overload.signature = signature
+
 # Defines what is considered a subclass.
 # Set the body of `JSUtils.isSubclass` to `return sub == sup` to disable support for subclass checking.
-# # `null/undefined` is considered a subclass of `null/undefined`.
-#
+# `null/undefined` is not considered a subclass of `null/undefined`.
 # @param sub [Class] potential subclass
 # @param sup [Class] potential superclass
 # @return [Boolean] If sub is a subclass of sup
