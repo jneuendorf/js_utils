@@ -93,7 +93,7 @@ These are the available matchers and match if the argument: (1) <code>isintanceM
       </a>
     </span>
     <span class='desc'>
-      This function can be used to create signatures that will be checked only by the given matchers. 
+      Callable with <code>JSUtils.overload.signature()</code>. 
     </span>
   </li>
   <li>
@@ -105,7 +105,7 @@ These are the available matchers and match if the argument: (1) <code>isintanceM
       </a>
     </span>
     <span class='desc'>
-      Defines what is considered a subclass. 
+      Callable with <code>JSUtils.overload.isSubclass()</code>. 
     </span>
   </li>
 </ul>
@@ -229,7 +229,8 @@ So let&#39;s call such a block a list of signatures belonging to one function: A
       <br>
     </p>
     <div class='docstring'>
-  <p>This function can be used to create signatures that will be checked only by the given matchers.</p>
+  <p>Callable with <code>JSUtils.overload.signature()</code>.
+This function can be used to create signatures that will be checked only by the given matchers.</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
@@ -276,7 +277,8 @@ So let&#39;s call such a block a list of signatures belonging to one function: A
       <br>
     </p>
     <div class='docstring'>
-  <p>Defines what is considered a subclass.
+  <p>Callable with <code>JSUtils.overload.isSubclass()</code>.
+Defines what is considered a subclass.
 Set the body of <code>JSUtils.isSubclass</code> to <code>return sub == sup</code> to disable support for subclass checking.
 <code>null/undefined</code> is not considered a subclass of <code>null/undefined</code>.</p>
 </div>

@@ -187,7 +187,7 @@ JSUtils.overload.matchers =
     arrayTypeMatcher: matchers[2]
     anyTypeMatcher: matchers[3]
 
-
+# Callable with `JSUtils.overload.signature()`.
 # This function can be used to create signatures that will be checked only by the given matchers.
 # @param signature [Array] A list of items (most commonly classes).
 # @param matchers... [Matchers] These matchers will be used when trying to match a signature. Can also be `...JSUtils.overload.matchers.all`.
@@ -204,6 +204,7 @@ signature = (signature, givenMatchers...) ->
 # @nodoc
 JSUtils.overload.signature = signature
 
+# Callable with `JSUtils.overload.isSubclass()`.
 # Defines what is considered a subclass.
 # Set the body of `JSUtils.isSubclass` to `return sub == sup` to disable support for subclass checking.
 # `null/undefined` is not considered a subclass of `null/undefined`.
