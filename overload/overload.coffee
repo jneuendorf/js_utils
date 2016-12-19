@@ -93,8 +93,11 @@ class OverloadHelpers
         return null
 
 
-# Overload functions by defining a set of signatures for a function that is executed if the current call's arguments match one of the signatures belonging to that function.
+# Overload functions by defining a set of signatures for a function that is executed
+# if the current call's arguments match one of the signatures belonging to that function.
 # Such a function is called `handler`.
+# The handler of the first matching signature will be returned.
+# Therefore duplicate signature won't throw errors but might lead to unexpected behavior.
 # The last block may contain only a handler which is used in case no signature matched the arguments.
 # @param arguments... [Blocks] For what a block can be see the example and the overload section.
 # @return [Function] The overloaded function.
@@ -116,11 +119,12 @@ class OverloadHelpers
 #       (a, b) ->                       # |> block
 #           return parseInt(a, 10) + b  # /
 #
-#       [Boolean, String]   # \
-#       [String, Boolean]   # |
-#       [String, Number]    # |>  block
-#       (x, y) ->           # |   (handler)
-#           return x + y    # /
+#       [Boolean, String]       # \
+#       [String, Boolean]       # |
+#       # duplicate signature   # |
+#       [String, Number]        # |>  block
+#       (x, y) ->               # |   (handler)
+#           return x + y        # /
 #   )
 # TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters
 JSUtils.overload = (args...) ->

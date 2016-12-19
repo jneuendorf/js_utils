@@ -1100,7 +1100,7 @@
       }).toThrow();
     });
     return describe("realistic use cases (multiple, blocks, multiple matchers)", function() {
-      return it("getter/setter", function() {
+      it("getter/setter", function() {
         var obj;
         obj = {};
         obj.attr = JSUtils.overload([String], function(key) {
@@ -1127,6 +1127,32 @@
         }).toThrow();
         return expect(function() {
           return obj.attr([], {});
+        }).toThrow();
+      });
+      return it("example from the docs", function() {
+        var f;
+        f = JSUtils.overload([Number, String], function(a, b) {
+          return a + parseInt(b, 10);
+        }, [String, Number], function(a, b) {
+          return parseInt(a, 10) + b;
+        }, [Boolean, String], [String, Boolean], [String, Number], function(x, y) {
+          return x + y;
+        });
+        expect(f(1, "2")).toBe(3);
+        expect(f("1", 2)).toBe(3);
+        expect(f(true, "false")).toBe("truefalse");
+        expect(f("true", false)).toBe("truefalse");
+        expect(function() {
+          return f();
+        }).toThrow();
+        expect(function() {
+          return f({});
+        }).toThrow();
+        expect(function() {
+          return f(1, 2);
+        }).toThrow();
+        return expect(function() {
+          return f([]);
         }).toThrow();
       });
     });

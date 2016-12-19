@@ -172,6 +172,7 @@ describe "overload", () ->
         expect f("string")
             .toBe "string"
 
+        # those would normally throw an error
         expect f(false)
             .toBe "fallback"
         expect f({})
@@ -269,18 +270,38 @@ describe "overload", () ->
                 .toThrow()
 
 
-            # f = JSUtils.overload(
-            #     [Number, String]
-            #     (a, b) ->
-            #         return a + parseInt(b, 10)
-            #
-            #     [String, Number]
-            #     (a, b) ->
-            #         return parseInt(a, 10) + b
-            #
-            #       [Boolean, String]   # \
-            #       [String, Boolean]   # |
-            #       [String, Number]    # |>  block
-            #       (x, y) ->           # |   (handler)
-            #           return x + y    # /
-            # )
+        it "example from the docs", () ->
+            f = JSUtils.overload(
+                [Number, String]
+                (a, b) ->
+                    return a + parseInt(b, 10)
+
+                [String, Number]
+                (a, b) ->
+                    return parseInt(a, 10) + b
+
+                [Boolean, String]
+                [String, Boolean]
+                # duplicate signature
+                [String, Number]
+                (x, y) ->
+                    return x + y
+            )
+
+            expect f(1, "2")
+                .toBe 3
+            expect f("1", 2)
+                .toBe 3
+            expect f(true, "false")
+                .toBe "truefalse"
+            expect f("true", false)
+                .toBe "truefalse"
+
+            expect () -> f()
+                .toThrow()
+            expect () -> f({})
+                .toThrow()
+            expect () -> f(1, 2)
+                .toThrow()
+            expect () -> f([])
+                .toThrow()
