@@ -1,14 +1,16 @@
 # A matcher determines whether a given argument(s) matches the according item(s) of a signature.
 # @nodoc
 class Matcher
-    # The matcher must return a boolean value
-    # that indicates whether a (potentially) preprocessed argument matches the according signature item
+
     constructor: (@name, @matcher, @argPreprocessor) ->
 
-    # The preprocessor must return a list of preprocessed arguments
     preprocess: (arg, args) ->
-        return @argPreprocessor?(arg, args) or [arg]
+        if @argPreprocessor instanceof Function
+            return @argPreprocessor(arg, args)
+        return arg
 
+    # The matcher must return a boolean value
+    # that indicates whether a (potentially) preprocessed argument matches the according signature item
     test: (arg, signatureItem) ->
         return @matcher.call(JSUtils.overload.matchers, arg, signatureItem)
 
@@ -51,23 +53,15 @@ class OverloadHelpers
             fallback
         }
 
-    # each preprocessor must return an array (because the original arg might be expanded to a list)
-    @argPreprocessors:
-        # instance |-> constructor
-        toClass: (arg, args) ->
-            return [arg?.constructor]
-
     @findHandler: (args, blocks, matchers) ->
         # save tuples: [givenArg, processedArg(s)] -> thus originals and processed are associated (hash like)
         processedArgTuples = []
         for matcher in matchers
             processedArgTuples.push do (matcher) ->
                 res = []
-                res.numProcessedArgs = 0
                 for arg in args
                     tuple = [arg, matcher.preprocess(arg, args)]
                     res.push(tuple)
-                    res.numProcessedArgs += tuple[1].length
                 return res
 
         numArgs = args.length
@@ -76,18 +70,17 @@ class OverloadHelpers
                 # special case: empty list
                 if numArgs is 0 and signature.length is 0
                     return block.handler
+                if signature.length isnt args.length
+                    continue
                 # assume signature fits given arguments
                 signatureMatches = true
                 # non-empty arg list
                 for arg, argIdx in args
                     foundMatchForArg = false
                     for matcher in signature.matchers when not foundMatchForArg
-                        for [accordingArg, processedArgs] in processedArgTuples[matchers.indexOf(matcher)] when accordingArg is arg
-                            for processedArg, processedArgIdx in processedArgs
-                                if matcher.test(processedArg, signature[argIdx]) is true
-                                    foundMatchForArg = true
-                                    break
-                            if foundMatchForArg
+                        for [accordingArg, processedArg] in processedArgTuples[matchers.indexOf(matcher)] when accordingArg is arg
+                            if matcher.test(processedArg, signature[argIdx]) is true
+                                foundMatchForArg = true
                                 break
                         if foundMatchForArg
                             break
@@ -141,7 +134,7 @@ JSUtils.overload = (args...) ->
         throw new Error("Arguments do not match any known signature.")
 
 
-# this constant is an array for reference identify and contains the string for debugging purposes
+# this constant is used by the `anyTypeMatcher` an array for reference identify and contains the string for debugging purposes
 JSUtils.overload.ANY = ["ANY"]
 
 # @nodoc
@@ -150,7 +143,8 @@ matchers = [
         "isintanceMatcher"
         (argClass, signatureItem) ->
             return JSUtils.overload.isSubclass(argClass, signatureItem) or argClass is signatureItem
-        OverloadHelpers.argPreprocessors.toClass
+        (arg) ->
+            return arg?.constructor
     )
     new Matcher(
         "nullTypeMatcher"
@@ -212,9 +206,13 @@ JSUtils.overload.signature = signature
 # @param sup [Class] potential superclass
 # @return [Boolean] If sub is a subclass of sup
 isSubclass = (sub, sup) ->
-    if sub?.prototype? and sup?
+    try
         return sub.prototype instanceof sup
-    return false
+    catch
+        return false
+    # if sub?.prototype? and sup?
+    #     return sub.prototype instanceof sup
+    # return false
 
 # @nodoc
 JSUtils.overload.isSubclass = isSubclass

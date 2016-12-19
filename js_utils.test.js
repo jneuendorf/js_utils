@@ -921,34 +921,12 @@
       this.A = (function() {
         function A() {}
 
-        A.prototype.a = function() {
-          return 1337;
-        };
-
         return A;
 
       })();
       A = this.A;
       return this.TestClass = (function() {
         function TestClass() {}
-
-        TestClass.prototype.method1 = JSUtils.overload([], [void 0, Object], [Object, void 0], function() {
-          return null;
-        }, [Number, String], function(a, b) {
-          return a + parseInt(b, 10);
-        }, [String, Number], function(a, b) {
-          return parseInt(a, 10) + b;
-        }, [Boolean, String], [String, Boolean], function(x, y) {
-          return x + y;
-        }, [A, String], function(a, b) {
-          return a.a() + parseInt(b, 10);
-        });
-
-        TestClass.prototype.method2 = JSUtils.overload([Number, String], function(n, str) {
-          return n + "-" + str;
-        }, [Number, String, String], function(n, str1, str2) {
-          return n + "-" + str1 + "+" + str2;
-        });
 
         return TestClass;
 
@@ -1086,7 +1064,7 @@
         return expect(f(null)).toBe(null);
       });
     });
-    return it("fallback handler", function() {
+    it("fallback handler", function() {
       var a, f;
       f = JSUtils.overload(JSUtils.overload.signature([String], JSUtils.overload.matchers.isintanceMatcher), function(arg) {
         return arg;
@@ -1102,6 +1080,55 @@
       expect(f(a)).toBe("fallback");
       expect(f(void 0)).toBe("fallback");
       return expect(f(null)).toBe("fallback");
+    });
+    it("simple signatures", function() {
+      var a, f;
+      f = JSUtils.overload([void 0], [Object], [this.A], function(arg) {
+        return arg;
+      });
+      expect(f(null)).toBe(null);
+      expect(f(void 0)).toBe(void 0);
+      expect(f(false)).toBe(false);
+      expect(f({})).toEqual({});
+      expect(f([])).toEqual([]);
+      expect(f(1)).toBe(1);
+      expect(f("string")).toBe("string");
+      a = new this.A();
+      expect(f(a)).toBe(a);
+      return expect(function() {
+        return f(new this.TestClass());
+      }).toThrow();
+    });
+    return describe("realistic use cases (multiple, blocks, multiple matchers)", function() {
+      return it("getter/setter", function() {
+        var obj;
+        obj = {};
+        obj.attr = JSUtils.overload([String], function(key) {
+          return this[key];
+        }, JSUtils.overload.signature([String, JSUtils.overload.ANY], JSUtils.overload.matchers.isintanceMatcher, JSUtils.overload.matchers.anyTypeMatcher), function(key, value) {
+          this[key] = value;
+          return this;
+        });
+        expect(obj.attr("a")).toBe(void 0);
+        obj.attr("a", "a");
+        expect(obj.attr("a")).toBe("a");
+        obj.attr("a", 1);
+        expect(obj.attr("a")).toBe(1);
+        obj.attr("a", null);
+        expect(obj.attr("a")).toBe(null);
+        obj.attr("a", void 0);
+        expect(obj.attr("a")).toBe(void 0);
+        obj.attr("a", []);
+        expect(obj.attr("a")).toEqual([]);
+        obj.attr("a", {});
+        expect(obj.attr("a")).toEqual({});
+        expect(function() {
+          return obj.attr(1);
+        }).toThrow();
+        return expect(function() {
+          return obj.attr([], {});
+        }).toThrow();
+      });
     });
   });
 
