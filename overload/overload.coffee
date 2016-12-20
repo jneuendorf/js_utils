@@ -19,6 +19,7 @@ class OverloadHelpers
     # parse the arguments into blocks - each containing signatures and a handler
     @parseArguments: (args) ->
         blocks = []
+        usedMatchers = []
         firstSignatureIndex = 0
         for arg, i in args
             if arg not instanceof Array and arg not instanceof Function
@@ -32,6 +33,9 @@ class OverloadHelpers
                         signature = args[j]
                         # assign isintanceMatcher if signature was not created by the `signature()` function for performance reasons
                         signature.matchers ?= [JSUtils.overload.matchers.isintanceMatcher]
+                        # gather all used matchers
+                        for matcher in signature.matchers when matcher not in usedMatchers
+                            usedMatchers.push(matcher)
                         signatures.push(signature)
                     handler = arg
                     blocks.push({
@@ -51,6 +55,7 @@ class OverloadHelpers
         return {
             blocks
             fallback
+            usedMatchers
         }
 
     @findHandler: (args, blocks, matchers) ->
@@ -128,10 +133,10 @@ class OverloadHelpers
 #   )
 # TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters
 JSUtils.overload = (args...) ->
-    {blocks, fallback} = OverloadHelpers.parseArguments(args)
+    {blocks, fallback, usedMatchers} = OverloadHelpers.parseArguments(args)
     return () ->
         # TODO: find union of actually used matchers a pass potential subset of all matchers
-        handler = OverloadHelpers.findHandler(arguments, blocks, JSUtils.overload.matchers.all)
+        handler = OverloadHelpers.findHandler(arguments, blocks, usedMatchers)
         handler ?= fallback
         if handler?
             return handler.apply(@, arguments)
@@ -214,9 +219,6 @@ isSubclass = (sub, sup) ->
         return sub.prototype instanceof sup
     catch
         return false
-    # if sub?.prototype? and sup?
-    #     return sub.prototype instanceof sup
-    # return false
 
 # @nodoc
 JSUtils.overload.isSubclass = isSubclass
