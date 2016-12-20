@@ -67,7 +67,6 @@ describe "Tree", () ->
                 expect tree.children[0].data.name
                     .toBe tree.children[0].name
 
-
         describe "modifying a tree", () ->
             beforeEach () ->
                 @tree = JSUtils.Tree.new {
@@ -195,7 +194,6 @@ describe "Tree", () ->
                 expect @tree.children[0].name
                     .toBe "child3"
 
-
         describe "traversing a tree", () ->
             beforeEach () ->
                 @tree = JSUtils.Tree.new {
@@ -260,7 +258,6 @@ describe "Tree", () ->
                     result.push node.name
                 expect result
                     .toEqual ["root", "child1", "child2", "child3", "child2-child"]
-
 
         describe "getting information about a tree", () ->
             beforeEach () ->
@@ -425,7 +422,7 @@ describe "Tree", () ->
 
         describe "converting a tree", () ->
             beforeEach () ->
-                @tree = JSUtils.Tree.new {
+                @tree = JSUtils.Tree.new({
                     a: 10
                     b: 20
                     name: "root"
@@ -453,10 +450,10 @@ describe "Tree", () ->
                             name: "child3"
                         }
                     ]
-                }
+                })
 
             it "serialize (== toObject)", () ->
-                expect @tree.serialize()
+                expect @tree.serialize (node, children) -> $.extend({children}, node.data)
                     .toEqual {
                         a: 10
                         b: 20

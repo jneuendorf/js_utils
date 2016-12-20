@@ -304,44 +304,24 @@ class JSUtils.Tree
         return @children.length is 0
 
     # Serialize the tree to a plain object or a string.
-    # @param toString [Boolean] Whether to return the result as a string.
     # @param format [Function] Optional. This function can postprocess the current object before returning it.
-    # @param doneNodes [Array] This list is carried along to prevent serializing circles.
-    # @return [Object|String] The serialized tree.
-    serialize: (toString, format, doneNodes) ->
-        # TODO: remove the toString option
-        # toString parameter omitted => shift parameters
-        if toString instanceof Function
-            doneNodes = format or []
-            format = toString
-            toString = false
-        # set default values manually
-        else
-            toString = toString or false
-            doneNodes = doneNodes or []
+    # @param doneNodes [Array] This list is carried along to prevent serializing circles. It may be passed but must then be an empty array.
+    # @return [Object] The serialized tree.
+    serialize: (format, doneNodes = []) ->
         serializedChildren = []
-        for child in @children when child not in doneNodes
-            doneNodes.push child
-            serializedChildren.push child?.serialize?(false, format, doneNodes) or {}
-
-        if not format?
-            res = @data.serialize?() or JSON.parse(JSON.stringify(@data))
-            if serializedChildren.length > 0
-                res.children = serializedChildren
-            if not toString
-                return res
-            return JSON.stringify(res)
-
-        res = format(@, serializedChildren, @data.serialize?() or JSON.parse(JSON.stringify(@data)))
-        if not toString
-            return res
-        return JSON.stringify(res)
+        for child in @children
+            if child?
+                if child not in doneNodes
+                    doneNodes.push child
+                    serializedChildren.push(child.serialize(format, doneNodes))
+            else
+                serializedChildren.push(null)
+        return format(@, serializedChildren)
 
     # Alias for {JSUtils.Tree#serialize}.
-    # @param toString [Boolean] Whether to return the result as a string.
     # @param format [Function] Optional. This function can postprocess the current object before returning it.
-    # @param doneNodes [Array] This list is carried along to prevent serializing circles.
-    # @return [Object|String] The serialized tree.
+    # @param doneNodes [Array] This list is carried along to prevent serializing circles. It may be passed but must then be an empty array.
+    # @return [Object] The serialized tree.
     toObject: () ->
         return @serialize.apply(@, arguments)
 

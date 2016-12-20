@@ -163,7 +163,6 @@
                 expect result
                     .toEqual [10, 1, 15, 3]
 
-
         describe "getting information about a tree", () ->
             beforeEach () ->
                 @tree = JSUtils.BinaryTree.new(
@@ -311,20 +310,18 @@
                 )
 
             it "serialize (== toObject)", () ->
-                expect @tree.serialize()
+                expect @tree.serialize (node, children) -> $.extend({}, node.data, {children})
                     .toEqual {
                         n: 10
                         children: [
                             {
                                 n: 1
                                 children: [
-                                    {}
-                                    {n: 3}
+                                    null
+                                    {n: 3, children: []}
                                 ]
                             }
-                            {
-                                n: 15
-                            }
+                            {n: 15, children: []}
                         ]
                     }
 
@@ -382,7 +379,7 @@
                     .toBe 10
 
                 tree.balance()
-                expect tree.serialize()
+                expect tree.serialize (node, children) -> $.extend({}, node.data, {children})
                     .toEqual {
                         n: 60
                         children: [
@@ -392,28 +389,18 @@
                                     {
                                         n: 20
                                         children: [
-                                            {
-                                                n: 10
-                                            }
-                                            {
-                                                n: 30
-                                            }
+                                            {n: 10, children: []}
+                                            {n: 30, children: []}
                                         ]
                                     }
-                                    {
-                                        n: 50
-                                    }
+                                    {n: 50, children: []}
                                 ]
                             }
                             {
                                 n: 90
                                 children: [
-                                    {
-                                        n: 80
-                                    }
-                                    {
-                                        n: 100
-                                    }
+                                    {n: 80, children: []}
+                                    {n: 100, children: []}
                                 ]
                             }
                         ]
