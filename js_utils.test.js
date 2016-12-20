@@ -2303,7 +2303,11 @@
           });
         });
         it("serialize (== toObject)", function() {
-          return expect(this.tree.serialize()).toEqual({
+          return expect(this.tree.serialize(function(node, children) {
+            return $.extend({
+              children: children
+            }, node.data);
+          })).toEqual({
             a: 10,
             b: 20,
             name: "root",
@@ -2715,18 +2719,24 @@
           });
         });
         it("serialize (== toObject)", function() {
-          return expect(this.tree.serialize()).toEqual({
+          return expect(this.tree.serialize(function(node, children) {
+            return $.extend({}, node.data, {
+              children: children
+            });
+          })).toEqual({
             n: 10,
             children: [
               {
                 n: 1,
                 children: [
-                  {}, {
-                    n: 3
+                  null, {
+                    n: 3,
+                    children: []
                   }
                 ]
               }, {
-                n: 15
+                n: 15,
+                children: []
               }
             ]
           });
@@ -2793,7 +2803,11 @@
           expect(tree.depth).toBe(9);
           expect(tree.left.left.left.left.left.left.left.left.left.n).toBe(10);
           tree.balance();
-          expect(tree.serialize()).toEqual({
+          expect(tree.serialize(function(node, children) {
+            return $.extend({}, node.data, {
+              children: children
+            });
+          })).toEqual({
             n: 60,
             children: [
               {
@@ -2803,22 +2817,27 @@
                     n: 20,
                     children: [
                       {
-                        n: 10
+                        n: 10,
+                        children: []
                       }, {
-                        n: 30
+                        n: 30,
+                        children: []
                       }
                     ]
                   }, {
-                    n: 50
+                    n: 50,
+                    children: []
                   }
                 ]
               }, {
                 n: 90,
                 children: [
                   {
-                    n: 80
+                    n: 80,
+                    children: []
                   }, {
-                    n: 100
+                    n: 100,
+                    children: []
                   }
                 ]
               }

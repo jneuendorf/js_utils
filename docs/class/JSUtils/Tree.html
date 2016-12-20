@@ -288,8 +288,8 @@ All properties of that <code>data</code> object that are made accesible on the n
     <span class='signature'>
       <a href='#serialize-dynamic'>
         #
-(Object|String)
-<b>serialize</b><span>(toString, format, doneNodes)</span>
+(Object)
+<b>serialize</b><span>(format, doneNodes = [])</span>
       </a>
     </span>
     <span class='desc'>
@@ -300,7 +300,7 @@ All properties of that <code>data</code> object that are made accesible on the n
     <span class='signature'>
       <a href='#toObject-dynamic'>
         #
-(Object|String)
+(Object)
 <b>toObject</b><span>()</span>
       </a>
     </span>
@@ -1353,8 +1353,8 @@ Additionally, all properties of the data object are made accesible on the node d
   <div class='method_details'>
     <p class='signature' id='serialize-dynamic'>
       #
-(Object|String)
-<b>serialize</b><span>(toString, format, doneNodes)</span>
+(Object)
+<b>serialize</b><span>(format, doneNodes = [])</span>
       <br>
     </p>
     <div class='docstring'>
@@ -1363,16 +1363,6 @@ Additionally, all properties of the data object are made accesible on the node d
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
-    <li>
-      <span class='name'>toString</span>
-      <span class='type'>
-        (
-          <tt>Boolean</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Whether to return the result as a string. </span>
-    </li>
     <li>
       <span class='name'>format</span>
       <span class='type'>
@@ -1391,7 +1381,7 @@ Additionally, all properties of the data object are made accesible on the node d
         )
       </span>
       &mdash;
-      <span class='desc'>This list is carried along to prevent serializing circles. </span>
+      <span class='desc'>This list is carried along to prevent serializing circles. It may be passed but must then be an empty array. </span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -1399,7 +1389,7 @@ Additionally, all properties of the data object are made accesible on the node d
     <li>
       <span class='type'></span>
       (
-        <tt>Object|String</tt>
+        <tt>Object</tt>
       )
       &mdash;
       <span class='desc'>The serialized tree. </span>
@@ -1410,7 +1400,7 @@ Additionally, all properties of the data object are made accesible on the node d
   <div class='method_details'>
     <p class='signature' id='toObject-dynamic'>
       #
-(Object|String)
+(Object)
 <b>toObject</b><span>()</span>
       <br>
     </p>
@@ -1420,16 +1410,6 @@ Additionally, all properties of the data object are made accesible on the node d
 <div class='tags'>
   <h3>Parameters:</h3>
   <ul class='param'>
-    <li>
-      <span class='name'>toString</span>
-      <span class='type'>
-        (
-          <tt>Boolean</tt>
-        )
-      </span>
-      &mdash;
-      <span class='desc'>Whether to return the result as a string. </span>
-    </li>
     <li>
       <span class='name'>format</span>
       <span class='type'>
@@ -1448,7 +1428,7 @@ Additionally, all properties of the data object are made accesible on the node d
         )
       </span>
       &mdash;
-      <span class='desc'>This list is carried along to prevent serializing circles. </span>
+      <span class='desc'>This list is carried along to prevent serializing circles. It may be passed but must then be an empty array. </span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -1456,7 +1436,7 @@ Additionally, all properties of the data object are made accesible on the node d
     <li>
       <span class='type'></span>
       (
-        <tt>Object|String</tt>
+        <tt>Object</tt>
       )
       &mdash;
       <span class='desc'>The serialized tree. </span>
