@@ -1099,7 +1099,7 @@
         return f(new this.TestClass());
       }).toThrow();
     });
-    return describe("realistic use cases (multiple, blocks, multiple matchers)", function() {
+    return describe("more realistic use cases (multiple, blocks, multiple matchers)", function() {
       it("getter/setter", function() {
         var obj;
         obj = {};
@@ -1129,7 +1129,7 @@
           return obj.attr([], {});
         }).toThrow();
       });
-      return it("example from the docs", function() {
+      it("example from the docs", function() {
         var f;
         f = JSUtils.overload([Number, String], function(a, b) {
           return a + parseInt(b, 10);
@@ -1153,6 +1153,49 @@
         }).toThrow();
         return expect(function() {
           return f([]);
+        }).toThrow();
+      });
+      return it("optional parameters", function() {
+        var Item;
+        Item = (function() {
+          var class1;
+
+          function Item() {
+            return class1.apply(this, arguments);
+          }
+
+          class1 = JSUtils.overload([String], [String, Number], function(str, optNum) {
+            this.list = [];
+            this.str = str;
+            return this.num = optNum || -1;
+          }, [Array, String], [Array, String, Number], function(list, str, optNum) {
+            this.list = list;
+            this.str = str;
+            return this.num = optNum || -1;
+          });
+
+          Item.prototype.toArr = function() {
+            return [this.list, this.str, this.num];
+          };
+
+          return Item;
+
+        })();
+        expect((new Item("a")).toArr()).toEqual([[], "a", -1]);
+        expect((new Item("a", 1)).toArr()).toEqual([[], "a", 1]);
+        expect(function() {
+          return new Item("a", []);
+        }).toThrow();
+        expect(function() {
+          return new Item("a", 1, []);
+        }).toThrow();
+        expect((new Item([1, 2, 3], "a")).toArr()).toEqual([[1, 2, 3], "a", -1]);
+        expect((new Item([1, 2, 3], "a", 1)).toArr()).toEqual([[1, 2, 3], "a", 1]);
+        expect(function() {
+          return new Item([1, 2, 3], "a", {});
+        }).toThrow();
+        return expect(function() {
+          return new Item([1, 2, 3], "a", 1, {});
         }).toThrow();
       });
     });

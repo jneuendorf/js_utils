@@ -222,7 +222,7 @@ describe "overload", () ->
             .toThrow()
 
     ##################################################################################################################
-    describe "realistic use cases (multiple, blocks, multiple matchers)", () ->
+    describe "more realistic use cases (multiple, blocks, multiple matchers)", () ->
 
         it "getter/setter", () ->
             obj = {}
@@ -304,4 +304,47 @@ describe "overload", () ->
             expect () -> f(1, 2)
                 .toThrow()
             expect () -> f([])
+                .toThrow()
+
+        it "optional parameters", () ->
+            class Item
+                constructor: JSUtils.overload(
+                    # optional last parameter (Number) and optional 1st parameter (made explicit in 2nd block)
+                    [String]
+                    [String, Number]
+                    (str, optNum) ->
+                        @list = []
+                        @str = str
+                        @num = optNum or -1
+                    # optional 1st parameter
+                    [Array, String]
+                    [Array, String, Number]
+                    (list, str, optNum) ->
+                        @list = list
+                        @str = str
+                        @num = optNum or -1
+                )
+                toArr: () ->
+                    return [@list, @str, @num]
+
+            # 1st block
+            expect (new Item("a")).toArr()
+                .toEqual [[], "a", -1]
+            expect (new Item("a", 1)).toArr()
+                .toEqual [[], "a", 1]
+
+            expect () -> new Item("a", [])
+                .toThrow()
+            expect () -> new Item("a", 1, [])
+                .toThrow()
+
+            # 2nd block
+            expect (new Item([1, 2, 3], "a")).toArr()
+                .toEqual [[1, 2, 3], "a", -1]
+            expect (new Item([1, 2, 3], "a", 1)).toArr()
+                .toEqual [[1, 2, 3], "a", 1]
+
+            expect () -> new Item([1, 2, 3], "a", {})
+                .toThrow()
+            expect () -> new Item([1, 2, 3], "a", 1, {})
                 .toThrow()
