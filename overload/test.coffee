@@ -269,7 +269,6 @@ describe "overload", () ->
             expect () -> obj.attr([], {})
                 .toThrow()
 
-
         it "example from the docs", () ->
             f = JSUtils.overload(
                 [Number, String]
@@ -348,3 +347,82 @@ describe "overload", () ->
                 .toThrow()
             expect () -> new Item([1, 2, 3], "a", 1, {})
                 .toThrow()
+
+    describe "caching calling functions", () ->
+
+        it "behaves as expected (same as 'getter/setter' but each call wrapped in a function)", () ->
+            obj = {}
+            obj.attr = JSUtils.cachedOverload(
+                [String]
+                (key) ->
+                    return @[key]
+
+                JSUtils.overload.signature(
+                    [String, JSUtils.overload.ANY]
+                    JSUtils.overload.matchers.isintanceMatcher
+                    JSUtils.overload.matchers.anyTypeMatcher
+                )
+                (key, value) ->
+                    @[key] = value
+                    return @
+            )
+
+            # before value was set
+            expect do () -> obj.attr("a")
+                .toBe undefined
+            # setting values for "a"
+            do () -> obj.attr("a", "a")
+            expect do () -> obj.attr("a")
+                .toBe "a"
+            do () -> obj.attr("a", 1)
+            expect do () -> obj.attr("a")
+                .toBe 1
+            do () -> obj.attr("a", null)
+            expect do () -> obj.attr("a")
+                .toBe null
+            do () -> obj.attr("a", undefined)
+            expect do () -> obj.attr("a")
+                .toBe undefined
+            do () -> obj.attr("a", [])
+            expect do () -> obj.attr("a")
+                .toEqual []
+            do () -> obj.attr("a", {})
+            expect do () -> obj.attr("a")
+                .toEqual {}
+
+            expect () -> obj.attr(1)
+                .toThrow()
+            expect () -> obj.attr([], {})
+                .toThrow()
+
+        it "is more performant than non-cached", () ->
+            n = 5
+            nums = [0...n]
+            numTrials = 300
+            blocks = [
+                JSUtils.overload.signature(
+                    (Number for i in nums)
+                    JSUtils.overload.matchers.all...
+                )
+                (args...) ->
+                    return args.length
+            ]
+            nonCached = JSUtils.overload(blocks...)
+            cached = JSUtils.cachedOverload(blocks...)
+
+            acc = 0
+            trials = [0...numTrials]
+            start = performance.now()
+            for i in trials
+                acc += nonCached(nums...)
+            deltaNonCached = performance.now() - start
+
+            acc = 0
+            start = performance.now()
+            for i in trials
+                acc += cached(nums...)
+            deltaCached = performance.now() - start
+
+            console.log "cachedOverload performance advantage (#{n} args, #{numTrials} trials each): cached: #{deltaCached} ms, non-cached #{deltaNonCached} ms"
+            expect deltaCached <= deltaNonCached
+                .toBe true

@@ -110,8 +110,8 @@ class OverloadHelpers
 # @overload JSUtils.overload(signatures1toN..., functionToExecute1)
 #   Defines one function for N different signatures.
 #   So let's call such a block a list of signatures belonging to one function: Any number of blocks can be passed to JSUtils.overload().
-#   @param signatures1toN... [Array of Array of class] Signatures. Any number of arrays (of classes).
-#   @param functionToExecute1 [Function] Function body for the previously defined signatures.
+#   @param signatures1toN... [Array] Signatures. Any number of arrays. See `JSUtils.overload.matchers` for details.
+#   @param functionToExecute1 [Function] Handler function for the previously defined signatures.
 #   @return [Function] The overloaded function
 #
 # @example Simple overload example
@@ -131,15 +131,41 @@ class OverloadHelpers
 #       (x, y) ->               # |   (handler)
 #           return x + y        # /
 #   )
-# TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters
 JSUtils.overload = (args...) ->
     {blocks, fallback, usedMatchers} = OverloadHelpers.parseArguments(args)
     return () ->
-        # TODO: find union of actually used matchers a pass potential subset of all matchers
-        handler = OverloadHelpers.findHandler(arguments, blocks, usedMatchers)
-        handler ?= fallback
+        handler = OverloadHelpers.findHandler(arguments, blocks, usedMatchers) or fallback
         if handler?
             return handler.apply(@, arguments)
+        throw new Error("Arguments do not match any known signature.")
+
+# This method works exactly like the normal `JSUtils.overload` function but caches the calling function.
+# This is particularly useful if the overloaded function is called many times from the same function (or from the global scope).
+# Of couse, the time difference is even greater if many arguments are used and the more matchers are checked.
+# If this is not the case `JSUtils.cachedOverload` should not be used
+# because it might actually lead to a performance loss
+# (because checking the cache might take longer than finding the handler by checking the blocks' signatures).
+# For details see the `JSUtils.overload` function.
+# @param arguments... [Blocks] For what a block can be see the example and the overload section.
+# @return [Function] The overloaded function.
+#
+# @overload JSUtils.cachedOverload(signatures1toN..., functionToExecute1)
+#   @param signatures1toN... [Array] Signatures.
+#   @param functionToExecute1 [Function] Handler.
+#   @return [Function] The overloaded function
+JSUtils.cachedOverload = (args...) ->
+    {blocks, fallback, usedMatchers} = OverloadHelpers.parseArguments(args)
+    cache = []
+    return () ->
+        caller = arguments.callee.caller
+        for cacheItem in cache when caller is cacheItem[0]
+            return cacheItem[1].apply?(@, arguments) or throw new Error("Arguments do not match any known signature.")
+        # no cache => find function the normal way and add handler to the cache
+        handler = OverloadHelpers.findHandler(arguments, blocks, usedMatchers) or handler
+        if handler?
+            cache.push([caller, handler])
+            return handler.apply(@, arguments)
+        cache.push([caller, false])
         throw new Error("Arguments do not match any known signature.")
 
 

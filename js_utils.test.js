@@ -1099,7 +1099,7 @@
         return f(new this.TestClass());
       }).toThrow();
     });
-    return describe("more realistic use cases (multiple, blocks, multiple matchers)", function() {
+    describe("more realistic use cases (multiple, blocks, multiple matchers)", function() {
       it("getter/setter", function() {
         var obj;
         obj = {};
@@ -1197,6 +1197,111 @@
         return expect(function() {
           return new Item([1, 2, 3], "a", 1, {});
         }).toThrow();
+      });
+    });
+    return describe("caching calling functions", function() {
+      it("behaves as expected (same as 'getter/setter' but each call wrapped in a function)", function() {
+        var obj;
+        obj = {};
+        obj.attr = JSUtils.cachedOverload([String], function(key) {
+          return this[key];
+        }, JSUtils.overload.signature([String, JSUtils.overload.ANY], JSUtils.overload.matchers.isintanceMatcher, JSUtils.overload.matchers.anyTypeMatcher), function(key, value) {
+          this[key] = value;
+          return this;
+        });
+        expect((function() {
+          return obj.attr("a");
+        })()).toBe(void 0);
+        (function() {
+          return obj.attr("a", "a");
+        })();
+        expect((function() {
+          return obj.attr("a");
+        })()).toBe("a");
+        (function() {
+          return obj.attr("a", 1);
+        })();
+        expect((function() {
+          return obj.attr("a");
+        })()).toBe(1);
+        (function() {
+          return obj.attr("a", null);
+        })();
+        expect((function() {
+          return obj.attr("a");
+        })()).toBe(null);
+        (function() {
+          return obj.attr("a", void 0);
+        })();
+        expect((function() {
+          return obj.attr("a");
+        })()).toBe(void 0);
+        (function() {
+          return obj.attr("a", []);
+        })();
+        expect((function() {
+          return obj.attr("a");
+        })()).toEqual([]);
+        (function() {
+          return obj.attr("a", {});
+        })();
+        expect((function() {
+          return obj.attr("a");
+        })()).toEqual({});
+        expect(function() {
+          return obj.attr(1);
+        }).toThrow();
+        return expect(function() {
+          return obj.attr([], {});
+        }).toThrow();
+      });
+      return it("is more performant than non-cached", function() {
+        var acc, blocks, cached, deltaCached, deltaNonCached, i, j, k, l, len, len1, m, n, nonCached, numTrials, nums, ref, results, results1, start, trials;
+        n = 5;
+        nums = (function() {
+          results = [];
+          for (var j = 0; 0 <= n ? j < n : j > n; 0 <= n ? j++ : j--){ results.push(j); }
+          return results;
+        }).apply(this);
+        numTrials = 300;
+        blocks = [
+          (ref = JSUtils.overload).signature.apply(ref, [(function() {
+            var k, len, results1;
+            results1 = [];
+            for (k = 0, len = nums.length; k < len; k++) {
+              i = nums[k];
+              results1.push(Number);
+            }
+            return results1;
+          })()].concat(slice.call(JSUtils.overload.matchers.all))), function() {
+            var args;
+            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+            return args.length;
+          }
+        ];
+        nonCached = JSUtils.overload.apply(JSUtils, blocks);
+        cached = JSUtils.cachedOverload.apply(JSUtils, blocks);
+        acc = 0;
+        trials = (function() {
+          results1 = [];
+          for (var k = 0; 0 <= numTrials ? k < numTrials : k > numTrials; 0 <= numTrials ? k++ : k--){ results1.push(k); }
+          return results1;
+        }).apply(this);
+        start = performance.now();
+        for (l = 0, len = trials.length; l < len; l++) {
+          i = trials[l];
+          acc += nonCached.apply(null, nums);
+        }
+        deltaNonCached = performance.now() - start;
+        acc = 0;
+        start = performance.now();
+        for (m = 0, len1 = trials.length; m < len1; m++) {
+          i = trials[m];
+          acc += cached.apply(null, nums);
+        }
+        deltaCached = performance.now() - start;
+        console.log("cachedOverload performance advantage (" + n + " args, " + numTrials + " trials each): cached: " + deltaCached + " ms, non-cached " + deltaNonCached + " ms");
+        return expect(deltaCached <= deltaNonCached).toBe(true);
       });
     });
   });

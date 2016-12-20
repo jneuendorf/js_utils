@@ -44,7 +44,7 @@
   <dd>
     <pre><code class='coffeescript'>[&quot;ANY&quot;]</code></pre>
     <div class='docstring'>
-  <p>this constant is an array for reference identify and contains the string for debugging purposes</p>
+  <p>this constant is used by the <code>anyTypeMatcher</code> an array for reference identify and contains the string for debugging purposes</p>
 </div>
 <div class='tags'>
 </div>
@@ -81,7 +81,20 @@ These are the available matchers and match if the argument: (1) <code>isintanceM
       </a>
     </span>
     <span class='desc'>
-      Overload functions by defining a set of signatures for a function that is executed if the current call&#39;s arguments match one of the signatures belonging to that function. 
+      Overload functions by defining a set of signatures for a function that is executed if the current call&#39;s arguments match one of the signatures belonging to that function.
+
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#JSUtils-'>
+        ~
+(Function)
+<b>JSUtils.cachedOverload</b><span>(signatures1toN..., functionToExecute1)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      This method works exactly like the normal <code>JSUtils.overload</code> function but caches the calling function. 
     </span>
   </li>
   <li>
@@ -119,9 +132,12 @@ These are the available matchers and match if the argument: (1) <code>isintanceM
       <br>
     </p>
     <div class='docstring'>
-  <p>Overload functions by defining a set of signatures for a function that is executed if the current call&#39;s arguments match one of the signatures belonging to that function.
+  <p>Overload functions by defining a set of signatures for a function that is executed
+if the current call&#39;s arguments match one of the signatures belonging to that function.
 Such a function is called <code>handler</code>.
-The last block may contain only a handler which is used in case no signature matched the arguments.</p><p>TODO: maybe cache the caller function?? should be configurable for each overload() because caller might call same function with variable number of parameters</p>
+The handler of the first matching signature will be returned.
+Therefore duplicate signature won&#39;t throw errors but might lead to unexpected behavior.
+The last block may contain only a handler which is used in case no signature matched the arguments.</p>
   <div class='examples'>
     <h3>Examples:</h3>
     <h4>
@@ -136,11 +152,12 @@ The last block may contain only a handler which is used in case no signature mat
     (a, b) -&gt;                       # |&gt; block
         return parseInt(a, 10) + b  # &#47;
 
-    [Boolean, String]   # \
-    [String, Boolean]   # |
-    [String, Number]    # |&gt;  block
-    (x, y) -&gt;           # |   (handler)
-        return x + y    # &#47;
+    [Boolean, String]       # \
+    [String, Boolean]       # |
+    # duplicate signature   # |
+    [String, Number]        # |&gt;  block
+    (x, y) -&gt;               # |   (handler)
+        return x + y        # &#47;
 )</code></pre>
   </div>
 </div>
@@ -188,11 +205,11 @@ So let&#39;s call such a block a list of signatures belonging to one function: A
       <span class='name'>signatures1toN...</span>
       <span class='type'>
         (
-          <tt>Array of Array of class</tt>
+          <tt>Array</tt>
         )
       </span>
       &mdash;
-      <span class='desc'>Signatures. Any number of arrays (of classes). </span>
+      <span class='desc'>Signatures. Any number of arrays. See <code>JSUtils.overload.matchers</code> for details. </span>
     </li>
     <li>
       <span class='name'>functionToExecute1</span>
@@ -202,7 +219,96 @@ So let&#39;s call such a block a list of signatures belonging to one function: A
         )
       </span>
       &mdash;
-      <span class='desc'>Function body for the previously defined signatures. </span>
+      <span class='desc'>Handler function for the previously defined signatures. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Function</tt>
+      )
+      &mdash;
+      <span class='desc'>The overloaded function </span>
+    </li>
+  </ul>
+</div>
+    </div>
+  </div>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='JSUtils-'>
+      ~
+(Function)
+<b>JSUtils.cachedOverload</b><span>(signatures1toN..., functionToExecute1)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>This method works exactly like the normal <code>JSUtils.overload</code> function but caches the calling function.
+This is particularly useful if the overloaded function is called many times from the same function (or from the global scope).
+Of couse, the time difference is even greater if many arguments are used and the more matchers are checked.
+If this is not the case <code>JSUtils.cachedOverload</code> should not be used
+because it might actually lead to a performance loss
+(because checking the cache might take longer than finding the handler by checking the blocks&#39; signatures).
+For details see the <code>JSUtils.overload</code> function.</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>arguments...</span>
+      <span class='type'>
+        (
+          <tt>Blocks</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>For what a block can be see the example and the overload section. </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>Function</tt>
+      )
+      &mdash;
+      <span class='desc'>The overloaded function. </span>
+    </li>
+  </ul>
+  <div class='overloads'>
+    <h3>Overloads:</h3>
+    <div class='overload'>
+      <p class='signature'>
+        ~
+(Function)
+<b>JSUtils.cachedOverload</b><span>(signatures1toN..., functionToExecute1)</span>
+      </p>
+      <div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>signatures1toN...</span>
+      <span class='type'>
+        (
+          <tt>Array</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Signatures. </span>
+    </li>
+    <li>
+      <span class='name'>functionToExecute1</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Handler. </span>
     </li>
   </ul>
   <h3>Returns:</h3>
