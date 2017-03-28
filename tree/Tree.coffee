@@ -181,21 +181,25 @@ class JSUtils.Tree
                 return @getDepth()
             set: () ->
                 return @
+            enumerable: true
         size:
             get: () ->
                 return @getSize()
             set: () ->
                 return @
+            enumerable: true
         level:
             get: () ->
                 return @getLevel()
             set: () ->
                 return @
+            enumerable: true
         root:
             get: () ->
                 return @getRoot()
             set: () ->
                 return @
+            enumerable: true
     }
 
 
