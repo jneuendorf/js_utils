@@ -160,18 +160,18 @@ class JSUtils.Tree
             ]
             for k, v of node when k not in forbiddenKeys
                 if v not instanceof Function
-                    do (k, v) ->
-                        Object.defineProperty self, k, {
+                    do (k, v) =>
+                        Object.defineProperty @, k, {
                             get: () ->
-                                return self.data[k]
+                                return @data[k]
                             set: (val) ->
-                                self.data[k] = val
-                                return self
+                                @data[k] = val
+                                return @
                         }
                 else
-                    do (k, v) ->
-                        self[k] = () ->
-                            return v.call(node, arguments...)
+                    do (k, v) =>
+                        @[k] = () ->
+                            return v.call(@, arguments...)
 
     ##################################################################################################
     # READ-ONLY PROPERTIES
