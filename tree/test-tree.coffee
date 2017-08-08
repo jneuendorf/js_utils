@@ -100,6 +100,8 @@ describe "Tree", () ->
                 }
 
             it "addChild (== appendChild)", () ->
+                expect @tree.getDescendants().length
+                    .toBe 4
                 expect @tree.children.length
                     .toBe 3
                 @tree.addChild {
@@ -109,6 +111,8 @@ describe "Tree", () ->
                     .toBe 4
                 expect @tree.children[3].newNode
                     .toBe true
+                expect @tree.getDescendants().length
+                    .toBe 5
 
                 @tree.addChild {prop: "asdf"}, 1
                 expect @tree.children.length
@@ -117,10 +121,14 @@ describe "Tree", () ->
                     .toBe "asdf"
                 expect @tree.children[4].newNode
                     .toBe true
+                expect @tree.getDescendants().length
+                    .toBe 6
 
             it "addChildren (== appendChildren)", () ->
                 expect @tree.children.length
                     .toBe 3
+                expect @tree.getDescendants().length
+                    .toBe 4
 
                 @tree.addChildren(
                     [
@@ -135,6 +143,8 @@ describe "Tree", () ->
                 )
                 expect @tree.children.length
                     .toBe 5
+                expect @tree.children[0].name
+                    .toBe "child1"
                 expect @tree.children[1].name
                     .toBe "new node 1"
                 expect @tree.children[2].name
@@ -143,10 +153,14 @@ describe "Tree", () ->
                     .toBe "child2"
                 expect @tree.children[4].name
                     .toBe "child3"
+                expect @tree.getDescendants().length
+                    .toBe 6
 
             it "setChildren", () ->
                 expect @tree.children.length
                     .toBe 3
+                expect @tree.getDescendants().length
+                    .toBe 4
                 @tree.setChildren [
                     {
                         name: "new child 1"
@@ -161,6 +175,8 @@ describe "Tree", () ->
                     .toBe "new child 1"
                 expect @tree.children[1].name
                     .toBe "new child 2"
+                expect @tree.getDescendants().length
+                    .toBe 2
 
             it "moveTo (== appendTo)", () ->
                 @tree.children[1].children[0].moveTo @tree, 0
