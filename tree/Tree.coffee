@@ -173,35 +173,6 @@ class JSUtils.Tree
                         @[k] = () ->
                             return v.call(@, arguments...)
 
-    ##################################################################################################
-    # READ-ONLY PROPERTIES
-    Object.defineProperties @::, {
-        depth:
-            get: () ->
-                return @getDepth()
-            set: () ->
-                return @
-            enumerable: true
-        size:
-            get: () ->
-                return @getSize()
-            set: () ->
-                return @
-            enumerable: true
-        level:
-            get: () ->
-                return @getLevel()
-            set: () ->
-                return @
-            enumerable: true
-        root:
-            get: () ->
-                return @getRoot()
-            set: () ->
-                return @
-            enumerable: true
-    }
-
 
     ##################################################################################################
     # INTERNAL
@@ -267,9 +238,11 @@ class JSUtils.Tree
     getDepth: () ->
         if @children.length > 0
             maxLevel = null
-            for descendant in @descendants when descendant? and (not maxLevel? or descendant.level > maxLevel)
-                maxLevel = descendant.level
-            return maxLevel - @level
+            for descendant in @descendants when descendant?
+                level = descendant.getLevel()
+                if not maxLevel? or level > maxLevel
+                    maxLevel = level
+            return maxLevel - @getLevel()
         return 0
 
     # Get number of nodes in subtree.
@@ -355,8 +328,9 @@ class JSUtils.Tree
     # @return [Array] The siblings.
     getLevelSiblings: () ->
         self = @
+        level = @getLevel()
         siblings = @getRoot().findNodes (node) ->
-            return node.level is self.level and node isnt self
+            return node.getLevel() is level and node isnt self
         return siblings or []
 
     # Get the parent of this node.
@@ -451,7 +425,7 @@ class JSUtils.Tree
             @addChild node, index, false
         if adjustLevels
             # TODO: see TODO in addChild()
-            @_adjustLevels @level
+            @_adjustLevels @getLevel()
         return @
 
     # Alias for {JSUtils.Tree#addChildren}.
@@ -477,7 +451,7 @@ class JSUtils.Tree
             @addChild node
 
         if adjustLevels
-            @_adjustLevels @level
+            @_adjustLevels @getLevel()
         return @
 
     # Moves this node to a new parent.
@@ -603,7 +577,7 @@ class JSUtils.Tree
     # @return [JSUtils.Tree] This instance.
     levelorder: (callback, level = 0, info = {idx: 0, ctx: @, levelIdx: 0}) ->
         list = [@]
-        startLevel = @level
+        startLevel = @getLevel()
         prevLevel = 0
 
         while list.length > 0
@@ -611,7 +585,7 @@ class JSUtils.Tree
             el = list.shift()
             # this is only in case any child is null. this is the case with binary trees
             if el?
-                currentLevel = el.level - startLevel
+                currentLevel = el.getLevel() - startLevel
 
                 # going to new level => reset level index
                 if currentLevel > prevLevel

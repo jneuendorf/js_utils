@@ -188,28 +188,28 @@
                     }
                 )
 
-            it "depth & getDepth()", () ->
-                expect @tree.depth
+            it "getDepth()", () ->
+                expect @tree.getDepth()
                     .toBe 2
 
-            it "size & getSize()", () ->
-                expect @tree.size
+            it "getSize()", () ->
+                expect @tree.getSize()
                     .toBe 4
 
-            it "level & getLevel()", () ->
-                expect @tree.level
+            it "getLevel()", () ->
+                expect @tree.getLevel()
                     .toBe 0
-                expect @tree.left.level
+                expect @tree.left.getLevel()
                     .toBe 1
-                expect @tree.left.right.level
+                expect @tree.left.right.getLevel()
                     .toBe 2
 
-            it "root & getRoot()", () ->
-                expect @tree.root
+            it "getRoot()", () ->
+                expect @tree.getRoot()
                     .toBe @tree
-                expect @tree.left.root
+                expect @tree.left.getRoot()
                     .toBe @tree
-                expect @tree.left.right.root
+                expect @tree.left.right.getRoot()
                     .toBe @tree
 
             it "hasNode", () ->
@@ -373,7 +373,7 @@
                 tree.addChild {n: 20}
                 tree.addChild {n: 10}
 
-                expect tree.depth
+                expect tree.getDepth()
                     .toBe 9
                 expect tree.left.left.left.left.left.left.left.left.left.n
                     .toBe 10
@@ -405,32 +405,32 @@
                             }
                         ]
                     }
-                expect tree.level
+                expect tree.getLevel()
                     .toBe 0
 
                 # 40
-                expect tree.left.level
+                expect tree.left.getLevel()
                     .toBe 1
                 # 20
-                expect tree.left.left.level
+                expect tree.left.left.getLevel()
                     .toBe 2
                 # 50
-                expect tree.left.right.level
+                expect tree.left.right.getLevel()
                     .toBe 2
 
                 # 10
-                expect tree.left.left.left.level
+                expect tree.left.left.left.getLevel()
                     .toBe 3
                 # 30
-                expect tree.left.left.right.level
+                expect tree.left.left.right.getLevel()
                     .toBe 3
 
                 # 90
-                expect tree.right.level
+                expect tree.right.getLevel()
                     .toBe 1
                 # 80
-                expect tree.right.left.level
+                expect tree.right.left.getLevel()
                     .toBe 2
                 # 100
-                expect tree.right.right.level
+                expect tree.right.right.getLevel()
                     .toBe 2

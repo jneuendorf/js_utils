@@ -307,37 +307,37 @@ describe "Tree", () ->
                     ]
                 }
 
-            it "depth & getDepth()", () ->
-                expect @tree.depth
+            it "getDepth()", () ->
+                expect @tree.getDepth()
                     .toBe 2
                 @tree.children[1].children[0].remove()
-                expect @tree.depth
+                expect @tree.getDepth()
                     .toBe 1
 
-            it "size & getSize()", () ->
-                expect @tree.size
+            it "getSize()", () ->
+                expect @tree.getSize()
                     .toBe 5
 
-            it "level & getLevel()", () ->
-                expect @tree.level
+            it "getLevel()", () ->
+                expect @tree.getLevel()
                     .toBe 0
-                expect @tree.children[1].level
+                expect @tree.children[1].getLevel()
                     .toBe 1
-                expect @tree.children[1].children[0].level
+                expect @tree.children[1].children[0].getLevel()
                     .toBe 2
 
                 @tree.children[1].children[0].addChild {
                     name: "child2-child-child"
                 }
-                expect @tree.children[1].children[0].children[0].level
+                expect @tree.children[1].children[0].children[0].getLevel()
                     .toBe 3
 
-            it "root & getRoot()", () ->
-                expect @tree.root
+            it "getRoot()", () ->
+                expect @tree.getRoot()
                     .toBe @tree
-                expect @tree.children[1].root
+                expect @tree.children[1].getRoot()
                     .toBe @tree
-                expect @tree.children[1].children[0].root
+                expect @tree.children[1].children[0].getRoot()
                     .toBe @tree
 
             it "hasNode", () ->

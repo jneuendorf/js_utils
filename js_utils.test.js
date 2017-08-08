@@ -2109,27 +2109,27 @@
             ]
           });
         });
-        it("depth & getDepth()", function() {
-          expect(this.tree.depth).toBe(2);
+        it("getDepth()", function() {
+          expect(this.tree.getDepth()).toBe(2);
           this.tree.children[1].children[0].remove();
-          return expect(this.tree.depth).toBe(1);
+          return expect(this.tree.getDepth()).toBe(1);
         });
-        it("size & getSize()", function() {
-          return expect(this.tree.size).toBe(5);
+        it("getSize()", function() {
+          return expect(this.tree.getSize()).toBe(5);
         });
-        it("level & getLevel()", function() {
-          expect(this.tree.level).toBe(0);
-          expect(this.tree.children[1].level).toBe(1);
-          expect(this.tree.children[1].children[0].level).toBe(2);
+        it("getLevel()", function() {
+          expect(this.tree.getLevel()).toBe(0);
+          expect(this.tree.children[1].getLevel()).toBe(1);
+          expect(this.tree.children[1].children[0].getLevel()).toBe(2);
           this.tree.children[1].children[0].addChild({
             name: "child2-child-child"
           });
-          return expect(this.tree.children[1].children[0].children[0].level).toBe(3);
+          return expect(this.tree.children[1].children[0].children[0].getLevel()).toBe(3);
         });
-        it("root & getRoot()", function() {
-          expect(this.tree.root).toBe(this.tree);
-          expect(this.tree.children[1].root).toBe(this.tree);
-          return expect(this.tree.children[1].children[0].root).toBe(this.tree);
+        it("getRoot()", function() {
+          expect(this.tree.getRoot()).toBe(this.tree);
+          expect(this.tree.children[1].getRoot()).toBe(this.tree);
+          return expect(this.tree.children[1].children[0].getRoot()).toBe(this.tree);
         });
         it("hasNode", function() {
           expect(this.tree.hasNode(this.tree)).toBe(true);
@@ -2573,21 +2573,21 @@
             }
           });
         });
-        it("depth & getDepth()", function() {
-          return expect(this.tree.depth).toBe(2);
+        it("getDepth()", function() {
+          return expect(this.tree.getDepth()).toBe(2);
         });
-        it("size & getSize()", function() {
-          return expect(this.tree.size).toBe(4);
+        it("getSize()", function() {
+          return expect(this.tree.getSize()).toBe(4);
         });
-        it("level & getLevel()", function() {
-          expect(this.tree.level).toBe(0);
-          expect(this.tree.left.level).toBe(1);
-          return expect(this.tree.left.right.level).toBe(2);
+        it("getLevel()", function() {
+          expect(this.tree.getLevel()).toBe(0);
+          expect(this.tree.left.getLevel()).toBe(1);
+          return expect(this.tree.left.right.getLevel()).toBe(2);
         });
-        it("root & getRoot()", function() {
-          expect(this.tree.root).toBe(this.tree);
-          expect(this.tree.left.root).toBe(this.tree);
-          return expect(this.tree.left.right.root).toBe(this.tree);
+        it("getRoot()", function() {
+          expect(this.tree.getRoot()).toBe(this.tree);
+          expect(this.tree.left.getRoot()).toBe(this.tree);
+          return expect(this.tree.left.right.getRoot()).toBe(this.tree);
         });
         it("hasNode", function() {
           expect(this.tree.hasNode(this.tree)).toBe(true);
@@ -2832,7 +2832,7 @@
           tree.addChild({
             n: 10
           });
-          expect(tree.depth).toBe(9);
+          expect(tree.getDepth()).toBe(9);
           expect(tree.left.left.left.left.left.left.left.left.left.n).toBe(10);
           tree.balance();
           expect(tree.serialize(function(node, children) {
@@ -2875,15 +2875,15 @@
               }
             ]
           });
-          expect(tree.level).toBe(0);
-          expect(tree.left.level).toBe(1);
-          expect(tree.left.left.level).toBe(2);
-          expect(tree.left.right.level).toBe(2);
-          expect(tree.left.left.left.level).toBe(3);
-          expect(tree.left.left.right.level).toBe(3);
-          expect(tree.right.level).toBe(1);
-          expect(tree.right.left.level).toBe(2);
-          return expect(tree.right.right.level).toBe(2);
+          expect(tree.getLevel()).toBe(0);
+          expect(tree.left.getLevel()).toBe(1);
+          expect(tree.left.left.getLevel()).toBe(2);
+          expect(tree.left.right.getLevel()).toBe(2);
+          expect(tree.left.left.left.getLevel()).toBe(3);
+          expect(tree.left.left.right.getLevel()).toBe(3);
+          expect(tree.right.getLevel()).toBe(1);
+          expect(tree.right.left.getLevel()).toBe(2);
+          return expect(tree.right.right.getLevel()).toBe(2);
         });
       });
     });
