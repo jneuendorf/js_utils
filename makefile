@@ -1,3 +1,6 @@
+all:
+	./make all
+
 docs:
 	./make docs
 
